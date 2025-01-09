@@ -21,7 +21,7 @@ public class SwerveModule {
     }
 
 
-    public void setState(SwerveModuleState wantedState) {
+    public void setDesiredState(SwerveModuleState wantedState) {
         //drive Motor.set(wantedState.getDrive)
         //turn motor.set(wantedState.getTurn)
     }
