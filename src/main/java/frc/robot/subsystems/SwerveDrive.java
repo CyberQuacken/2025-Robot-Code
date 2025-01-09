@@ -32,7 +32,8 @@ public class SwerveDrive extends SubsystemBase{
             new Translation2d(Units.inchesToMeters(12.5),Units.inchesToMeters(-12.5)),
             new Translation2d(Units.inchesToMeters(-12.5),Units.inchesToMeters(12.5)),
             new Translation2d(Units.inchesToMeters(-12.5),Units.inchesToMeters(-12.5))
-        );
+        );// this values are not true to our robot
+
         /*
          * kinematics = new SwerveDriveKinematices (
          * new Translation2d (aka cord points)(units.conversion(Ydistance) , units.conversion(Xdistance))
