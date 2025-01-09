@@ -5,24 +5,25 @@ package frc.robot.subsystems;
  * for calculating where to drive
  * and sending directions to the SwerveModules
  */
-public class SwerveDrive {
- /*
-  * SwerveModules[] modules = new ~~~ {
-  * module [0] // front left
-  * module [1] // front right
-  * module [2] // back left
-  * module [3] // back right
-  * }
-  */
+public class SwerveDrive extends SubsystemBase{
+    //Attributes
+    SwerveDriveKinematics kinematics;
+    SwerveDriveOdometry odometry;
+    Gyroscope gyro;
+    SwerveModule[] swerveModules;
 
-  /*
-   * Gyro
-   * kinematice
-   * odometry
-   */
+    //Constructor
+    public SwerveDrive()
+    {
+        swerveModules = new SwerveModule[4]; //Creates Swerve Modules
 
-    //set up the swerve Drive subsystem
-    public SwerveDrive(){
+        kinematics = newSwerveDriveKinematics
+        (
+            new Translation2d(Units.inchesToMeters(12.5),Units.inchesToMeters(12.5))
+            new Translation2d(Units.inchesToMeters(12.5),Units.inchesToMeters(-12.5))
+            new Translation2d(Units.inchesToMeters(-12.5),Units.inchesToMeters(12.5))
+            new Translation2d(Units.inchesToMeters(-12.5),Units.inchesToMeters(-12.5))
+        );
 
         /*
          * kinematics = new SwerveDriveKinematices (
@@ -51,6 +52,14 @@ public class SwerveDrive {
     // In robot container this is used every second or so
     // Take inputed values (from controller sticks), if drive will be relative to field, and if rate should be limited
     public void drive(){
+        gyro = new Gyroscope();
 
+        odometry = new SwerveDriveOdometry
+        (
+            kinematics
+            gyro.getAngle()
+            new SwerveModulePosition[]{new SwerveModulePosition(),new SwerveModulePosition(),new SwerveModulePosition(),new SwerveModulePosition()}
+            new Pose2d(0,0,new Rotation2d())
+        );
     }
 }
