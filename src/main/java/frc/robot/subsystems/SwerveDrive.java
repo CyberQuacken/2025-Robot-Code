@@ -28,10 +28,10 @@ public class SwerveDrive extends SubsystemBase{
 
         kinematics = new SwerveDriveKinematics
         (
-            new Translation2d(Units.inchesToMeters(12.5),Units.inchesToMeters(12.5)),
-            new Translation2d(Units.inchesToMeters(12.5),Units.inchesToMeters(-12.5)),
-            new Translation2d(Units.inchesToMeters(-12.5),Units.inchesToMeters(12.5)),
-            new Translation2d(Units.inchesToMeters(-12.5),Units.inchesToMeters(-12.5))
+            new Translation2d(Units.inchesToMeters(12),Units.inchesToMeters(12)),
+            new Translation2d(Units.inchesToMeters(12),Units.inchesToMeters(-12)),
+            new Translation2d(Units.inchesToMeters(-12),Units.inchesToMeters(12)),
+            new Translation2d(Units.inchesToMeters(-12),Units.inchesToMeters(-12))
         );// this values are not true to our robot
 
         /*
@@ -68,6 +68,33 @@ public class SwerveDrive extends SubsystemBase{
     
     // In robot container this is used every second or so
     // Take inputed values (from controller sticks), if drive will be relative to field, and if rate should be limited
-    public void drive(){
+    public void drive()
+    {
+        //test ChassisSpeeds
+        ChassisSpeeds testSpeeds = new ChassisSpeeds(Units.inchesToMeters(14),Units.inchesToMeters(4),Units.degreesToRadians(30));
+        //States for each module
+        SwerveModuleState[] swerveModuleState = kinematics.toSwerveModuleStates(testSpeeds);
+
+        swerveModules[0].setState(swerveModuleStates[0]);//Front-Left
+        swerveModules[1].setState(swerveModuleStates[1]);//Front-Right
+        swerveModules[2].setState(swerveModuleStates[2]);//Back-Left
+        swerveModules[3].setState(swerveModuleStates[3]);//Back-Right
+    }
+    // Fetch the current module positions
+    public SwerveModulePosition[] getCurrentSwerveModulePositions()
+    {
+        return new SwerveModulePosition[]{
+            new SwerveModulePosition(swerveModules[0].getDistance(), swerveModules[0].getAngle()), // Front-Left
+            new SwerveModulePosition(swerveModules[1].getDistance(), swerveModules[1].getAngle()), // Front-Right
+            new SwerveModulePosition(swerveModules[2].getDistance(), swerveModules[2].getAngle()), // Back-Left
+            new SwerveModulePosition(swerveModules[3].getDistance(), swerveModules[3].getAngle())  // Back-Right
+        };
+    }
+    
+    @Override
+    public void periodic()
+    {
+        // Update the odometry
+        odometry.update(gyro.getAngle(),  getCurrentSwerveModulePositions());
     }
 }
