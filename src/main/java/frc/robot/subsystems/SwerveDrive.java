@@ -153,7 +153,6 @@ public class SwerveDrive extends SubsystemBase{
                 ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, Rotation2d.fromDegrees(-gyro.getAngle()))
                 : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));        
         //test ChassisSpeeds
-        ChassisSpeeds testSpeeds = new ChassisSpeeds(Units.inchesToMeters(14),Units.inchesToMeters(4),Units.degreesToRadians(30));
         //States for each module
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
         m_frontLeft.setDesiredState(swerveModuleStates[0]);//Front-Left
