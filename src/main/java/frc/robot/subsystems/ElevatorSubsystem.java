@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class ElevatorSubsystem extends SubsystemBase {
   /** Creates a new ExampleSubsystem. */
-  public ElevatorSubsystem() {}
+  public ElevatorSubsystem(int leftMotorID, int rightMotorID) {}
 
   /**
    * Example command factory method
