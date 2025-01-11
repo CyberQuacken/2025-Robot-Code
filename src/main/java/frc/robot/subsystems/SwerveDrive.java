@@ -1,5 +1,4 @@
 package frc.robot.subsystems;
-
 import com.ctre.phoenix6.swerve.SwerveModule;
 import com.studica.frc.AHRS;
 
@@ -13,6 +12,7 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import frc.robot.Constants.DriveConstants;
 
 /*
  * This is the swerve drive class
@@ -24,12 +24,30 @@ public class SwerveDrive extends SubsystemBase{
     SwerveDriveKinematics kinematics;
     SwerveDriveOdometry odometry;
     private final AHRS gyro = new AHRS(AHRS.NavXComType.kUSB2); // dependant on what gyroscope we use
-    SwerveModule[] swerveModules;
+    private final MAXSwerveModule m_frontLeft = new MAXSwerveModule(
+        DriveConstants.kFrontLeftDrivingCanId,
+        DriveConstants.kFrontLeftTurningCanId,
+        DriveConstants.kFrontLeftChassisAngularOffset);
+  
+    private final MAXSwerveModule m_frontRight = new MAXSwerveModule(
+        DriveConstants.kFrontRightDrivingCanId,
+        DriveConstants.kFrontRightTurningCanId,
+        DriveConstants.kFrontRightChassisAngularOffset);
+  
+    private final MAXSwerveModule m_backLeft = new MAXSwerveModule(
+        DriveConstants.kBackLeftDrivingCanId,
+        DriveConstants.kBackLeftTurningCanId,
+        DriveConstants.kBackLeftChassisAngularOffset);
+  
+    private final MAXSwerveModule m_backRight = new MAXSwerveModule(
+        DriveConstants.kBackRightDrivingCanId,
+        DriveConstants.kBackRightTurningCanId,
+        DriveConstants.kBackRightChassisAngularOffset);
 
     //Constructor
     public SwerveDrive()
     {
-        swerveModules = new SwerveModule[4]; //Creates Swerve Modules
+        //.swerveModules = new SwerveModule[4]; //Creates Swerve Modules
 
         kinematics = new SwerveDriveKinematics
         (
@@ -77,27 +95,31 @@ public class SwerveDrive extends SubsystemBase{
         ChassisSpeeds testSpeeds = new ChassisSpeeds(Units.inchesToMeters(14),Units.inchesToMeters(4),Units.degreesToRadians(30));
         //States for each module
         SwerveModuleState[] swerveModuleState = kinematics.toSwerveModuleStates(testSpeeds);
-
-        swerveModules[0].setState(swerveModuleState[0]);//Front-Left
-        swerveModules[1].setState(swerveModuleState[1]);//Front-Right
-        swerveModules[2].setState(swerveModuleState[2]);//Back-Left
-        swerveModules[3].setState(swerveModuleState[3]);//Back-Right
+        
+        m_frontLeft.setDesiredState(swerveModuleState[0]);//Front-Left
+        m_frontRight.setDesiredState(swerveModuleState[1]);//Front-Right
+        m_backLeft.setDesiredState(swerveModuleState[2]);//Back-Left
+        m_backRight.setDesiredState(swerveModuleState[3]);//Back-Right
     }
     // Fetch the current module positions
-    public SwerveModulePosition[] getCurrentSwerveModulePositions()
-    {
-        return new SwerveModulePosition[]{
-            new SwerveModulePosition(swerveModules[0].getDistance(), swerveModules[0].getAngle()), // Front-Left
-            new SwerveModulePosition(swerveModules[1].getDistance(), swerveModules[1].getAngle()), // Front-Right
-            new SwerveModulePosition(swerveModules[2].getDistance(), swerveModules[2].getAngle()), // Back-Left
-            new SwerveModulePosition(swerveModules[3].getDistance(), swerveModules[3].getAngle())  // Back-Right
-        };
-    }
+    public SwerveModuleState[] getModuleStates(){ 
+        return   new SwerveModuleState[] {
+                  m_frontLeft.getState(),
+                  m_frontRight.getState(),
+                  m_backLeft.getState(),
+                  m_backRight.getState()
+              };
+      }
     
     @Override
     public void periodic()
     {
         // Update the odometry
-        odometry.update(gyro.getAngle(),  getCurrentSwerveModulePositions());
+        odometry.update(gyro.getRotation2d(), new SwerveModulePosition[]{
+            m_frontLeft.getPosition(),
+            m_frontRight.getPosition(),
+            m_backLeft.getPosition(),
+             m_backRight.getPosition()
+        });
     }
 }
