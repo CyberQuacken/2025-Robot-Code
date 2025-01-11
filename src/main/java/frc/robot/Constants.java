@@ -16,4 +16,14 @@ public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
   }
+  public static class elevatorConstants {
+    public static final int[] elevatorPosition = {
+      1, // level 1 coral
+      2, // level 2 coral
+      3, // level 3 coral
+      4, // level 4 coral
+      5, // home
+      6, // retracted
+    };
+  }
 }
