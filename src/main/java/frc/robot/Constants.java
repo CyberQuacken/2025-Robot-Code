@@ -42,6 +42,8 @@ public final class Constants {
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
     public static final double kDriveDeadband = 0.05;
+    public static final boolean fieldRelative = true;
+    public static final double kDeadband = 0.1;
   }
   public static final class NeoMotorConstants {
     public static final double kFreeSpeedRpm = 5676;
@@ -51,7 +53,9 @@ public static final class DriveConstants {
     // the robot, rather the allowed maximum speeds
     public static final double kMaxSpeedMetersPerSecond = 4.8;
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
-
+    public static final double kDirectionSlewRate = 1.2; // radians per second
+    public static final double kMagnitudeSlewRate = 1.8; // percent per second (1 = 100%)
+    public static final double kRotationalSlewRate = 3.0; // percent per second (1 = 100%)
     // Chassis configuration
     public static final double kTrackWidth = Units.inchesToMeters(24);
     // Distance between centers of right and left wheels on robot
@@ -69,7 +73,7 @@ public static final class DriveConstants {
     public static final double kBackLeftChassisAngularOffset = Math.PI;
     public static final double kBackRightChassisAngularOffset = Math.PI / 2;
 
-    // SPARK MAX CAN IDs
+    // SPARK MAX CAN IDs,  we will likely have to change these
     public static final int kFrontLeftDrivingCanId = 13;
     public static final int kBackLeftDrivingCanId = 3;
     public static final int kFrontRightDrivingCanId = 16;
