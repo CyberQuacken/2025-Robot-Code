@@ -25,5 +25,10 @@ public final class Constants {
       5, // home
       6, // retracted
     };
+
+    // temp values for PID
+    public static final double kP = 1;
+    public static final double kI = 1;
+    public static final double kD = 1; 
   }
 }

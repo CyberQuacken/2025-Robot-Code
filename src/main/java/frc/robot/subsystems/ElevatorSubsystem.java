@@ -5,9 +5,13 @@
 package frc.robot.subsystems;
 
 import com.revrobotics.AbsoluteEncoder;
+import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
+import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.Encoder;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.elevatorConstants;
@@ -17,9 +21,12 @@ public class ElevatorSubsystem extends SubsystemBase {
   SparkMax rightMotor;
   int[] positions; // list of all positions
   int currentPosition; // index of the position we want the elevator to be att
-  //PID leftMotorPID;
-  //PID rightMotorPID
-  AbsoluteEncoder encoder;
+  
+  // possible to make indivual PIDocntrller or motor specific PIDcontroller
+  PIDController pidController;
+
+  RelativeEncoder leftEncoder;
+  RelativeEncoder rightEncoder;
   // encoder for the motors
 
   /** Creates a new ExampleSubsystem. */
@@ -31,11 +38,17 @@ public class ElevatorSubsystem extends SubsystemBase {
     currentPosition = 0; // or whatever the number is from the statering position
 
     // <I do not know if we need encoders for both motors>
-    encoder = leftMotor.getAbsoluteEncoder();
+    leftEncoder = leftMotor.getEncoder();
+    rightEncoder = rightMotor.getEncoder();
 
-    //set up MOTORs
+    //not sure what this dos completely..
+    //leftPIDController = leftMotor.getClosedLoopController();
+    //rightPIDController = rightMotor.getClosedLoopController();
 
-    //Configure Motor PIDS
+    pidController = new PIDController(
+      elevatorConstants.kP,
+      elevatorConstants.kI,
+      elevatorConstants.kD);
   }
 
 /**
@@ -44,8 +57,9 @@ public class ElevatorSubsystem extends SubsystemBase {
  * to change where the Elevator moves to, use the setCurrentPosition method
  */
   public void moveMotors(){
-    //PID calculates
-
+    // the PID controller requestest a distance, im not sure how to get distance or what it correlates to
+    leftMotor.set(pidController.calculate(leftEncoder.getVelocity(), positions[currentPosition]));
+    rightMotor.set(pidController.calculate(rightEncoder.getVelocity(), positions[currentPosition]));
     //sends data to motors
   }
 
