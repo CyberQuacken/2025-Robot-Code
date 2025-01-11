@@ -79,5 +79,15 @@ public static final class DriveConstants {
     public static final int kBackRightTurningCanId = 16;
 
     public static final boolean kGyroReversed = false;
+  public static class elevatorConstants {
+    public static final int[] elevatorPosition = {
+      1, // level 1 coral
+      2, // level 2 coral
+      3, // level 3 coral
+      4, // level 4 coral
+      5, // home
+      6, // retracted
+    };
   }
+}
 }
