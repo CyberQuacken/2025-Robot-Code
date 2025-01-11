@@ -187,4 +187,8 @@ public class SwerveDrive extends SubsystemBase{
         m_backLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
         m_backRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
       }
-}
+    public void zeroHeading(){
+        gyro.reset();
+    }
+
+    }
