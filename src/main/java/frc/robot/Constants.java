@@ -79,20 +79,30 @@ public static final class DriveConstants {
     public static final int kBackRightTurningCanId = 16;
 
     public static final boolean kGyroReversed = false;
-  public static class elevatorConstants {
-    public static final int[] elevatorPosition = {
-      1, // level 1 coral
-      2, // level 2 coral
-      3, // level 3 coral
-      4, // level 4 coral
-      5, // home
-      6, // retracted
-    };
-
-    // temp values for PID
-    public static final double kP = 1;
-    public static final double kI = 1;
-    public static final double kD = 1; 
   }
+    
+public static class elevatorConstants {
+
+  public static final int[] positions ={
+    1, // level one
+    1, // level two
+    1, // level three
+    1, // level four
+    1, // intake
+    1, // home
+  };
+
+  public static final int levelOnePositionIndex = 0;
+  public static final int levelTwoPositionIndex = 1;
+  public static final int levelThreePositionIndex = 2;
+  public static final int levelFourPositionIndex = 3;
+
+  public static final int homePositionIndex = 4; // reset position / home positon
+  public static final int intakePositionIndex = 5;
+
+  // temp values for PID
+  public static final double kP = 1;
+  public static final double kI = 1;
+  public static final double kD = 1; 
 }
 }
