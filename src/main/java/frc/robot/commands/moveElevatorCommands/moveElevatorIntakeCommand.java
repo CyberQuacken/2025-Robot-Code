@@ -1,14 +1,13 @@
-package frc.robot.commands;
+package frc.robot.commands.moveElevatorCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants.elevatorConstants;
 import frc.robot.subsystems.ElevatorSubsystem;
 
-public class moveElevatorHomeCommand extends Command{
+public class moveElevatorIntakeCommand extends Command{
     private static ElevatorSubsystem m_subsystem;
 
-    public moveElevatorHomeCommand(ElevatorSubsystem subsystem) {
+    public moveElevatorIntakeCommand(ElevatorSubsystem subsystem) {
         m_subsystem = subsystem;
         // Use addRequirements() here to declare subsystem dependencies.
         addRequirements(subsystem);
@@ -17,7 +16,7 @@ public class moveElevatorHomeCommand extends Command{
   // Called when the command is initially scheduled.
   @Override
   public void initialize() {
-    m_subsystem.setCurrentPosition(elevatorConstants.homePositionIndex);
+    m_subsystem.setCurrentPosition(elevatorConstants.intakePositionIndex);
   }
 
   // Called every time the scheduler runs while the command is scheduled.

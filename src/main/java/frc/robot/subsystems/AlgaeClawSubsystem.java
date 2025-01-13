@@ -4,6 +4,6 @@ public class AlgaeClawSubsystem {
     
 
     public AlgaeClawSubsystem(int motorID){
-
+        
     }
 }

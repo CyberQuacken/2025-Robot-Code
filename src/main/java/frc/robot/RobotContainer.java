@@ -64,9 +64,12 @@ public class RobotContainer {
    * joysticks}.
    */
   private void configureBindings() {
-    new RunCommand( // im not actualy sjre what this does anymore
+
+    /* <code form last year we arent sure what it does>
+    new RunCommand( // im not actualy sure what this does anymore
             () -> m_robotDrive.setX(),
             m_robotDrive);
+    */
   }
 
   /**
@@ -75,7 +78,7 @@ public class RobotContainer {
    * @return the command to run in autonomous
    */
   public Command getAutonomousCommand() {
-    // An example command will be run in autonomous
+    // runs preplanned pathplanner
     return autoChooser.getSelected();
   }
 }

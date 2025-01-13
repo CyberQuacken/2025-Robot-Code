@@ -98,12 +98,12 @@ public static class elevatorConstants {
     1, // home
   };
 
-  public static final int levelOnePositionIndex = 0;
-  public static final int levelTwoPositionIndex = 1;
-  public static final int levelThreePositionIndex = 2;
-  public static final int levelFourPositionIndex = 3;
+  public static final int levelOnePositionIndex = 1;
+  public static final int levelTwoPositionIndex = 2;
+  public static final int levelThreePositionIndex = 3;
+  public static final int levelFourPositionIndex = 4;
 
-  public static final int homePositionIndex = 4; // reset position / home positon
+  public static final int homePositionIndex = 0; // home/reset it below level one, you just cant reach it
   public static final int intakePositionIndex = 5;
 
   // temp values for PID
