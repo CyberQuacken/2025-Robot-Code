@@ -15,7 +15,7 @@ public class stopCoralClawCommand extends Command{
     @Override
     public void initialize(){
         // <Should outtake speed be from constants or container?>
-        m_coralClawSubsystem.outtake(0);
+        m_coralClawSubsystem.stopMotors();
     }
 
     @Override

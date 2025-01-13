@@ -8,9 +8,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class CoralClawPivotSubsystem extends SubsystemBase {
-  // we dont know if this will be used
+  
+  SparkMax pivotMotor;
+  PIDController pidController;
+
   /** Creates a new ExampleSubsystem. */
-  public CoralClawPivotSubsystem(int motorID) {
-    //crating the motors and such
+  public CoralClawPivotSubsystem(int pivotMotorID) {
   }
 }
