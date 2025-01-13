@@ -93,7 +93,7 @@ public class MAXSwerveModule {
    * @param desiredState Desired state with speed and angle.
    */
   public void setDesiredState(SwerveModuleState desiredState) {
-    if (Math.abs(desiredState.speedMetersPerSecond)<0.005){
+    if (Math.abs(desiredState.speedMetersPerSecond)<0.001){
       stop();
       return;
     }
