@@ -79,7 +79,7 @@ public static final class DriveConstants {
     public static final int kFrontRightDrivingCanId = 16;
     public static final int kBackRightDrivingCanId = 6;
 
-    public static final int kFrontLeftTurningCanId = 13;
+    public static final int kFrontLeftTurningCanId = 12;
     public static final int kBackLeftTurningCanId = 2;
     public static final int kFrontRightTurningCanId = 15;
     public static final int kBackRightTurningCanId = 5;
