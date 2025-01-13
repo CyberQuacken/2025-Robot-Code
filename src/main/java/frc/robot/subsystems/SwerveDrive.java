@@ -88,7 +88,7 @@ public class SwerveDrive extends SubsystemBase{
         odometry = new SwerveDriveOdometry
         (
             kinematics,
-            gyro.getRotation2d(), // gyro is currently using a false class, as such it will show error until we use the proper class
+            gyro.getRotation2d(), 
             new SwerveModulePosition[]{new SwerveModulePosition(),new SwerveModulePosition(),new SwerveModulePosition(),new SwerveModulePosition()},
             new Pose2d(0,0,new Rotation2d())
         );
@@ -117,12 +117,7 @@ public class SwerveDrive extends SubsystemBase{
       return false;
     },
     this //Set requirements
-  );
-
-
-
-
-           
+  );       
     }
 //Auto methods
 private Pose2d getPose(){
@@ -157,6 +152,8 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
     m_backLeft.setDesiredState(desiredStates[2]);
     m_backRight.setDesiredState(desiredStates[3]);
   }
+
+
     // In robot container this is used every second or so
     // Take inputed values (from controller sticks), if drive will be relative to field, and if rate should be limited
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit)
