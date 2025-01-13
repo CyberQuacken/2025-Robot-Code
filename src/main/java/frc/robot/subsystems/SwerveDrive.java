@@ -1,5 +1,11 @@
 package frc.robot.subsystems;
 import com.ctre.phoenix6.swerve.SwerveModule;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.controllers.PPLTVController;
+import com.pathplanner.lib.controllers.PathFollowingController;
 import com.studica.frc.AHRS;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -13,10 +19,10 @@ import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.WPIUtilJNI;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.SwerveUtils;
-
 
 /*
  * This is the swerve drive class
@@ -25,6 +31,7 @@ import frc.robot.SwerveUtils;
  */
 public class SwerveDrive extends SubsystemBase{
     //Attributes
+    RobotConfig config;
     SwerveDriveKinematics kinematics;
     SwerveDriveOdometry odometry;
     private final AHRS gyro = new AHRS(AHRS.NavXComType.kUSB2); // dependant on what gyroscope we use
@@ -81,22 +88,73 @@ public class SwerveDrive extends SubsystemBase{
         odometry = new SwerveDriveOdometry
         (
             kinematics,
-            gyro.getRotation2d(), // gyro is currently using a false class, as such it will show error until we use the proper class
+            gyro.getRotation2d(), 
             new SwerveModulePosition[]{new SwerveModulePosition(),new SwerveModulePosition(),new SwerveModulePosition(),new SwerveModulePosition()},
             new Pose2d(0,0,new Rotation2d())
         );
-        /*
-        * odometry = new SwerveDriveOdometry(
-        * kinematics // i believe this assigns the odometry we are making to kinematics, considering kinematics is the one calculating
-        * gyro.getAngle() // this is pretty useless as periodicly() the odometer will be updated on current gyro angle and swerveModule states
-        * new swerveModulePosition[]{new position, new position, new position, new position} creates a new array for the odometer to use, and fills it will empty positions    
-        * new Pose2d(0,0 ,  new Rotation2d()) // x= 0 , y = 0 , heading 0
-        * // all new object are to fill the odometer with nonexistent values to be filled when updated
-        * );
-        */
-    }
 
-    
+
+        //AUTO
+        try{
+            config = RobotConfig.fromGUISettings();
+        } catch (Exception e){
+            e.printStackTrace();
+            System.out.println("AUTO!!!!");
+        }
+
+        AutoBuilder.configure(
+            this::getPose,
+            this::resetOdometry,
+            this::getSpeeds,
+            (speeds, feedforwards) -> driveRobotRelative(speeds),
+            new PPLTVController(0.02),
+            config,
+            () -> { 
+      // tells which alliance it is
+      var alliance = DriverStation.getAlliance();
+      if(alliance.isPresent()) { 
+        return alliance.get() == DriverStation.Alliance.Red; 
+      }
+      return false;
+    },
+    this //Set requirements
+  );       
+    }
+//Auto methods
+private Pose2d getPose(){
+    return odometry.getPoseMeters();
+}
+public ChassisSpeeds getSpeeds(){
+    return DriveConstants.kDriveKinematics.toChassisSpeeds(getModuleStates());
+}
+public void resetOdometry(Pose2d pose) {
+    odometry.resetPosition(
+        Rotation2d.fromDegrees(-gyro.getAngle()),
+        new SwerveModulePosition[] { 
+            m_frontLeft.getPosition(),
+            m_frontRight.getPosition(),
+            m_backLeft.getPosition(),
+            m_backRight.getPosition()
+        }, pose
+    );
+}
+public void driveRobotRelative(ChassisSpeeds RobotRelativeSpeeds){
+    var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
+    ChassisSpeeds.fromFieldRelativeSpeeds(RobotRelativeSpeeds,getPose().getRotation())
+    );
+    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
+    setModuleStates(swerveModuleStates);
+}
+public void setModuleStates(SwerveModuleState[] desiredStates) {
+    SwerveDriveKinematics.desaturateWheelSpeeds(
+        desiredStates, DriveConstants.kMaxSpeedMetersPerSecond);
+    m_frontLeft.setDesiredState(desiredStates[0]);
+    m_frontRight.setDesiredState(desiredStates[1]);
+    m_backLeft.setDesiredState(desiredStates[2]);
+    m_backRight.setDesiredState(desiredStates[3]);
+  }
+
+
     // In robot container this is used every second or so
     // Take inputed values (from controller sticks), if drive will be relative to field, and if rate should be limited
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit)
