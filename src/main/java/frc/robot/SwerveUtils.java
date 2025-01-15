@@ -1,3 +1,4 @@
+package frc.robot;
 /*
  * This file has several methods useful for swerve code.
  * Last year, it was built into the frc.utils package.
@@ -8,7 +9,6 @@
 
 
 
-package frc.robot;
 public class SwerveUtils {
 
     /**
