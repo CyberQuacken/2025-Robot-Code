@@ -1,11 +1,7 @@
 package frc.robot.subsystems;
-import com.ctre.phoenix6.swerve.SwerveModule;
 import com.pathplanner.lib.auto.AutoBuilder;
-import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
-import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.controllers.PPLTVController;
-import com.pathplanner.lib.controllers.PathFollowingController;
 import com.studica.frc.AHRS;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -245,6 +241,7 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
         m_backLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
         m_backRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
       }
+      
     public void zeroHeading(){
         gyro.reset();
     }
