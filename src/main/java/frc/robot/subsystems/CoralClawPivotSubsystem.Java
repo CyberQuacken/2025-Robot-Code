@@ -7,9 +7,10 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class MailBoxSubsytem extends SubsystemBase {
+public class CoralClawPivotSubsystem extends SubsystemBase {
+  // we dont know if this will be used
   /** Creates a new ExampleSubsystem. */
-  public MailBoxSubsytem(int motorID) {
+  public CoralClawPivotSubsystem(int motorID) {
     //crating the motors and such
   }
 }

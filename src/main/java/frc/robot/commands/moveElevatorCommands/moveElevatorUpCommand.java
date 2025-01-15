@@ -1,4 +1,4 @@
-package frc.robot.commands;
+package frc.robot.commands.moveElevatorCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.elevatorConstants;
@@ -22,10 +22,6 @@ public class moveElevatorUpCommand extends Command {
         else if (m_Subsystem.getCurrentPosition() == elevatorConstants.intakePositionIndex){
             //if current level is equal to 5, change position from intake to level 3
             m_Subsystem.setCurrentPosition(elevatorConstants.levelThreePositionIndex);// level 3
-        }
-        else if (m_Subsystem.getCurrentPosition() == elevatorConstants.homePositionIndex){
-            // if current pos is at home/reset, move up to level one
-            m_Subsystem.setCurrentPosition(elevatorConstants.levelOnePositionIndex); // level 1
         }
     }
 
