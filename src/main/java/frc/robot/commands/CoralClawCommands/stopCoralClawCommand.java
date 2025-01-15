@@ -1,7 +1,7 @@
 package frc.robot.commands.CoralClawCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.CoralClawSubsystem;
+import frc.robot.subsystems.CoralClawSubsystems.CoralClawSubsystem;
 
 public class stopCoralClawCommand extends Command{
     

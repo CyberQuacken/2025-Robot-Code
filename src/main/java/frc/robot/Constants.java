@@ -114,4 +114,26 @@ public static class elevatorConstants {
   public static final int leftMotorCanID = 0;
   public static final int rightMotorCanID = 1;
 }
+
+public static class coralClawConstants {
+  
+  public static final int[] positions = {
+    1, // retract/tucked in
+    1, // intake
+    1, // place coral
+  };
+
+  public static final int retractPositionIndex = 0; // pivot arm to be inside 
+  public static final int intakePositionIndex = 1; // pivot arm to intake
+  public static final int depositPositionIndex = 2; // better name pending. position for when we are placing coral down
+
+  //temp values for PID of claw pivot
+  public static final int kP = 1;
+  public static final int kI = 1;
+  public static final int kD = 1;
+
+  // preset values for how much the claw takes in <needs to be changed before use>
+  public static final int clawIntakeSpeed = -1;
+  public static final int clawOuttakeSpeed = -1;
+}
 }
