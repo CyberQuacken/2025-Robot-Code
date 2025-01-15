@@ -10,6 +10,8 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.subsystems.SwerveDrive;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.path.PathPlannerPath;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
@@ -50,8 +52,6 @@ public class RobotContainer {
         m_robotDrive));
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
-    
-    
   }
 
   /**
@@ -76,6 +76,9 @@ public class RobotContainer {
    */
   public Command getAutonomousCommand() {
     // An example command will be run in autonomous
+    return new PathPlannerAuto("New Auto");
+  }
+  public Command getOtherAutoCommand() { 
     return autoChooser.getSelected();
   }
 }
