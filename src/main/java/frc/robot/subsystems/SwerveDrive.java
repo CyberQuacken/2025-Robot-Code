@@ -52,9 +52,6 @@ public class SwerveDrive extends SubsystemBase
         (
             kinematics,
             gyro.getAngle(), // gyro is currently using a false class, as such it will show error until we use the proper class
-            new SwerveModulePosition[]{new SwerveModulePosition(),new SwerveModulePosition(),new SwerveModulePosition(),new SwerveModulePosition()},
-            new Pose2d(0,0,new Rotation2d())
-        );
         /*
         * odometry = new SwerveDriveOdometry(
         * kinematics // i believe this assigns the odometry we are making to kinematics, considering kinematics is the one calculating
