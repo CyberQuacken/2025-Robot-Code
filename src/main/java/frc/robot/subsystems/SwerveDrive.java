@@ -20,6 +20,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.SwerveUtils;
@@ -159,6 +160,7 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
     // Take inputed values (from controller sticks), if drive will be relative to field, and if rate should be limited
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit)
     {
+        System.out.println("xSpeed");
         double xSpeedCommand;
         double ySpeedCommand;
         if (rateLimit){
@@ -238,6 +240,18 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
             m_backLeft.getPosition(),
              m_backRight.getPosition()
         });
+        double loggingState[] = { 
+            m_frontLeft.getState().angle.getDegrees(),
+            m_frontLeft.getState().speedMetersPerSecond,
+            m_frontRight.getState().angle.getDegrees(),
+            m_frontRight.getState().speedMetersPerSecond,            
+            m_backLeft.getState().angle.getDegrees(),
+            m_backLeft.getState().speedMetersPerSecond,            
+            m_backRight.getState().angle.getDegrees(),
+            m_backRight.getState().speedMetersPerSecond,            
+        };
+        SmartDashboard.putNumberArray("SwerveModuleStates", loggingState);
+        //System.out.println(m_frontLeft.getState().speedMetersPerSecond);
     }
     public void setX() {
         m_frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
