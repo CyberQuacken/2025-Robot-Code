@@ -52,6 +52,14 @@ public class RobotContainer {
         m_robotDrive));
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
+
+    // <messing around with smartDashboard. it may be good to have a few commands or subsystems for this>
+    SmartDashboard.putBoolean(" Home", true);
+    SmartDashboard.putBoolean(" intake", false);
+    SmartDashboard.putBoolean(" level One", false);
+    SmartDashboard.putBoolean(" level Two", false);
+    SmartDashboard.putBoolean(" level Three", false);
+    SmartDashboard.putBoolean(" level Four", false);
   }
 
   /**
