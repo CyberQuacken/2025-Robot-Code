@@ -16,6 +16,7 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.SwerveUtils;
@@ -155,6 +156,8 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
     // Take inputed values (from controller sticks), if drive will be relative to field, and if rate should be limited
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit)
     {
+        //System.out.println("RUNNING!");
+        //System.out.println(xSpeed);
         double xSpeedCommand;
         double ySpeedCommand;
         if (rateLimit){
@@ -208,11 +211,13 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
                 : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));        
         //test ChassisSpeeds
         //States for each module
+        
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
         m_frontLeft.setDesiredState(swerveModuleStates[0]);//Front-Left
         m_frontRight.setDesiredState(swerveModuleStates[1]);//Front-Right
         m_backLeft.setDesiredState(swerveModuleStates[2]);//Back-Left
         m_backRight.setDesiredState(swerveModuleStates[3]);//Back-Right
+        //System.out.println(swerveModuleStates[0].toString());
     }
     // Fetch the current module positions
     public SwerveModuleState[] getModuleStates(){ 
@@ -234,12 +239,27 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
             m_backLeft.getPosition(),
              m_backRight.getPosition()
         });
+       
+        double loggingState[] = { 
+            m_frontLeft.getState().angle.getDegrees(),
+            m_frontLeft.getState().speedMetersPerSecond,
+            m_frontRight.getState().angle.getDegrees(),
+            m_frontRight.getState().speedMetersPerSecond,            
+            m_backLeft.getState().angle.getDegrees(),
+            m_backLeft.getState().speedMetersPerSecond,            
+            m_backRight.getState().angle.getDegrees(),
+            m_backRight.getState().speedMetersPerSecond,            
+        };
+
+       
+        SmartDashboard.putNumberArray("SwerveModuleStates", loggingState);
+        //System.out.println(m_frontLeft.getState().speedMetersPerSecond);
     }
     public void setX() {
-        m_frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
+       /*  m_frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
         m_frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
         m_backLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));
-        m_backRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
+        m_backRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45))); */
       }
       
     public void zeroHeading(){
