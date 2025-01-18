@@ -3,12 +3,12 @@ package frc.robot.subsystems;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class LightsSubsystem extends ExampleSubsystem
+public class LightsSubsystem extends SubsystemBase
 {
 
     final Spark lights;//channel?
     
-    lightSubsytem(int lightsPort){
+    LightsSubsystem(int lightsPort){
         lights = new Spark(0);
     }
 
