@@ -8,11 +8,9 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
-import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -26,7 +24,8 @@ import frc.robot.SwerveUtils;
  * for calculating where to drive
  * and sending directions to the SwerveModules
  */
-public class SwerveDrive extends SubsystemBase{
+public class SwerveDrive extends SubsystemBase
+{
     //Attributes
     private Rotation2d[] rots = new Rotation2d[4];
     private Rotation2d[] tempRots = new Rotation2d[4];
@@ -67,7 +66,7 @@ public class SwerveDrive extends SubsystemBase{
     //Constructor
     public SwerveDrive()
     {
-        //.swerveModules = new SwerveModule[4]; //Creates Swerve Modules
+        swerveModules = new SwerveModule[4]; //Creates Swerve Modules
 
         kinematics = new SwerveDriveKinematics
         (
@@ -87,6 +86,8 @@ public class SwerveDrive extends SubsystemBase{
          * + / - signs are not written with specfics and neither is the x or y accurate to cordnates
          */
 
+        gyro = new Gyroscope();
+        // gyro = new Gyro // setup gyro here, thats about it
         
         odometry = new SwerveDriveOdometry
         (
@@ -289,14 +290,15 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
     }
      
     // Fetch the current module positions
-    public SwerveModuleState[] getModuleStates(){ 
-        return   new SwerveModuleState[] {
-                  m_frontLeft.getState(),
-                  m_frontRight.getState(),
-                  m_backLeft.getState(),
-                  m_backRight.getState()
-              };
-      }
+    public SwerveModulePosition[] getCurrentSwerveModulePositions()
+    {
+        return new SwerveModulePosition[]{
+            new SwerveModulePosition(swerveModules[0].getDistance(), swerveModules[0].getAngle()), // Front-Left
+            new SwerveModulePosition(swerveModules[1].getDistance(), swerveModules[1].getAngle()), // Front-Right
+            new SwerveModulePosition(swerveModules[2].getDistance(), swerveModules[2].getAngle()), // Back-Left
+            new SwerveModulePosition(swerveModules[3].getDistance(), swerveModules[3].getAngle())  // Back-Right
+        };
+    }
     
     @Override
     public void periodic()
@@ -334,5 +336,4 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
     public void zeroHeading(){
         gyro.reset();
     }
-
     }
