@@ -7,6 +7,8 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.util.Color;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -135,5 +137,22 @@ public static class coralClawConstants {
   // preset values for how much the claw takes in <needs to be changed before use>
   public static final int clawIntakeSpeed = -1;
   public static final int clawOuttakeSpeed = -1;
+}
+
+public static class lightConstants {
+  public static final int upperLightsPort = 1;
+  public static final int lowerLightsPort = 1;
+
+
+  // list of all premade patterns 
+  public static final LEDPattern[] upperLightsPatterns = {
+    LEDPattern.solid(Color.kBlack), // off
+    null
+  };
+
+  public static final LEDPattern[] lowerlightsPattern = {
+    LEDPattern.solid(Color.kBlack), // off
+    null
+  };
 }
 }
