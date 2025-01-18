@@ -6,8 +6,9 @@ package frc.robot;
 
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.OperatorConstants;
-
+import frc.robot.commands.SwerveDriveCommands.lastRotInput;
 import frc.robot.subsystems.SwerveDrive;
+import frc.robot.subsystems.VisionSubsystem;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
@@ -36,7 +37,7 @@ public class RobotContainer {
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
-
+  private final VisionSubsystem m_vision = new VisionSubsystem();
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -50,6 +51,12 @@ public class RobotContainer {
           -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDeadband+.2),
         OIConstants.fieldRelative, true), 
         m_robotDrive));
+      m_vision.setDefaultCommand(
+        new RunCommand( 
+          () -> m_vision.run(), m_vision
+        )
+      );
+      
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
@@ -73,11 +80,16 @@ public class RobotContainer {
    */
   private void configureBindings() {
 
-    /* <code form last year we arent sure what it does>
-    new RunCommand( // im not actualy sure what this does anymore
+    // <code form last year we arent sure what it does>
+   /*  new RunCommand( // im not actualy sure what this does anymore
             () -> m_robotDrive.setX(),
-            m_robotDrive);
-    */
+            m_robotDrive); */
+    
+
+
+    Trigger rbDriverButton = m_driverController.rightBumper();
+    final lastRotInput rotInput = new lastRotInput(m_robotDrive);
+    //rbDriverButton.whileTrue(rotInput);
   }
 
   /**
