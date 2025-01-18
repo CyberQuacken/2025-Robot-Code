@@ -93,6 +93,10 @@ public class MAXSwerveModule {
    * @param desiredState Desired state with speed and angle.
    */
   public void setDesiredState(SwerveModuleState desiredState) {
+    if (Math.abs(desiredState.speedMetersPerSecond)<0.001){
+      stop();
+      return;
+    }
     // Apply chassis angular offset to the desired state.
     SwerveModuleState correctedDesiredState = new SwerveModuleState();
     correctedDesiredState.speedMetersPerSecond = desiredState.speedMetersPerSecond;
@@ -107,7 +111,10 @@ public class MAXSwerveModule {
 
     m_desiredState = desiredState;
   }
-
+public void stop(){
+  m_drivingSpark.set(0);
+  m_turningSpark.set(0);
+}
   /** Zeroes all the SwerveModule encoders. */
   public void resetEncoders() {
     m_drivingEncoder.setPosition(0);

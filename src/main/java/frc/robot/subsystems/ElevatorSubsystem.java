@@ -4,15 +4,11 @@
 
 package frc.robot.subsystems;
 
-import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.SparkClosedLoopController;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.Encoder;
-import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.elevatorConstants;
 
@@ -34,7 +30,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     leftMotor = new SparkMax(leftMotorID, MotorType.kBrushless);
     rightMotor = new SparkMax(rightMotorID, MotorType.kBrushless);
 
-    positions = elevatorConstants.elevatorPosition; // copies saved positions from constant
+    positions = elevatorConstants.positions; // copies saved positions from constant
     currentPosition = 0; // or whatever the number is from the statering position
 
     // <I do not know if we need encoders for both motors>

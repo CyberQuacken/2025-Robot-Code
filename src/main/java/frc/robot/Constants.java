@@ -7,6 +7,8 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.util.Color;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -19,6 +21,8 @@ import edu.wpi.first.math.util.Units;
 public final class Constants {
   public static class OperatorConstants {
     public static final int kDriverControllerPort = 0;
+    public static final int kScorerControllerPort = 1;
+
   }
   public static final class ModuleConstants {
     // The MAXSwerve module can be configured with one of three pinion gears: 12T,
@@ -40,6 +44,8 @@ public final class Constants {
   public static final class OIConstants {
     public static final int kDriverControllerPort = 0;
     public static final double kDriveDeadband = 0.05;
+    public static final boolean fieldRelative = true;
+    public static final double kDeadband = 0.1;
   }
   public static final class NeoMotorConstants {
     public static final double kFreeSpeedRpm = 5676;
@@ -49,11 +55,13 @@ public static final class DriveConstants {
     // the robot, rather the allowed maximum speeds
     public static final double kMaxSpeedMetersPerSecond = 4.8;
     public static final double kMaxAngularSpeed = 2 * Math.PI; // radians per second
-
+    public static final double kDirectionSlewRate = 1.2; // radians per second
+    public static final double kMagnitudeSlewRate = 1.8; // percent per second (1 = 100%)
+    public static final double kRotationalSlewRate = 3.0; // percent per second (1 = 100%)
     // Chassis configuration
-    public static final double kTrackWidth = Units.inchesToMeters(26.5);
+    public static final double kTrackWidth = Units.inchesToMeters(24);
     // Distance between centers of right and left wheels on robot
-    public static final double kWheelBase = Units.inchesToMeters(26.5);
+    public static final double kWheelBase = Units.inchesToMeters(24);
     // Distance between front and back wheels on robot
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
         new Translation2d(kWheelBase / 2, kTrackWidth / 2),
@@ -67,32 +75,84 @@ public static final class DriveConstants {
     public static final double kBackLeftChassisAngularOffset = Math.PI;
     public static final double kBackRightChassisAngularOffset = Math.PI / 2;
 
-    // SPARK MAX CAN IDs
-    public static final int kFrontLeftDrivingCanId = 11;
-    public static final int kBackLeftDrivingCanId = 13;
-    public static final int kFrontRightDrivingCanId = 15;
-    public static final int kBackRightDrivingCanId = 17;
+    // SPARK MAX CAN IDs,  we will likely have to change these
+    public static final int kFrontLeftDrivingCanId = 13;
+    public static final int kBackLeftDrivingCanId = 3;
+    public static final int kFrontRightDrivingCanId = 16;
+    public static final int kBackRightDrivingCanId = 6;
 
-    public static final int kFrontLeftTurningCanId = 10;
-    public static final int kBackLeftTurningCanId = 12;
-    public static final int kFrontRightTurningCanId = 14;
-    public static final int kBackRightTurningCanId = 16;
+    public static final int kFrontLeftTurningCanId = 12;
+    public static final int kBackLeftTurningCanId = 2;
+    public static final int kFrontRightTurningCanId = 15;
+    public static final int kBackRightTurningCanId = 5;
 
     public static final boolean kGyroReversed = false;
-  public static class elevatorConstants {
-    public static final int[] elevatorPosition = {
-      1, // level 1 coral
-      2, // level 2 coral
-      3, // level 3 coral
-      4, // level 4 coral
-      5, // home
-      6, // retracted
-    };
-
-    // temp values for PID
-    public static final double kP = 1;
-    public static final double kI = 1;
-    public static final double kD = 1; 
   }
+    
+public static class elevatorConstants {
+
+  public static final int[] positions ={
+    1, // level one
+    1, // level two
+    1, // level three
+    1, // level four
+    1, // intake
+    1, // home
+  };
+
+  public static final int levelOnePositionIndex = 1;
+  public static final int levelTwoPositionIndex = 2;
+  public static final int levelThreePositionIndex = 3;
+  public static final int levelFourPositionIndex = 4;
+
+  public static final int homePositionIndex = 0; // home/reset it below level one, you just cant reach it
+  public static final int intakePositionIndex = 5;
+
+  // temp values for PID
+  public static final double kP = 1;
+  public static final double kI = 1;
+  public static final double kD = 1; 
+
+  public static final int leftMotorCanID = 0;
+  public static final int rightMotorCanID = 1;
+}
+
+public static class coralClawConstants {
+  
+  public static final int[] positions = {
+    1, // retract/tucked in
+    1, // intake
+    1, // place coral
+  };
+
+  public static final int retractPositionIndex = 0; // pivot arm to be inside 
+  public static final int intakePositionIndex = 1; // pivot arm to intake
+  public static final int depositPositionIndex = 2; // better name pending. position for when we are placing coral down
+
+  //temp values for PID of claw pivot
+  public static final int kP = 1;
+  public static final int kI = 1;
+  public static final int kD = 1;
+
+  // preset values for how much the claw takes in <needs to be changed before use>
+  public static final int clawIntakeSpeed = -1;
+  public static final int clawOuttakeSpeed = -1;
+}
+
+public static class lightConstants {
+  public static final int upperLightsPort = 1;
+  public static final int lowerLightsPort = 1;
+
+
+  // list of all premade patterns 
+  public static final LEDPattern[] upperLightsPatterns = {
+    LEDPattern.solid(Color.kBlack), // off
+    null
+  };
+
+  public static final LEDPattern[] lowerlightsPattern = {
+    LEDPattern.solid(Color.kBlack), // off
+    null
+  };
 }
 }

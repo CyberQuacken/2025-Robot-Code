@@ -1,6 +1,7 @@
-package frc.robot.commands;
+package frc.robot.commands.moveElevatorCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.elevatorConstants;
 import frc.robot.subsystems.ElevatorSubsystem;
 
 public class moveElevatorUpCommand extends Command {
@@ -14,9 +15,13 @@ public class moveElevatorUpCommand extends Command {
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
-        // if there is a position higher than the current positon. it adds to get that position
-        if (m_Subsystem.getCurrentPosition() < 5){ // 5 is the top currently
+        // if position is available above current possition and isnt intake, then add
+        if (m_Subsystem.getCurrentPosition() < elevatorConstants.intakePositionIndex-1){ // 4 is highest scoring level
             m_Subsystem.setCurrentPosition(m_Subsystem.getCurrentPosition()+1);
+        }
+        else if (m_Subsystem.getCurrentPosition() == elevatorConstants.intakePositionIndex){
+            //if current level is equal to 5, change position from intake to level 3
+            m_Subsystem.setCurrentPosition(elevatorConstants.levelThreePositionIndex);// level 3
         }
     }
 
