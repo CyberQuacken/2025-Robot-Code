@@ -111,6 +111,15 @@ public class MAXSwerveModule {
 
     m_desiredState = desiredState;
   }
+
+  public void setDesiredRot(Rotation2d lastAngle) { 
+    SwerveModuleState correctedDesiredState = new SwerveModuleState();
+    correctedDesiredState.angle = lastAngle.plus(Rotation2d.fromRadians(m_chassisAngularOffset));
+    m_turningClosedLoopController.setReference(correctedDesiredState.angle.getRadians(), ControlType.kPosition);
+    correctedDesiredState.optimize(new Rotation2d(m_turningEncoder.getPosition()));
+    m_desiredState.angle = lastAngle;
+
+  }
 public void stop(){
   m_drivingSpark.set(0);
   m_turningSpark.set(0);
