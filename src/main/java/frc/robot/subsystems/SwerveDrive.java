@@ -3,6 +3,7 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPLTVController;
 import com.studica.frc.AHRS;
+import com.studica.frc.AHRS.NavXComType;
 
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -31,7 +32,7 @@ public class SwerveDrive extends SubsystemBase{
     RobotConfig config;
     SwerveDriveKinematics kinematics;
     SwerveDriveOdometry odometry;
-    private final AHRS gyro = new AHRS(AHRS.NavXComType.kUSB2); // dependant on what gyroscope we use
+    private AHRS gyro;
     private double m_currentTranslationMag = 0.0;
     private double m_currentTranslationDir = 0.0;
     private double m_currentRotation = 0.0;
@@ -62,7 +63,7 @@ public class SwerveDrive extends SubsystemBase{
     public SwerveDrive()
     {
         //.swerveModules = new SwerveModule[4]; //Creates Swerve Modules
-
+        gyro = new AHRS(NavXComType.kUSB1);
         kinematics = new SwerveDriveKinematics
         (
             new Translation2d(Units.inchesToMeters(12),Units.inchesToMeters(12)),
@@ -157,7 +158,6 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit)
     {
         //System.out.println("RUNNING!");
-        //System.out.println(xSpeed);
         double xSpeedCommand;
         double ySpeedCommand;
         if (rateLimit){

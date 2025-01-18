@@ -86,6 +86,8 @@ public static final class DriveConstants {
     public static final int kFrontRightTurningCanId = 15;
     public static final int kBackRightTurningCanId = 5;
 
+    public static final int kGryoi2cPort = 1;
+
     public static final boolean kGyroReversed = false;
   }
     
