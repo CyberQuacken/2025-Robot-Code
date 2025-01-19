@@ -49,6 +49,7 @@ public class SwerveDrive extends SubsystemBase
     private SlewRateLimiter m_magLimiter = new SlewRateLimiter(DriveConstants.kMagnitudeSlewRate);
   private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(DriveConstants.kRotationalSlewRate);
     private double m_prevTime = WPIUtilJNI.now() * 1e-7;
+    SwerveModuleState[] currStates = {new SwerveModuleState(), new SwerveModuleState(),new SwerveModuleState(),new SwerveModuleState()};
     private final MAXSwerveModule m_frontLeft = new MAXSwerveModule(
         DriveConstants.kFrontLeftDrivingCanId,
         DriveConstants.kFrontLeftTurningCanId,
@@ -72,6 +73,9 @@ public class SwerveDrive extends SubsystemBase
     //Constructor
     public SwerveDrive()
     {
+        for(int i = 0; i < 4; i++){
+            currStates[i] = new SwerveModuleState();
+        }
         //.swerveModules = new SwerveModule[4]; //Creates Swerve Modules
         gyro = new AHRS(NavXComType.kUSB1);
         //swerveModules = new SwerveModule[4]; //Creates Swerve Modules
@@ -170,6 +174,11 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
     // Take inputed values (from controller sticks), if drive will be relative to field, and if rate should be limited
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit)
     {
+
+
+    //This giant comment is a method that attempts to dampen the input to avoid jerkiness.
+    //It does not work.
+    //Maybe one day it will. Maybe it will not be needed. I do not know. 
         //System.out.println("New: " + xSpeed + " Old: " + prevXSpeed);
     /*     
         if(prevXSpeed > 0) { 
@@ -199,9 +208,8 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
             }
         } */
 
-        prevXSpeed = xSpeed;
-        prevYSpeed = ySpeed;
-        //System.out.println("RUNNING!");
+      /*   prevXSpeed = xSpeed;
+        prevYSpeed = ySpeed; */
         double xSpeedCommand;
         double ySpeedCommand;
         if (rateLimit){
@@ -257,12 +265,12 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
         //States for each module
         tempRots =  new Rotation2d[] {swerveModuleStates[0].angle, swerveModuleStates[1].angle,swerveModuleStates[2].angle, swerveModuleStates[3].angle};
         rots = tempRots;
-        System.out.print("Rotations from drive method: ");
+ /*        System.out.print("Rotations from drive method: ");
         for(int i = 0; i < rots.length; i++){ 
             System.out.print(rots[i].getDegrees() + ",");
         }
-        System.out.println("");
-
+        System.out.println(""); */
+        
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
         m_frontLeft.setDesiredState(swerveModuleStates[0]);//Front-Left
         m_frontRight.setDesiredState(swerveModuleStates[1]);//Front-Right
@@ -274,7 +282,7 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
 /*         if(rot > 0.1 || rot < -0.1) { 
             rots = tempRots;
         } */
-     
+        setDesiredStates(swerveModuleStates);
     }
 
     public Rotation2d[] getLastRots() { 
@@ -313,7 +321,10 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
                   m_backRight.getState()
               };
       }
-    
+    private void setDesiredStates(SwerveModuleState[] states){
+        currStates = states;
+    }
+
     @Override
     public void periodic()
     {
@@ -326,14 +337,14 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
         });
        
         double loggingState[] = { 
-            m_frontLeft.getState().angle.getDegrees(),
-            m_frontLeft.getState().speedMetersPerSecond,
-            m_frontRight.getState().angle.getDegrees(),
-            m_frontRight.getState().speedMetersPerSecond,            
-            m_backLeft.getState().angle.getDegrees(),
-            m_backLeft.getState().speedMetersPerSecond,            
-            m_backRight.getState().angle.getDegrees(),
-            m_backRight.getState().speedMetersPerSecond,            
+            currStates[0].angle.getDegrees(),
+            currStates[0].speedMetersPerSecond,
+            currStates[1].angle.getDegrees(),
+            currStates[1].speedMetersPerSecond,            
+            currStates[2].angle.getDegrees(),
+            currStates[2].speedMetersPerSecond,            
+            currStates[3].angle.getDegrees(),
+            currStates[3].speedMetersPerSecond,            
         };
 
        
