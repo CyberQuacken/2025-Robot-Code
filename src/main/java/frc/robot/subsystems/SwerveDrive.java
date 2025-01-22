@@ -88,17 +88,7 @@ public class SwerveDrive extends SubsystemBase
             new Translation2d(Units.inchesToMeters(-12),Units.inchesToMeters(-12))
         );// this values are not true to our robot
 
-        /*
-         * kinematics = new SwerveDriveKinematices (
-         * new Translation2d (aka cord points)(units.conversion(Ydistance) , units.conversion(Xdistance))
-         * new Translation2d (aka cord points)(units.conversion(-Ydistance) , units.conversion(Xdistance))
-         * new Translation2d (aka cord points)(units.conversion(-Ydistance) , units.conversion(-Xdistance))
-         * new Translation2d (aka cord points)(units.conversion(Ydistance) , units.conversion(-Xdistance))
-         * );
-         * + / - signs are not written with specfics and neither is the x or y accurate to cordnates
-         */
 
-        // gyro = new Gyro // setup gyro here, thats about it
         
         odometry = new SwerveDriveOdometry
         (
@@ -349,7 +339,6 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
 
        
         SmartDashboard.putNumberArray("SwerveModuleStates", loggingState);
-        //System.out.println(m_frontLeft.getState().speedMetersPerSecond);
     }
     public void setX() {
          m_frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
@@ -360,5 +349,19 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
       
     public void zeroHeading(){
         gyro.reset();
+    }
+
+    public enum Axis { 
+        kLeftX(0),
+        kRightX(4),
+        kLeftY(1),
+        kRightY(5),
+        kLeftTrigger(2),
+        kRightTrigger(3);
+
+        public final int value;
+        Axis(int value) { 
+            this.value = value;
+        }
     }
     }
