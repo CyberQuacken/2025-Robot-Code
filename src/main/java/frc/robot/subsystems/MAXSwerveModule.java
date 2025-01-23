@@ -93,7 +93,6 @@ public class MAXSwerveModule {
    * @param desiredState Desired state with speed and angle.
    */
   public void setDesiredState(SwerveModuleState desiredState) {
-    System.out.println("Running!");
     if (Math.abs(desiredState.speedMetersPerSecond)<0.001){
       stop();
       return;
@@ -114,11 +113,11 @@ public class MAXSwerveModule {
   }
 
   public void setDesiredRot(Rotation2d lastAngle) { 
-    SwerveModuleState correctedDesiredState = new SwerveModuleState();
-    correctedDesiredState.angle = lastAngle.plus(Rotation2d.fromRadians(m_chassisAngularOffset));
-    m_turningClosedLoopController.setReference(correctedDesiredState.angle.getRadians(), ControlType.kPosition);
-    correctedDesiredState.optimize(new Rotation2d(m_turningEncoder.getPosition()));
-    m_desiredState.angle = lastAngle;
+    SwerveModuleState correctedDesiredState = new SwerveModuleState();//Make a new state
+    correctedDesiredState.angle = lastAngle.plus(Rotation2d.fromRadians(m_chassisAngularOffset));//Input angle + offset
+    m_turningClosedLoopController.setReference(correctedDesiredState.angle.getRadians(), ControlType.kPosition);//Move angle
+    correctedDesiredState.optimize(new Rotation2d(m_turningEncoder.getPosition()));//Optimize
+    m_desiredState.angle = lastAngle;//Curr is input.
 
   }
 public void stop(){

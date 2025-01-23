@@ -104,7 +104,7 @@ public class SwerveDrive extends SubsystemBase
             config = RobotConfig.fromGUISettings();
         } catch (Exception e){
             e.printStackTrace();
-            System.out.println("AUTO!!!!");
+            //System.out.println("AUTO!!!!");
         }
 
         AutoBuilder.configure(
@@ -170,36 +170,7 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
     //It does not work.
     //Maybe one day it will. Maybe it will not be needed. I do not know. 
         //System.out.println("New: " + xSpeed + " Old: " + prevXSpeed);
-    /*     
-        if(prevXSpeed > 0) { 
-            if((xSpeed - prevXSpeed) > 0 && (xSpeed - prevXSpeed) > deadzone) {//Increasing
-                xSpeed = prevXSpeed + deadzone;
-            } else if ((xSpeed - prevXSpeed) < 0 && (xSpeed - prevXSpeed) < -deadzone) { 
-                xSpeed = prevXSpeed - deadzone;
-            }
-        } else if (prevXSpeed < 0) { 
-            if((prevXSpeed - xSpeed) > 0 && (prevXSpeed - xSpeed) > deadzone) {//Increasing
-                xSpeed = prevXSpeed - deadzone;
-            } else if ((prevXSpeed - xSpeed) < 0 && (prevXSpeed - xSpeed) < -deadzone) { 
-                xSpeed = prevXSpeed + deadzone;
-            }
-        }
-        if(prevYSpeed > 0) { 
-            if((ySpeed - prevYSpeed) > 0 && (ySpeed - prevYSpeed) > deadzone) {//Increasing
-                ySpeed = prevYSpeed + deadzone;
-            } else if ((ySpeed - prevYSpeed) < 0 && (ySpeed - prevYSpeed) < -deadzone) { 
-                ySpeed = prevYSpeed - deadzone;
-            }
-        } else if (prevYSpeed < 0) { 
-            if((prevYSpeed - ySpeed) > 0 && (prevYSpeed - ySpeed) > deadzone) {//Increasing
-                ySpeed = prevYSpeed - deadzone;
-            } else if ((prevYSpeed - ySpeed) < 0 && (prevYSpeed - ySpeed) < -deadzone) { 
-                ySpeed = prevYSpeed + deadzone;
-            }
-        } */
 
-      /*   prevXSpeed = xSpeed;
-        prevYSpeed = ySpeed; */
         double xSpeedCommand;
         double ySpeedCommand;
         if (rateLimit){
