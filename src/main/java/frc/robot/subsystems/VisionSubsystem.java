@@ -15,7 +15,7 @@ public class VisionSubsystem extends SubsystemBase {
     public void periodic() { 
         
         double tx = LimelightHelpers.getTX("");  // Horizontal offset from crosshair to target in degrees
-        RawFiducial[] data = LimelightHelpers.getRawFiducials("");;
+        RawFiducial[] data = LimelightHelpers.getRawFiducials("");
         if(tx != 0.0) { 
             System.out.println("AprilTag detected!");
             System.out.println(data[0].id);
