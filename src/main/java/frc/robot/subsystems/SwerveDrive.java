@@ -9,9 +9,14 @@ import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -44,6 +49,7 @@ public class SwerveDrive extends SubsystemBase
     private SlewRateLimiter m_magLimiter = new SlewRateLimiter(DriveConstants.kMagnitudeSlewRate);
   private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(DriveConstants.kRotationalSlewRate);
     private double m_prevTime = WPIUtilJNI.now() * 1e-7;
+    SwerveModuleState[] currStates = {new SwerveModuleState(), new SwerveModuleState(),new SwerveModuleState(),new SwerveModuleState()};
     private final MAXSwerveModule m_frontLeft = new MAXSwerveModule(
         DriveConstants.kFrontLeftDrivingCanId,
         DriveConstants.kFrontLeftTurningCanId,
@@ -67,9 +73,12 @@ public class SwerveDrive extends SubsystemBase
     //Constructor
     public SwerveDrive()
     {
+        for(int i = 0; i < 4; i++){
+            currStates[i] = new SwerveModuleState();
+        }
         //.swerveModules = new SwerveModule[4]; //Creates Swerve Modules
         gyro = new AHRS(NavXComType.kUSB1);
-        swerveModules = new SwerveModule[4]; //Creates Swerve Modules
+        //swerveModules = new SwerveModule[4]; //Creates Swerve Modules
 
         kinematics = new SwerveDriveKinematics
         (
@@ -79,18 +88,7 @@ public class SwerveDrive extends SubsystemBase
             new Translation2d(Units.inchesToMeters(-12),Units.inchesToMeters(-12))
         );// this values are not true to our robot
 
-        /*
-         * kinematics = new SwerveDriveKinematices (
-         * new Translation2d (aka cord points)(units.conversion(Ydistance) , units.conversion(Xdistance))
-         * new Translation2d (aka cord points)(units.conversion(-Ydistance) , units.conversion(Xdistance))
-         * new Translation2d (aka cord points)(units.conversion(-Ydistance) , units.conversion(-Xdistance))
-         * new Translation2d (aka cord points)(units.conversion(Ydistance) , units.conversion(-Xdistance))
-         * );
-         * + / - signs are not written with specfics and neither is the x or y accurate to cordnates
-         */
 
-        gyro = new Gyroscope();
-        // gyro = new Gyro // setup gyro here, thats about it
         
         odometry = new SwerveDriveOdometry
         (
@@ -106,7 +104,7 @@ public class SwerveDrive extends SubsystemBase
             config = RobotConfig.fromGUISettings();
         } catch (Exception e){
             e.printStackTrace();
-            System.out.println("AUTO!!!!");
+            //System.out.println("AUTO!!!!");
         }
 
         AutoBuilder.configure(
@@ -166,38 +164,13 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
     // Take inputed values (from controller sticks), if drive will be relative to field, and if rate should be limited
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit)
     {
-        //System.out.println("New: " + xSpeed + " Old: " + prevXSpeed);
-    /*     
-        if(prevXSpeed > 0) { 
-            if((xSpeed - prevXSpeed) > 0 && (xSpeed - prevXSpeed) > deadzone) {//Increasing
-                xSpeed = prevXSpeed + deadzone;
-            } else if ((xSpeed - prevXSpeed) < 0 && (xSpeed - prevXSpeed) < -deadzone) { 
-                xSpeed = prevXSpeed - deadzone;
-            }
-        } else if (prevXSpeed < 0) { 
-            if((prevXSpeed - xSpeed) > 0 && (prevXSpeed - xSpeed) > deadzone) {//Increasing
-                xSpeed = prevXSpeed - deadzone;
-            } else if ((prevXSpeed - xSpeed) < 0 && (prevXSpeed - xSpeed) < -deadzone) { 
-                xSpeed = prevXSpeed + deadzone;
-            }
-        }
-        if(prevYSpeed > 0) { 
-            if((ySpeed - prevYSpeed) > 0 && (ySpeed - prevYSpeed) > deadzone) {//Increasing
-                ySpeed = prevYSpeed + deadzone;
-            } else if ((ySpeed - prevYSpeed) < 0 && (ySpeed - prevYSpeed) < -deadzone) { 
-                ySpeed = prevYSpeed - deadzone;
-            }
-        } else if (prevYSpeed < 0) { 
-            if((prevYSpeed - ySpeed) > 0 && (prevYSpeed - ySpeed) > deadzone) {//Increasing
-                ySpeed = prevYSpeed - deadzone;
-            } else if ((prevYSpeed - ySpeed) < 0 && (prevYSpeed - ySpeed) < -deadzone) { 
-                ySpeed = prevYSpeed + deadzone;
-            }
-        } */
 
-        prevXSpeed = xSpeed;
-        prevYSpeed = ySpeed;
-        //System.out.println("RUNNING!");
+
+    //This giant comment is a method that attempts to dampen the input to avoid jerkiness.
+    //It does not work.
+    //Maybe one day it will. Maybe it will not be needed. I do not know. 
+        //System.out.println("New: " + xSpeed + " Old: " + prevXSpeed);
+
         double xSpeedCommand;
         double ySpeedCommand;
         if (rateLimit){
@@ -253,12 +226,12 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
         //States for each module
         tempRots =  new Rotation2d[] {swerveModuleStates[0].angle, swerveModuleStates[1].angle,swerveModuleStates[2].angle, swerveModuleStates[3].angle};
         rots = tempRots;
-        System.out.print("Rotations from drive method: ");
+ /*        System.out.print("Rotations from drive method: ");
         for(int i = 0; i < rots.length; i++){ 
             System.out.print(rots[i].getDegrees() + ",");
         }
-        System.out.println("");
-
+        System.out.println(""); */
+        
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
         m_frontLeft.setDesiredState(swerveModuleStates[0]);//Front-Left
         m_frontRight.setDesiredState(swerveModuleStates[1]);//Front-Right
@@ -270,7 +243,7 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
 /*         if(rot > 0.1 || rot < -0.1) { 
             rots = tempRots;
         } */
-     
+        setDesiredStates(swerveModuleStates);
     }
 
     public Rotation2d[] getLastRots() { 
@@ -291,7 +264,7 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
         m_backRight.setDesiredRot(rots[3]);
     }
      
-    // Fetch the current module positions
+/*     // Fetch the current module positions
     public SwerveModulePosition[] getCurrentSwerveModulePositions()
     {
         return new SwerveModulePosition[]{
@@ -300,8 +273,19 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
             new SwerveModulePosition(swerveModules[2].getDistance(), swerveModules[2].getAngle()), // Back-Left
             new SwerveModulePosition(swerveModules[3].getDistance(), swerveModules[3].getAngle())  // Back-Right
         };
+    } */
+        public SwerveModuleState[] getModuleStates(){ 
+        return   new SwerveModuleState[] {
+                  m_frontLeft.getState(),
+                  m_frontRight.getState(),
+                  m_backLeft.getState(),
+                  m_backRight.getState()
+              };
+      }
+    private void setDesiredStates(SwerveModuleState[] states){
+        currStates = states;
     }
-    
+
     @Override
     public void periodic()
     {
@@ -314,19 +298,18 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
         });
        
         double loggingState[] = { 
-            m_frontLeft.getState().angle.getDegrees(),
-            m_frontLeft.getState().speedMetersPerSecond,
-            m_frontRight.getState().angle.getDegrees(),
-            m_frontRight.getState().speedMetersPerSecond,            
-            m_backLeft.getState().angle.getDegrees(),
-            m_backLeft.getState().speedMetersPerSecond,            
-            m_backRight.getState().angle.getDegrees(),
-            m_backRight.getState().speedMetersPerSecond,            
+            currStates[0].angle.getDegrees(),
+            currStates[0].speedMetersPerSecond,
+            currStates[1].angle.getDegrees(),
+            currStates[1].speedMetersPerSecond,            
+            currStates[2].angle.getDegrees(),
+            currStates[2].speedMetersPerSecond,            
+            currStates[3].angle.getDegrees(),
+            currStates[3].speedMetersPerSecond,            
         };
 
        
         SmartDashboard.putNumberArray("SwerveModuleStates", loggingState);
-        //System.out.println(m_frontLeft.getState().speedMetersPerSecond);
     }
     public void setX() {
          m_frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
@@ -337,5 +320,19 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
       
     public void zeroHeading(){
         gyro.reset();
+    }
+
+    public enum Axis { 
+        kLeftX(0),
+        kRightX(4),
+        kLeftY(1),
+        kRightY(5),
+        kLeftTrigger(2),
+        kRightTrigger(3);
+
+        public final int value;
+        Axis(int value) { 
+            this.value = value;
+        }
     }
     }

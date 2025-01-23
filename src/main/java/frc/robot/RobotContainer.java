@@ -30,6 +30,7 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
 
   private final SendableChooser<Command> autoChooser;
+  
   // The robot's subsystems and commands are defined here...
   private final SwerveDrive m_robotDrive = new SwerveDrive();
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -55,7 +56,6 @@ public class RobotContainer {
         )
       );
       
-
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
     // <messing around with smartDashboard. it may be good to have a few commands or subsystems for this>
