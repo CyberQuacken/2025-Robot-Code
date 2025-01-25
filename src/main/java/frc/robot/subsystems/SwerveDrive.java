@@ -109,12 +109,7 @@ public class SwerveDrive extends SubsystemBase
             (speeds, feedforwards) -> driveRobotRelative(speeds),
             new PPLTVController(0.02),
             config,
-            () -> { 
-      // tells which alliance it is
-      var alliance = DriverStation.getAlliance();
-      if(alliance.isPresent()) { 
-        return alliance.get() == DriverStation.Alliance.Red; 
-      }
+            () -> {     
       return false;
     },
     this //Set requirements

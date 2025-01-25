@@ -18,7 +18,7 @@ public class VisionSubsystem extends SubsystemBase {
         RawFiducial[] data = LimelightHelpers.getRawFiducials("");
         if(tx != 0.0) { 
            //System.out.println("AprilTag detected!");
-            System.out.println(data[0].id);
+            //System.out.println(data[0].id);
         }
         
     }
