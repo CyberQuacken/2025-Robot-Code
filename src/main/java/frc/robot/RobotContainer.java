@@ -10,7 +10,6 @@ import frc.robot.commands.TestLightCommand;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.VisionSubsystem;
-import frc.robot.subsystems.simSwerve;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
