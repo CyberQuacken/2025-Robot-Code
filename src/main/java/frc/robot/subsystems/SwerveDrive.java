@@ -34,11 +34,6 @@ public class SwerveDrive extends SubsystemBase
 {
     //Attributes
     private Rotation2d[] rots = new Rotation2d[4];
-    private Rotation2d[] tempRots = new Rotation2d[4];
-    private double prevXSpeed = 0.0;
-    private double prevYSpeed = 0.0;
-    private double prevRot = 0.0;
-    private final double deadzone = 0.0002;
     RobotConfig config;
     SwerveDriveKinematics kinematics;
     SwerveDriveOdometry odometry;
@@ -104,7 +99,7 @@ public class SwerveDrive extends SubsystemBase
             config = RobotConfig.fromGUISettings();
         } catch (Exception e){
             e.printStackTrace();
-            System.out.println("AUTO!!!!");
+            //System.out.println("AUTO!!!!");
         }
 
         AutoBuilder.configure(
@@ -114,12 +109,7 @@ public class SwerveDrive extends SubsystemBase
             (speeds, feedforwards) -> driveRobotRelative(speeds),
             new PPLTVController(0.02),
             config,
-            () -> { 
-      // tells which alliance it is
-      var alliance = DriverStation.getAlliance();
-      if(alliance.isPresent()) { 
-        return alliance.get() == DriverStation.Alliance.Red; 
-      }
+            () -> {     
       return false;
     },
     this //Set requirements
@@ -164,42 +154,10 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
     // Take inputed values (from controller sticks), if drive will be relative to field, and if rate should be limited
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit)
     {
-
-
-    //This giant comment is a method that attempts to dampen the input to avoid jerkiness.
-    //It does not work.
-    //Maybe one day it will. Maybe it will not be needed. I do not know. 
+        
+        //xSpeed = Axis 1, YSpeed = Axis 0
         //System.out.println("New: " + xSpeed + " Old: " + prevXSpeed);
-    /*     
-        if(prevXSpeed > 0) { 
-            if((xSpeed - prevXSpeed) > 0 && (xSpeed - prevXSpeed) > deadzone) {//Increasing
-                xSpeed = prevXSpeed + deadzone;
-            } else if ((xSpeed - prevXSpeed) < 0 && (xSpeed - prevXSpeed) < -deadzone) { 
-                xSpeed = prevXSpeed - deadzone;
-            }
-        } else if (prevXSpeed < 0) { 
-            if((prevXSpeed - xSpeed) > 0 && (prevXSpeed - xSpeed) > deadzone) {//Increasing
-                xSpeed = prevXSpeed - deadzone;
-            } else if ((prevXSpeed - xSpeed) < 0 && (prevXSpeed - xSpeed) < -deadzone) { 
-                xSpeed = prevXSpeed + deadzone;
-            }
-        }
-        if(prevYSpeed > 0) { 
-            if((ySpeed - prevYSpeed) > 0 && (ySpeed - prevYSpeed) > deadzone) {//Increasing
-                ySpeed = prevYSpeed + deadzone;
-            } else if ((ySpeed - prevYSpeed) < 0 && (ySpeed - prevYSpeed) < -deadzone) { 
-                ySpeed = prevYSpeed - deadzone;
-            }
-        } else if (prevYSpeed < 0) { 
-            if((prevYSpeed - ySpeed) > 0 && (prevYSpeed - ySpeed) > deadzone) {//Increasing
-                ySpeed = prevYSpeed - deadzone;
-            } else if ((prevYSpeed - ySpeed) < 0 && (prevYSpeed - ySpeed) < -deadzone) { 
-                ySpeed = prevYSpeed + deadzone;
-            }
-        } */
 
-      /*   prevXSpeed = xSpeed;
-        prevYSpeed = ySpeed; */
         double xSpeedCommand;
         double ySpeedCommand;
         if (rateLimit){
@@ -251,30 +209,26 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
             fieldRelative
                 ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, Rotation2d.fromDegrees(-gyro.getAngle()))
                 : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));        
-        //test ChassisSpeeds
-        //States for each module
-        tempRots =  new Rotation2d[] {swerveModuleStates[0].angle, swerveModuleStates[1].angle,swerveModuleStates[2].angle, swerveModuleStates[3].angle};
-        rots = tempRots;
- /*        System.out.print("Rotations from drive method: ");
-        for(int i = 0; i < rots.length; i++){ 
-            System.out.print(rots[i].getDegrees() + ",");
-        }
-        System.out.println(""); */
-        
+        //System.out.println(swerveModuleStates[0].angle);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
         m_frontLeft.setDesiredState(swerveModuleStates[0]);//Front-Left
         m_frontRight.setDesiredState(swerveModuleStates[1]);//Front-Right
         m_backLeft.setDesiredState(swerveModuleStates[2]);//Back-Left
         m_backRight.setDesiredState(swerveModuleStates[3]);//Back-Right
-        //System.out.println(swerveModuleStates[0].toString());
-        
-        tempRots =  new Rotation2d[] {swerveModuleStates[0].angle, swerveModuleStates[1].angle,swerveModuleStates[2].angle, swerveModuleStates[3].angle};
-/*         if(rot > 0.1 || rot < -0.1) { 
-            rots = tempRots;
-        } */
+
         setDesiredStates(swerveModuleStates);
     }
-
+    public void moveRot(double rot, boolean fieldRelative) { 
+        double rotDelivered = Math.toRadians(rot) * DriveConstants.kMaxAngularSpeed;
+        var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(fieldRelative ? 
+        ChassisSpeeds.fromFieldRelativeSpeeds(0,0,rotDelivered, Rotation2d.fromDegrees(-gyro.getAngle())) : 
+        new ChassisSpeeds(0,0, rotDelivered));
+        m_frontLeft.setDesiredState(swerveModuleStates[0]);//Front-Left
+        m_frontRight.setDesiredState(swerveModuleStates[1]);//Front-Right
+        m_backLeft.setDesiredState(swerveModuleStates[2]);//Back-Left
+        m_backRight.setDesiredState(swerveModuleStates[3]);//Back-Right
+      
+    }
     public Rotation2d[] getLastRots() { 
         return rots;
     }
@@ -293,16 +247,7 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
         m_backRight.setDesiredRot(rots[3]);
     }
      
-/*     // Fetch the current module positions
-    public SwerveModulePosition[] getCurrentSwerveModulePositions()
-    {
-        return new SwerveModulePosition[]{
-            new SwerveModulePosition(swerveModules[0].getDistance(), swerveModules[0].getAngle()), // Front-Left
-            new SwerveModulePosition(swerveModules[1].getDistance(), swerveModules[1].getAngle()), // Front-Right
-            new SwerveModulePosition(swerveModules[2].getDistance(), swerveModules[2].getAngle()), // Back-Left
-            new SwerveModulePosition(swerveModules[3].getDistance(), swerveModules[3].getAngle())  // Back-Right
-        };
-    } */
+
         public SwerveModuleState[] getModuleStates(){ 
         return   new SwerveModuleState[] {
                   m_frontLeft.getState(),
@@ -325,7 +270,7 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
             m_backLeft.getPosition(),
              m_backRight.getPosition()
         });
-       
+       //FL, FR, BL, BR
         double loggingState[] = { 
             currStates[0].angle.getDegrees(),
             currStates[0].speedMetersPerSecond,
@@ -353,10 +298,10 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
 
     public enum Axis { 
         kLeftX(0),
-        kRightX(4),
+        kRightX(2),
         kLeftY(1),
         kRightY(5),
-        kLeftTrigger(2),
+        kLeftTrigger(4),
         kRightTrigger(3);
 
         public final int value;

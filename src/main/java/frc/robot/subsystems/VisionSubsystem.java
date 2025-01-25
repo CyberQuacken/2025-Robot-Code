@@ -1,10 +1,40 @@
 package frc.robot.subsystems;
 
+import org.opencv.video.Video;
+
+import edu.wpi.first.cameraserver.CameraServer;
+import edu.wpi.first.cscore.HttpCamera;
+import edu.wpi.first.cscore.VideoSource;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.LimelightHelpers;
 import frc.robot.LimelightHelpers.RawFiducial;
 
 public class VisionSubsystem extends SubsystemBase {
+    @Override
+    public void periodic() { 
+        
+        double tx = LimelightHelpers.getTX("");  // Horizontal offset from crosshair to target in degrees
+        RawFiducial[] data = LimelightHelpers.getRawFiducials("");
+        if(tx != 0.0) { 
+           //System.out.println("AprilTag detected!");
+            //System.out.println(data[0].id);
+        }
+        
+    }
+    public boolean getDetection() { 
+        // If The angle offset the camrea and the target (horizontal) is not 0, return true. else false
+        if (LimelightHelpers.getTX("") != 0.0) { 
+            return true;
+        } else { 
+            return false;
+        }
+    }
+    public double getOffset() { 
+        return LimelightHelpers.getTX("");
+    }
+    
+    
     public void run() { 
         double tx = LimelightHelpers.getTX("");  // Horizontal offset from crosshair to target in degrees
         double ty = LimelightHelpers.getTY("");  // Vertical offset from crosshair to target in degrees
@@ -39,9 +69,11 @@ public class VisionSubsystem extends SubsystemBase {
         // Configure AprilTag detection
         LimelightHelpers.SetFiducialIDFiltersOverride("", new int[]{1, 2, 3, 4}); // Only track these tag IDs
         LimelightHelpers.SetFiducialDownscalingOverride("", 2.0f); // Process at half resolution for improved framerate and reduced range
-        System.out.println(LimelightHelpers.getFiducialID(""));
+        //System.out.println(LimelightHelpers.getFiducialID(""));
         RawFiducial[] data = LimelightHelpers.getRawFiducials("");
         //data[data.length-1].id
+        //System.out.println("testing");
+        //System.out.println(LimelightHelpers.getTX(""));
 
     }
 }
