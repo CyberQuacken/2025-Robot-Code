@@ -47,25 +47,17 @@ public class RobotContainer {
     m_robotDrive.setDefaultCommand(
       new RunCommand(
         () -> m_robotDrive.drive(
-          -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDeadband),
-          -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDeadband),
-          -MathUtil.applyDeadband(m_driverController.getLeftTriggerAxis(), OIConstants.kDeadband+.2),
-        false, true), 
+          MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDeadband),
+          MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDeadband),
+          -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDeadband+.2),
+        true, true), 
         m_robotDrive)); 
       m_vision.setDefaultCommand(
         new RunCommand( 
           () -> m_vision.run(), m_vision
         )
       );
- /*      m_SimSwerve.setDefaultCommand(
-        new RunCommand(
-          () -> m_SimSwerve.drive(
-            -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDeadband),
-            -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDeadband),
-            -MathUtil.applyDeadband(m_driverController.getLeftTriggerAxis(), OIConstants.kDeadband+.2),
-          true, true), 
-          m_SimSwerve));
-       */
+
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
     // <messing around with smartDashboard. it may be good to have a few commands or subsystems for this>
