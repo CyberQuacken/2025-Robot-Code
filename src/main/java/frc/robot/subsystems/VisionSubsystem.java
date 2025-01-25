@@ -17,11 +17,23 @@ public class VisionSubsystem extends SubsystemBase {
         double tx = LimelightHelpers.getTX("");  // Horizontal offset from crosshair to target in degrees
         RawFiducial[] data = LimelightHelpers.getRawFiducials("");
         if(tx != 0.0) { 
-            System.out.println("AprilTag detected!");
+           //System.out.println("AprilTag detected!");
             System.out.println(data[0].id);
         }
         
     }
+    public boolean getDetection() { 
+        if (LimelightHelpers.getTX("") != 0.0) { 
+            return true;
+        } else { 
+            return false;
+        }
+    }
+    public double getOffset() { 
+        return LimelightHelpers.getTX("");
+    }
+    
+    
     public void run() { 
         double tx = LimelightHelpers.getTX("");  // Horizontal offset from crosshair to target in degrees
         double ty = LimelightHelpers.getTY("");  // Vertical offset from crosshair to target in degrees
@@ -59,8 +71,8 @@ public class VisionSubsystem extends SubsystemBase {
         //System.out.println(LimelightHelpers.getFiducialID(""));
         RawFiducial[] data = LimelightHelpers.getRawFiducials("");
         //data[data.length-1].id
-        System.out.println("testing");
-        System.out.println(LimelightHelpers.getTX(""));
+        //System.out.println("testing");
+        //System.out.println(LimelightHelpers.getTX(""));
 
     }
 }
