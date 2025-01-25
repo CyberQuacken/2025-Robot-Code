@@ -263,6 +263,7 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
     @Override
     public void periodic()
     {
+        
         // Update the odometry
         odometry.update(gyro.getRotation2d(), new SwerveModulePosition[]{
             m_frontLeft.getPosition(),
@@ -281,8 +282,10 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
             currStates[3].angle.getDegrees(),
             currStates[3].speedMetersPerSecond,            
         };
-
-       
+        double x = getSpeeds().vxMetersPerSecond;
+        double y = getSpeeds().vyMetersPerSecond;
+        double speed = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
+        SmartDashboard.putNumber("Speed", speed);
         SmartDashboard.putNumberArray("SwerveModuleStates", loggingState);
     }
     public void setX() {
