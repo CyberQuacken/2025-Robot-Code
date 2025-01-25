@@ -109,12 +109,7 @@ public class SwerveDrive extends SubsystemBase
             (speeds, feedforwards) -> driveRobotRelative(speeds),
             new PPLTVController(0.02),
             config,
-            () -> { 
-      // tells which alliance it is
-      var alliance = DriverStation.getAlliance();
-      if(alliance.isPresent()) { 
-        return alliance.get() == DriverStation.Alliance.Red; 
-      }
+            () -> {     
       return false;
     },
     this //Set requirements
@@ -159,7 +154,7 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
     // Take inputed values (from controller sticks), if drive will be relative to field, and if rate should be limited
     public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit)
     {
-
+        
         //xSpeed = Axis 1, YSpeed = Axis 0
         //System.out.println("New: " + xSpeed + " Old: " + prevXSpeed);
 
