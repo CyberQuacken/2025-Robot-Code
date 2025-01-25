@@ -31,6 +31,7 @@ public class lightsSubsystems extends SubsystemBase{
         patterns = setpatterns;
 
         lightBuffer = new AddressableLEDBuffer(length);
+        
 
     }
 
