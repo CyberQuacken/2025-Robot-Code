@@ -23,6 +23,7 @@ public class VisionSubsystem extends SubsystemBase {
         
     }
     public boolean getDetection() { 
+        // If The angle offset the camrea and the target (horizontal) is not 0, return true. else false
         if (LimelightHelpers.getTX("") != 0.0) { 
             return true;
         } else { 

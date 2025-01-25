@@ -7,6 +7,7 @@ package frc.robot;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.TestLightCommand;
+import frc.robot.commands.SwerveDriveCommands.resetGyroCommand;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.VisionSubsystem;
@@ -49,14 +50,14 @@ public class RobotContainer {
         () -> m_robotDrive.drive(
           -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDeadband),
           -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDeadband),
-          -MathUtil.applyDeadband(m_driverController.getLeftTriggerAxis(), OIConstants.kDeadband+.2),
+          -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDeadband+.2),
         false, true), 
         m_robotDrive)); 
-      m_vision.setDefaultCommand(
-        new RunCommand( 
-          () -> m_vision.run(), m_vision
-        )
-      );
+    m_vision.setDefaultCommand(
+      new RunCommand( 
+        () -> m_vision.run(), m_vision
+      )
+    );
  /*      m_SimSwerve.setDefaultCommand(
         new RunCommand(
           () -> m_SimSwerve.drive(
@@ -67,14 +68,6 @@ public class RobotContainer {
           m_SimSwerve));
        */
     SmartDashboard.putData("Auto Chooser", autoChooser);
-
-    // <messing around with smartDashboard. it may be good to have a few commands or subsystems for this>
-    SmartDashboard.putBoolean(" Home", true);
-    SmartDashboard.putBoolean(" intake", false);
-    SmartDashboard.putBoolean(" level One", false);
-    SmartDashboard.putBoolean(" level Two", false);
-    SmartDashboard.putBoolean(" level Three", false);
-    SmartDashboard.putBoolean(" level Four", false);
   }
 
   /**
@@ -92,10 +85,12 @@ public class RobotContainer {
    /*  new RunCommand( // im not actualy sure what this does anymore
             () -> m_robotDrive.setX(),
             m_robotDrive); */
+    resetGyroCommand resetGryo = new resetGyroCommand(m_robotDrive);
     
-
     Trigger yDriverButton = m_driverController.y();
     //yDriverButton.whileTrue(testLightCommand);
+
+    Trigger xDriverButton = m_driverController.x();
   }
 
   /**
