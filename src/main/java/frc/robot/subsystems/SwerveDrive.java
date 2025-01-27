@@ -18,6 +18,9 @@ import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -32,6 +35,13 @@ import frc.robot.SwerveUtils;
  */
 public class SwerveDrive extends SubsystemBase
 {
+    Pose2d pose = new Pose2d();
+    StructPublisher<Pose2d> publisher = 
+    NetworkTableInstance.getDefault().getStructTopic("MyPose", Pose2d.struct).publish();
+
+    StructArrayPublisher<SwerveModuleState> swervePublisher =
+    NetworkTableInstance.getDefault()
+    .getStructArrayTopic("MyStates", SwerveModuleState.struct).publish();
     //Attributes
     private Rotation2d[] rots = new Rotation2d[4];
     RobotConfig config;
@@ -263,7 +273,9 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
     @Override
     public void periodic()
     {
-        
+        pose = getPose();
+        publisher.set(pose);
+        swervePublisher.set(currStates);
         // Update the odometry
         odometry.update(gyro.getRotation2d(), new SwerveModulePosition[]{
             m_frontLeft.getPosition(),
@@ -287,6 +299,10 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
         double speed = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
         SmartDashboard.putNumber("Speed", speed);
         SmartDashboard.putNumberArray("SwerveModuleStates", loggingState);
+        Pose2d pose = getPose();
+        
+
+
     }
     public void setX() {
          m_frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
