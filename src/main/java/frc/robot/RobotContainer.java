@@ -54,7 +54,7 @@ public class RobotContainer {
           -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDeadband),
           -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDeadband),
           -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDeadband+.2),
-        false, true), 
+        true, true), 
         m_robotDrive)); 
     m_vision.setDefaultCommand(
       new RunCommand( 
