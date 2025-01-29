@@ -15,6 +15,8 @@ import frc.robot.subsystems.VisionSubsystem;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardComponent;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -34,6 +36,7 @@ public class RobotContainer {
   
   // The robot's subsystems and commands are defined here...
   private final SwerveDrive m_robotDrive = new SwerveDrive();
+  
   private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
   private final TestLightCommand testLightCommand = new TestLightCommand(m_VisionSubsystem, m_robotDrive);
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -51,7 +54,7 @@ public class RobotContainer {
           -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDeadband),
           -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDeadband),
           -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDeadband+.2),
-        false, true), 
+        true, false), 
         m_robotDrive)); 
     m_vision.setDefaultCommand(
       new RunCommand( 
@@ -68,6 +71,7 @@ public class RobotContainer {
           m_SimSwerve));
        */
     SmartDashboard.putData("Auto Chooser", autoChooser);
+
   }
 
   /**
@@ -91,6 +95,7 @@ public class RobotContainer {
     //yDriverButton.whileTrue(testLightCommand);
 
     Trigger xDriverButton = m_driverController.x();
+    SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
   /**

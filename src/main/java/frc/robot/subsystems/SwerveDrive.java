@@ -14,12 +14,11 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructArrayPublisher;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.util.WPIUtilJNI;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
@@ -32,6 +31,20 @@ import frc.robot.SwerveUtils;
  */
 public class SwerveDrive extends SubsystemBase
 {
+
+    //Structs for AdvantageScope Simulation
+    Pose2d pose = new Pose2d();
+    StructPublisher<Pose2d> publisher = 
+    NetworkTableInstance.getDefault().getStructTopic("MyPose", Pose2d.struct).publish();
+    StructArrayPublisher<SwerveModuleState> swervePublisher =
+    NetworkTableInstance.getDefault()
+    .getStructArrayTopic("MyStates", SwerveModuleState.struct).publish();
+    
+    //Sim states
+    SwerveModuleState[] currStates = {new SwerveModuleState(), new SwerveModuleState(),new SwerveModuleState(),new SwerveModuleState()};
+
+
+
     //Attributes
     private Rotation2d[] rots = new Rotation2d[4];
     RobotConfig config;
@@ -42,9 +55,10 @@ public class SwerveDrive extends SubsystemBase
     private double m_currentTranslationDir = 0.0;
     private double m_currentRotation = 0.0;
     private SlewRateLimiter m_magLimiter = new SlewRateLimiter(DriveConstants.kMagnitudeSlewRate);
-  private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(DriveConstants.kRotationalSlewRate);
+    private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(DriveConstants.kRotationalSlewRate);
     private double m_prevTime = WPIUtilJNI.now() * 1e-7;
-    SwerveModuleState[] currStates = {new SwerveModuleState(), new SwerveModuleState(),new SwerveModuleState(),new SwerveModuleState()};
+
+
     private final MAXSwerveModule m_frontLeft = new MAXSwerveModule(
         DriveConstants.kFrontLeftDrivingCanId,
         DriveConstants.kFrontLeftTurningCanId,
@@ -161,23 +175,28 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
         double xSpeedCommand;
         double ySpeedCommand;
         if (rateLimit){
-            double inputTranslationDir = Math.atan2(ySpeed, xSpeed);
-            double inputTranslationMag = Math.sqrt(Math.pow(xSpeed, 2) + Math.pow(ySpeed, 2));
+
+            //Vector: direction and magnitude
+            double inputTranslationDir = Math.atan2(ySpeed, xSpeed);//Find angle given two points on circle
+            double inputTranslationMag = Math.sqrt(Math.pow(xSpeed, 2) + Math.pow(ySpeed, 2));//Pythagorean theorem
 
             double directionSlewRate;
-            if (m_currentTranslationMag != 0.0){ 
+            if (m_currentTranslationMag != 0.0){ //If driving
                 directionSlewRate = Math.abs(DriveConstants.kDirectionSlewRate / m_currentTranslationMag);
             } else { 
                 directionSlewRate = 500.0;
             }
       double currentTime = WPIUtilJNI.now() * 1e-6;
       double elapsedTime = currentTime - m_prevTime;
-      double angleDif = SwerveUtils.AngleDifference(inputTranslationDir, m_currentTranslationDir);
+      double angleDif = SwerveUtils.AngleDifference(inputTranslationDir, m_currentTranslationDir);//Change between goal and current in radians
+      //System.out.println(angleDif);
       if (angleDif < 0.45*Math.PI) {
+        //System.out.println("SMALL!");
         m_currentTranslationDir = SwerveUtils.StepTowardsCircular(m_currentTranslationDir, inputTranslationDir, directionSlewRate * elapsedTime);
         m_currentTranslationMag = m_magLimiter.calculate(inputTranslationMag);
       }
       else if (angleDif > 0.85*Math.PI) {
+        //System.out.println("BIG");
         if (m_currentTranslationMag > 1e-4) { //some small number to avoid floating-point errors with equality checking
           // keep currentTranslationDir unchanged
           m_currentTranslationMag = m_magLimiter.calculate(0.0);
@@ -188,6 +207,7 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
         }
       }
       else {
+        //System.out.println("MEDIUM!");
         m_currentTranslationDir = SwerveUtils.StepTowardsCircular(m_currentTranslationDir, inputTranslationDir, directionSlewRate * elapsedTime);
         m_currentTranslationMag = m_magLimiter.calculate(0.0);
       }
@@ -196,25 +216,35 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
       xSpeedCommand = m_currentTranslationMag * Math.cos(m_currentTranslationDir);
       ySpeedCommand = m_currentTranslationMag * Math.sin(m_currentTranslationDir);
       m_currentRotation = m_rotLimiter.calculate(rot);
+
+
         }else { 
             xSpeedCommand = xSpeed;
             ySpeedCommand = ySpeed;
             m_currentRotation = rot;
         }
         
+
+        //Convert input to m/s chassis speeds.
         double xSpeedDelivered = xSpeedCommand * DriveConstants.kMaxSpeedMetersPerSecond;
         double ySpeedDelivered = ySpeedCommand * DriveConstants.kMaxSpeedMetersPerSecond;
         double rotDelivered = m_currentRotation * DriveConstants.kMaxAngularSpeed; 
+
+        //Convert chassis speeds to usable module states
         var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
             fieldRelative
                 ? ChassisSpeeds.fromFieldRelativeSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered, Rotation2d.fromDegrees(-gyro.getAngle()))
                 : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));        
         //System.out.println(swerveModuleStates[0].angle);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
+        
+
+        
         m_frontLeft.setDesiredState(swerveModuleStates[0]);//Front-Left
         m_frontRight.setDesiredState(swerveModuleStates[1]);//Front-Right
         m_backLeft.setDesiredState(swerveModuleStates[2]);//Back-Left
         m_backRight.setDesiredState(swerveModuleStates[3]);//Back-Right
+    
 
         setDesiredStates(swerveModuleStates);
     }
@@ -240,12 +270,7 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
             m_backRight.getState().angle,
         };
     }
-    public void turn(Rotation2d[] rots) { 
-        m_frontLeft.setDesiredRot(rots[0]);
-        m_frontRight.setDesiredRot(rots[1]);
-        m_backLeft.setDesiredRot(rots[2]);
-        m_backRight.setDesiredRot(rots[3]);
-    }
+
      
 
         public SwerveModuleState[] getModuleStates(){ 
@@ -263,6 +288,9 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
     @Override
     public void periodic()
     {
+        pose = getPose();
+        publisher.set(pose);
+        swervePublisher.set(currStates);
         // Update the odometry
         odometry.update(gyro.getRotation2d(), new SwerveModulePosition[]{
             m_frontLeft.getPosition(),
@@ -281,9 +309,14 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
             currStates[3].angle.getDegrees(),
             currStates[3].speedMetersPerSecond,            
         };
-
-       
+        double x = getSpeeds().vxMetersPerSecond;
+        double y = getSpeeds().vyMetersPerSecond;
+        double speed = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
+        SmartDashboard.putNumber("Speed", speed);
         SmartDashboard.putNumberArray("SwerveModuleStates", loggingState);
+        
+
+
     }
     public void setX() {
          m_frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
@@ -296,17 +329,5 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
         gyro.reset();
     }
 
-    public enum Axis { 
-        kLeftX(0),
-        kRightX(2),
-        kLeftY(1),
-        kRightY(5),
-        kLeftTrigger(4),
-        kRightTrigger(3);
-
-        public final int value;
-        Axis(int value) { 
-            this.value = value;
-        }
-    }
+  
     }
