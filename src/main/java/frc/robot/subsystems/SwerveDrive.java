@@ -189,11 +189,14 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
       double currentTime = WPIUtilJNI.now() * 1e-6;
       double elapsedTime = currentTime - m_prevTime;
       double angleDif = SwerveUtils.AngleDifference(inputTranslationDir, m_currentTranslationDir);//Change between goal and current in radians
+      //System.out.println(angleDif);
       if (angleDif < 0.45*Math.PI) {
+        //System.out.println("SMALL!");
         m_currentTranslationDir = SwerveUtils.StepTowardsCircular(m_currentTranslationDir, inputTranslationDir, directionSlewRate * elapsedTime);
         m_currentTranslationMag = m_magLimiter.calculate(inputTranslationMag);
       }
       else if (angleDif > 0.85*Math.PI) {
+        //System.out.println("BIG");
         if (m_currentTranslationMag > 1e-4) { //some small number to avoid floating-point errors with equality checking
           // keep currentTranslationDir unchanged
           m_currentTranslationMag = m_magLimiter.calculate(0.0);
@@ -204,6 +207,7 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
         }
       }
       else {
+        //System.out.println("MEDIUM!");
         m_currentTranslationDir = SwerveUtils.StepTowardsCircular(m_currentTranslationDir, inputTranslationDir, directionSlewRate * elapsedTime);
         m_currentTranslationMag = m_magLimiter.calculate(0.0);
       }
@@ -233,10 +237,14 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
                 : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));        
         //System.out.println(swerveModuleStates[0].angle);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
+        
+
+        
         m_frontLeft.setDesiredState(swerveModuleStates[0]);//Front-Left
         m_frontRight.setDesiredState(swerveModuleStates[1]);//Front-Right
         m_backLeft.setDesiredState(swerveModuleStates[2]);//Back-Left
         m_backRight.setDesiredState(swerveModuleStates[3]);//Back-Right
+    
 
         setDesiredStates(swerveModuleStates);
     }
