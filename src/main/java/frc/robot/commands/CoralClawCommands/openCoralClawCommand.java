@@ -15,6 +15,7 @@ public class openCoralClawCommand extends Command{
     @Override
     public void initialize(){
         // <Should outtake speed be from constants or container?>
+        // IMO, constants - Finn
         m_coralClawSubsystem.outtake(0);
     }
 

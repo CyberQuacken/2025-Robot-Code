@@ -21,7 +21,7 @@
       },
       "prevControl": {
         "x": 0.13961038961038952,
-        "y": 1.3019309637730692
+        "y": 1.3019309637730694
       },
       "nextControl": null,
       "isLocked": false,
@@ -45,7 +45,7 @@
     "rotation": 0.0
   },
   "reversed": false,
-  "folder": null,
+  "folder": "Weaving",
   "idealStartingState": {
     "velocity": 0,
     "rotation": 0.0
