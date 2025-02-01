@@ -12,6 +12,9 @@ import frc.robot.LimelightHelpers.LimelightResults;
 import frc.robot.commands.TestLightCommand;
 import frc.robot.commands.SwerveDriveCommands.resetGyroCommand;
 import frc.robot.commands.SwerveDriveCommands.toggleLimelightAuto;
+
+import frc.robot.commands.SwerveDriveCommands.lastRotCommand;
+
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.VisionSubsystem;
@@ -28,6 +31,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -50,6 +54,7 @@ public class RobotContainer {
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
   private final VisionSubsystem m_vision = new VisionSubsystem();
+  private final lastRotCommand lastRots = new lastRotCommand(m_robotDrive);
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -93,6 +98,7 @@ public class RobotContainer {
       )
     );
 
+
     SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
@@ -122,6 +128,7 @@ public class RobotContainer {
     //yDriverButton.whileTrue(testLightCommand);
 
     Trigger xDriverButton = m_driverController.x();
+    xDriverButton.whileTrue(lastRots);
     SmartDashboard.putData("Auto Chooser", autoChooser);
   }
   /**

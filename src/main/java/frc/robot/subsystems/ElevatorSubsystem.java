@@ -31,7 +31,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     rightMotor = new SparkMax(rightMotorID, MotorType.kBrushless);
 
     positions = elevatorConstants.positions; // copies saved positions from constant
-    currentPosition = 0; // or whatever the number is from the statering position
+    currentPosition = 0; // or whatever the number is from the starting position
 
     // <I do not know if we need encoders for both motors>
     leftEncoder = leftMotor.getEncoder();

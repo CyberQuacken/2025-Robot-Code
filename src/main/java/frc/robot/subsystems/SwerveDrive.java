@@ -36,7 +36,13 @@ import frc.robot.SwerveUtils;
  */
 public class SwerveDrive extends SubsystemBase
 {
-
+    private Rotation2d[] tempRots = new Rotation2d[4];
+    private double prevXSpeed = 0.0;
+    private double prevYSpeed = 0.0;
+    private double prevSpeed = 0.0;
+    private double speed = 0.0;
+    private double prevRot = 0.0;
+    private final double deadzone = 0.05;
     //Structs for AdvantageScope Simulation
     boolean limelightAuto = false;
     Pose2d pose = new Pose2d();
@@ -84,6 +90,8 @@ public class SwerveDrive extends SubsystemBase
         DriveConstants.kBackRightDrivingCanId,
         DriveConstants.kBackRightTurningCanId,
         DriveConstants.kBackRightChassisAngularOffset);
+    double prevTime = WPIUtilJNI.now();
+    double time = WPIUtilJNI.now();
 
     //Constructor
     public SwerveDrive()
@@ -225,63 +233,51 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
 
     // In robot container this is used every second or so
     // Take inputed values (from controller sticks), if drive will be relative to field, and if rate should be limited
-    public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit)
+    public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative)
     {
-        
-        //xSpeed = Axis 1, YSpeed = Axis 0
-        //System.out.println("New: " + xSpeed + " Old: " + prevXSpeed);
+        double past = xSpeed;
+        //If change in speed is greater than (deadzone), set change to deadzone. 
+        //This is the purpose of the giant if statements. 
+        if(prevXSpeed > 0) { 
+            if((xSpeed - prevXSpeed) > 0 && (xSpeed - prevXSpeed) > deadzone) {//Increasing
+                xSpeed = prevXSpeed + deadzone;
+            } else if ((xSpeed - prevXSpeed) < 0 && (xSpeed - prevXSpeed) < -deadzone) { 
+                xSpeed = prevXSpeed - deadzone;
+            }
+        } else if (prevXSpeed < 0) { 
+            if((prevXSpeed - xSpeed) > 0 && (prevXSpeed - xSpeed) > deadzone) {//Increasing
+                xSpeed = prevXSpeed - deadzone;
+            } else if ((prevXSpeed - xSpeed) < 0 && (prevXSpeed - xSpeed) < -deadzone) { 
+                xSpeed = prevXSpeed + deadzone;
+            }
+        }
 
+
+        if(prevYSpeed > 0) { 
+            if((ySpeed - prevYSpeed) > 0 && (ySpeed - prevYSpeed) > deadzone) {//Increasing
+                ySpeed = prevYSpeed + deadzone;
+            } else if ((ySpeed - prevYSpeed) < 0 && (ySpeed - prevYSpeed) < -deadzone) { 
+                ySpeed = prevYSpeed - deadzone;
+            }
+        } else if (prevYSpeed < 0) { 
+            if((prevYSpeed - ySpeed) > 0 && (prevYSpeed - ySpeed) > deadzone) {//Increasing
+                ySpeed = prevYSpeed - deadzone;
+            } else if ((prevYSpeed - ySpeed) < 0 && (prevYSpeed - ySpeed) < -deadzone) { 
+                ySpeed = prevYSpeed + deadzone;
+            }
+       
+        //xSpeed = Axis 1, YSpeed = Axis 0
+        }
+        prevXSpeed = xSpeed;
+        prevYSpeed = ySpeed;
+        //System.out.println("Past: " + past + " Present: " + xSpeed); // Making sure limiter works
         double xSpeedCommand;
         double ySpeedCommand;
-        if (rateLimit){
-
-            //Vector: direction and magnitude
-            double inputTranslationDir = Math.atan2(ySpeed, xSpeed);//Find angle given two points on circle
-            double inputTranslationMag = Math.sqrt(Math.pow(xSpeed, 2) + Math.pow(ySpeed, 2));//Pythagorean theorem
-
-            double directionSlewRate;
-            if (m_currentTranslationMag != 0.0){ //If driving
-                directionSlewRate = Math.abs(DriveConstants.kDirectionSlewRate / m_currentTranslationMag);
-            } else { 
-                directionSlewRate = 500.0;
-            }
-      double currentTime = WPIUtilJNI.now() * 1e-6;
-      double elapsedTime = currentTime - m_prevTime;
-      double angleDif = SwerveUtils.AngleDifference(inputTranslationDir, m_currentTranslationDir);//Change between goal and current in radians
-      //System.out.println(angleDif);
-      if (angleDif < 0.45*Math.PI) {
-        //System.out.println("SMALL!");
-        m_currentTranslationDir = SwerveUtils.StepTowardsCircular(m_currentTranslationDir, inputTranslationDir, directionSlewRate * elapsedTime);
-        m_currentTranslationMag = m_magLimiter.calculate(inputTranslationMag);
-      }
-      else if (angleDif > 0.85*Math.PI) {
-        //System.out.println("BIG");
-        if (m_currentTranslationMag > 1e-4) { //some small number to avoid floating-point errors with equality checking
-          // keep currentTranslationDir unchanged
-          m_currentTranslationMag = m_magLimiter.calculate(0.0);
-        }
-        else {
-          m_currentTranslationDir = SwerveUtils.WrapAngle(m_currentTranslationDir + Math.PI);
-          m_currentTranslationMag = m_magLimiter.calculate(inputTranslationMag);
-        }
-      }
-      else {
-        //System.out.println("MEDIUM!");
-        m_currentTranslationDir = SwerveUtils.StepTowardsCircular(m_currentTranslationDir, inputTranslationDir, directionSlewRate * elapsedTime);
-        m_currentTranslationMag = m_magLimiter.calculate(0.0);
-      }
-      m_prevTime = currentTime;
-      
-      xSpeedCommand = m_currentTranslationMag * Math.cos(m_currentTranslationDir);
-      ySpeedCommand = m_currentTranslationMag * Math.sin(m_currentTranslationDir);
-      m_currentRotation = m_rotLimiter.calculate(rot);
-
-
-        }else { 
-            xSpeedCommand = xSpeed;
-            ySpeedCommand = ySpeed;
-            m_currentRotation = rot;
-        }
+     
+        xSpeedCommand = xSpeed;
+        ySpeedCommand = ySpeed;
+        m_currentRotation = rot;
+        
         
 
         //Convert input to m/s chassis speeds.
@@ -298,7 +294,6 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
 
         
-
         
         m_frontLeft.setDesiredState(swerveModuleStates[0]);//Front-Left
         m_frontRight.setDesiredState(swerveModuleStates[1]);//Front-Right
@@ -351,7 +346,13 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
         };
     }
 
-     
+
+    public void turn(Rotation2d[] rots) { 
+        m_frontLeft.setDesiredRot(rots[0]);
+        m_frontRight.setDesiredRot(rots[1]);
+        m_backLeft.setDesiredRot(rots[2]);
+        m_backRight.setDesiredRot(rots[3]);
+    }
 
         public SwerveModuleState[] getModuleStates(){ 
         return   new SwerveModuleState[] {
@@ -391,9 +392,16 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
         };
         double x = getSpeeds().vxMetersPerSecond;
         double y = getSpeeds().vyMetersPerSecond;
-        double speed = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
+        prevSpeed = speed;
+        prevTime = time;
+        time = WPIUtilJNI.now();
+         speed = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
         SmartDashboard.putNumber("Speed", speed);
         SmartDashboard.putNumberArray("SwerveModuleStates", loggingState);
+
+        double acceleration = (speed - prevSpeed)/(time-prevTime);
+        SmartDashboard.putNumber("Acceleration", acceleration);
+
         
 
 
