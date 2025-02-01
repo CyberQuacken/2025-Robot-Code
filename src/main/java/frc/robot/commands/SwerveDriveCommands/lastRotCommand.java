@@ -1,4 +1,3 @@
-@ -0,0 +1,34 @@
 package frc.robot.commands.SwerveDriveCommands;
 
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -20,6 +19,7 @@ public class lastRotCommand extends Command {
     public void initialize(){}
     @Override
     public void execute() { 
+        System.out.println("Rotating");
         rots = SwerveDrive.getLastRots();
 
         if(rots[0] != null && rots[1] != null && rots[2] != null && rots[3] != null){ 

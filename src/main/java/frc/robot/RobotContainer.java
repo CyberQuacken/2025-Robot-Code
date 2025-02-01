@@ -9,7 +9,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.TestLightCommand;
 import frc.robot.commands.SwerveDriveCommands.resetGyroCommand;
 
-//import frc.robot.commands.SwerveDriveCommands.lastRotCommand;
+import frc.robot.commands.SwerveDriveCommands.lastRotCommand;
 
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.SwerveDrive;
@@ -47,7 +47,7 @@ public class RobotContainer {
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
   private final VisionSubsystem m_vision = new VisionSubsystem();
-  //private final lastRotCommand lastRots = new lastRotCommand(m_robotDrive);
+  private final lastRotCommand lastRots = new lastRotCommand(m_robotDrive);
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -66,15 +66,7 @@ public class RobotContainer {
         () -> m_vision.run(), m_vision
       )
     );
- /*      m_SimSwerve.setDefaultCommand(
-        new RunCommand(
-          () -> m_SimSwerve.drive(
-            -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDeadband),
-            -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDeadband),
-            -MathUtil.applyDeadband(m_driverController.getLeftTriggerAxis(), OIConstants.kDeadband+.2),
-          true, true), 
-          m_SimSwerve));
-       */
+
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
   }
@@ -100,6 +92,7 @@ public class RobotContainer {
     //yDriverButton.whileTrue(testLightCommand);
 
     Trigger xDriverButton = m_driverController.x();
+    xDriverButton.whileTrue(lastRots);
     SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
