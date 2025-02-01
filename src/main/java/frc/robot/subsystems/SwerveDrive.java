@@ -36,8 +36,10 @@ public class SwerveDrive extends SubsystemBase
     private Rotation2d[] tempRots = new Rotation2d[4];
     private double prevXSpeed = 0.0;
     private double prevYSpeed = 0.0;
+    private double prevSpeed = 0.0;
+    private double speed = 0.0;
     private double prevRot = 0.0;
-    private final double deadzone = 0.02;
+    private final double deadzone = 0.05;
     //Structs for AdvantageScope Simulation
     Pose2d pose = new Pose2d();
     StructPublisher<Pose2d> publisher = 
@@ -84,6 +86,8 @@ public class SwerveDrive extends SubsystemBase
         DriveConstants.kBackRightDrivingCanId,
         DriveConstants.kBackRightTurningCanId,
         DriveConstants.kBackRightChassisAngularOffset);
+    double prevTime = WPIUtilJNI.now();
+    double time = WPIUtilJNI.now();
 
     //Constructor
     public SwerveDrive()
@@ -241,11 +245,11 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
     
 
         setDesiredStates(swerveModuleStates);
-        SmartDashboard.putNumber("TargetPos", LimelightHelpers.getCameraPose_TargetSpace("")[5]);
+        /* SmartDashboard.putNumber("TargetPos", LimelightHelpers.getCameraPose_TargetSpace("")[5]);
         SmartDashboard.putNumber("RobotSpace", LimelightHelpers.getTargetPose_RobotSpace("")[5]);
         SmartDashboard.putNumber("ID", LimelightHelpers.getTargetCount(""));
         SmartDashboard.putNumber("rot", rotDelivered);
-        SmartDashboard.putNumber("jostick", rot);
+        SmartDashboard.putNumber("jostick", rot); */
 
     }
     public void moveRot(double rot, boolean fieldRelative) { 
@@ -328,9 +332,16 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
         };
         double x = getSpeeds().vxMetersPerSecond;
         double y = getSpeeds().vyMetersPerSecond;
-        double speed = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
+        prevSpeed = speed;
+        prevTime = time;
+        time = WPIUtilJNI.now();
+         speed = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
         SmartDashboard.putNumber("Speed", speed);
         SmartDashboard.putNumberArray("SwerveModuleStates", loggingState);
+
+        double acceleration = (speed - prevSpeed)/(time-prevTime);
+        SmartDashboard.putNumber("Acceleration", acceleration);
+
         
 
 
