@@ -1,4 +1,6 @@
 package frc.robot.subsystems;
+import org.dyn4j.exception.SameObjectException;
+
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPLTVController;
@@ -6,6 +8,7 @@ import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -35,6 +38,7 @@ public class SwerveDrive extends SubsystemBase
 {
 
     //Structs for AdvantageScope Simulation
+    boolean limelightAuto = false;
     Pose2d pose = new Pose2d();
     StructPublisher<Pose2d> publisher = 
     NetworkTableInstance.getDefault().getStructTopic("MyPose", Pose2d.struct).publish();
@@ -163,8 +167,61 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
     m_frontRight.setDesiredState(desiredStates[1]);
     m_backLeft.setDesiredState(desiredStates[2]);
     m_backRight.setDesiredState(desiredStates[3]);
-  }
+  } 
 
+    public void toggleLimelightAuto(){
+        limelightAuto = !limelightAuto;
+    }
+
+    public void calculateStrafingAlignMent (double yaw){
+
+    }
+
+    public void defaultCommand(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit, double limelightxSpeed, double limelightySpeed, double limelightRot){
+        
+        SmartDashboard.putNumber("Target_Camera :", LimelightHelpers.getTargetPose_CameraSpace("")[4]);
+        if (!limelightAuto){
+            SmartDashboard.putString("drive", "Manual");
+            drive(xSpeed,ySpeed,rot,fieldRelative,rateLimit);
+        }
+        else{
+            /*
+            if (limelightySpeed == Math.abs(limelightySpeed)){
+                limelightySpeed = .1;
+            }
+            else if (limelightySpeed != Math.abs(limelightySpeed)){
+                limelightySpeed = -.1;
+            }
+                 */
+            
+            PIDController horizontalPIDController = new PIDController(
+                SmartDashboard.getNumber("limelight_kp_y", .005), // .005
+                SmartDashboard.getNumber("limelight_ki_y", .004), // .004
+                SmartDashboard.getNumber("limelight_kd_y", 0));
+
+            limelightySpeed = horizontalPIDController.calculate(
+            -limelightySpeed ,
+            SmartDashboard.getNumber("limelight_horizontalOffset", 0)
+            );
+
+            PIDController verticalPidController = new PIDController(
+                SmartDashboard.getNumber("limelight_kp_x", 0),
+                SmartDashboard.getNumber("limelight_ki_x", 0),
+                SmartDashboard.getNumber("limelight_kd_x", 0));
+            if (LimelightHelpers.getTV("")){
+                SmartDashboard.putNumber("tZ", LimelightHelpers.getTargetPose_CameraSpace("")[2]);
+                SmartDashboard.putNumber("prior tZ", limelightxSpeed);
+                limelightxSpeed = verticalPidController.calculate(
+                limelightxSpeed * SmartDashboard.getNumber("inverse X", -1),
+                -SmartDashboard.getNumber("limelight_verticalOffset", 2));//meters
+            }
+            SmartDashboard.putNumber("Vertical PID", limelightxSpeed);
+            
+
+            SmartDashboard.putString("drive", "auto");
+            drive(limelightxSpeed, limelightySpeed, limelightRot, false, false);
+        }
+    }
 
     // In robot container this is used every second or so
     // Take inputed values (from controller sticks), if drive will be relative to field, and if rate should be limited
@@ -250,12 +307,7 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
     
 
         setDesiredStates(swerveModuleStates);
-        SmartDashboard.putNumber("TargetPos", LimelightHelpers.getCameraPose_TargetSpace("")[5]);
-        SmartDashboard.putNumber("RobotSpace", LimelightHelpers.getTargetPose_RobotSpace("")[5]);
-        SmartDashboard.putNumber("ID", LimelightHelpers.getTargetCount(""));
-        SmartDashboard.putNumber("rot", rotDelivered);
-        SmartDashboard.putNumber("jostick", rot);
-
+        SmartDashboard.putNumber("yaw", LimelightHelpers.getCameraPose_TargetSpace("")[5]);
     }
     public void moveRot(double rot, boolean fieldRelative) { 
         double rotDelivered = Math.toRadians(rot) * DriveConstants.kMaxAngularSpeed;
@@ -278,6 +330,14 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
             ca
     }
      */
+
+     public double moveToHorizontal(){
+        double currentYaw = LimelightHelpers.getCameraPose_TargetSpace("")[5];
+
+        double pidYaw = 0;
+
+        return pidYaw;
+     }
 
     public Rotation2d[] getLastRots() { 
         return rots;

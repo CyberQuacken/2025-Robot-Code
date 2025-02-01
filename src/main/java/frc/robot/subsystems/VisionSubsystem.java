@@ -51,11 +51,11 @@ public class VisionSubsystem extends SubsystemBase {
 
         // Change the camera pose relative to robot center (x forward, y left, z up, degrees)
         LimelightHelpers.setCameraPose_RobotSpace("", 
-            0.5,    // Forward offset (meters)
+            0.05,    // Forward offset (meters)
             0.0,    // Side offset (meters)
-            0.5,    // Height offset (meters)
+            0.3,    // Height offset (meters)
             0.0,    // Roll (degrees)
-            30.0,   // Pitch (degrees)
+            0.0,   // Pitch (degrees)
             0.0     // Yaw (degrees)
         );
 

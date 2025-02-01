@@ -4,11 +4,14 @@
 
 package frc.robot;
 
+import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.LimelightHelpers.LimelightResults;
 import frc.robot.commands.TestLightCommand;
 import frc.robot.commands.SwerveDriveCommands.resetGyroCommand;
+import frc.robot.commands.SwerveDriveCommands.toggleLimelightAuto;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.VisionSubsystem;
@@ -16,6 +19,7 @@ import frc.robot.subsystems.VisionSubsystem;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
 import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardComponent;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
@@ -40,6 +44,8 @@ public class RobotContainer {
   
   private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
   private final TestLightCommand testLightCommand = new TestLightCommand(m_VisionSubsystem, m_robotDrive);
+
+  private final toggleLimelightAuto toggleLimelight = new toggleLimelightAuto(m_robotDrive);
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
@@ -47,29 +53,39 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
         autoChooser = AutoBuilder.buildAutoChooser();
+
+    SmartDashboard.putNumber("limelight_kp_y", 0.005);
+    SmartDashboard.putNumber("limelight_ki_y", 0.004);
+    SmartDashboard.putNumber("limelight_kd_y", 0);
+
+    SmartDashboard.putNumber("limelight_kp_x", 0);
+    SmartDashboard.putNumber("limelight_ki_x", 0);
+    SmartDashboard.putNumber("limelight_kd_x", 0);
+    SmartDashboard.putNumber("inverse X", 1);
+
+    SmartDashboard.putNumber("limelight_horizontalOffset", 0);
+    SmartDashboard.putNumber("limelight_verticalOffset", 3);
+
     // Configure the trigger bindings
     configureBindings();
     m_robotDrive.setDefaultCommand(
       new RunCommand(
-        () -> m_robotDrive.drive(
+        () -> m_robotDrive.defaultCommand(
+          //manual section
           -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDeadband),
           -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDeadband),
           -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDeadband+.2),
-        true, false), 
+        false, false,
+        // limelight section
+        LimelightHelpers.getTargetPose_CameraSpace("")[2],
+        LimelightHelpers.getTargetPose_CameraSpace("")[4],
+        //-MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDeadband),
+        LimelightHelpers.getTX("") * -.003 * Math.PI),
         m_robotDrive)); 
       // /* 
       //m_robotDrive.setDefaultCommand(new RunCommand(()-> m_robotDrive.moveRot(1, false), m_robotDrive));
       // */
-      /*
-      m_robotDrive.setDefaultCommand(
-          new RunCommand(
-          () -> m_robotDrive.drive(
-             0,
-             0,
-             LimelightHelpers.getCameraPose_TargetSpace("")[5] * -.004 * Math.PI,
-           true, true), 
-           m_robotDrive)); 
-            */
+            
 
     m_vision.setDefaultCommand(
       new RunCommand( 
@@ -96,14 +112,17 @@ public class RobotContainer {
             () -> m_robotDrive.setX(),
             m_robotDrive); */
     resetGyroCommand resetGryo = new resetGyroCommand(m_robotDrive);
+
+    Trigger aDriverButton = m_driverController.a();
+    aDriverButton.toggleOnTrue(toggleLimelight);
+
+    Trigger bDriverButton = m_driverController.b();
     
     Trigger yDriverButton = m_driverController.y();
     //yDriverButton.whileTrue(testLightCommand);
 
     Trigger xDriverButton = m_driverController.x();
     SmartDashboard.putData("Auto Chooser", autoChooser);
-
-    SmartDashboard.putBooleanArray("Test",new Boolean[] {true, false, true});
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
