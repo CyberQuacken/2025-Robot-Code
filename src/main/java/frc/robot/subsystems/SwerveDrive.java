@@ -207,7 +207,7 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
         }
         prevXSpeed = xSpeed;
         prevYSpeed = ySpeed;
-        System.out.println("Past: " + past + " Present: " + xSpeed);
+        //System.out.println("Past: " + past + " Present: " + xSpeed); // Making sure limiter works
         double xSpeedCommand;
         double ySpeedCommand;
      
@@ -230,7 +230,6 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
         //System.out.println(swerveModuleStates[0].angle);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
         
-
         
         m_frontLeft.setDesiredState(swerveModuleStates[0]);//Front-Left
         m_frontRight.setDesiredState(swerveModuleStates[1]);//Front-Right
