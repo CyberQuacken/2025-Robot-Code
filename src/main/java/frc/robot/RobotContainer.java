@@ -6,6 +6,7 @@ package frc.robot;
 
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.LimelightHelpers.LimelightResults;
 import frc.robot.commands.TestLightCommand;
 import frc.robot.commands.SwerveDriveCommands.resetGyroCommand;
 import frc.robot.subsystems.SwerveDrive;
@@ -54,24 +55,29 @@ public class RobotContainer {
           -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDeadband),
           -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDeadband),
           -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDeadband+.2),
-        true, true), 
+        true, false), 
         m_robotDrive)); 
+      // /* 
+      //m_robotDrive.setDefaultCommand(new RunCommand(()-> m_robotDrive.moveRot(1, false), m_robotDrive));
+      // */
+      /*
+      m_robotDrive.setDefaultCommand(
+          new RunCommand(
+          () -> m_robotDrive.drive(
+             0,
+             0,
+             LimelightHelpers.getCameraPose_TargetSpace("")[5] * -.004 * Math.PI,
+           true, true), 
+           m_robotDrive)); 
+            */
+
     m_vision.setDefaultCommand(
       new RunCommand( 
         () -> m_vision.run(), m_vision
       )
     );
- /*      m_SimSwerve.setDefaultCommand(
-        new RunCommand(
-          () -> m_SimSwerve.drive(
-            -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDeadband),
-            -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDeadband),
-            -MathUtil.applyDeadband(m_driverController.getLeftTriggerAxis(), OIConstants.kDeadband+.2),
-          true, true), 
-          m_SimSwerve));
-       */
-    SmartDashboard.putData("Auto Chooser", autoChooser);
 
+    SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
   /**
@@ -96,8 +102,9 @@ public class RobotContainer {
 
     Trigger xDriverButton = m_driverController.x();
     SmartDashboard.putData("Auto Chooser", autoChooser);
-  }
 
+    SmartDashboard.putBooleanArray("Test",new Boolean[] {true, false, true});
+  }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
    *

@@ -5,6 +5,7 @@ import com.pathplanner.lib.controllers.PPLTVController;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -22,6 +23,7 @@ import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.LimelightHelpers;
 import frc.robot.SwerveUtils;
 
 /*
@@ -233,12 +235,19 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
                 : new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));        
         //System.out.println(swerveModuleStates[0].angle);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
+
         m_frontLeft.setDesiredState(swerveModuleStates[0]);//Front-Left
         m_frontRight.setDesiredState(swerveModuleStates[1]);//Front-Right
         m_backLeft.setDesiredState(swerveModuleStates[2]);//Back-Left
         m_backRight.setDesiredState(swerveModuleStates[3]);//Back-Right
 
         setDesiredStates(swerveModuleStates);
+        SmartDashboard.putNumber("TargetPos", LimelightHelpers.getCameraPose_TargetSpace("")[5]);
+        SmartDashboard.putNumber("RobotSpace", LimelightHelpers.getTargetPose_RobotSpace("")[5]);
+        SmartDashboard.putNumber("ID", LimelightHelpers.getTargetCount(""));
+        SmartDashboard.putNumber("rot", rotDelivered);
+        SmartDashboard.putNumber("jostick", rot);
+
     }
     public void moveRot(double rot, boolean fieldRelative) { 
         double rotDelivered = Math.toRadians(rot) * DriveConstants.kMaxAngularSpeed;
@@ -249,8 +258,19 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
         m_frontRight.setDesiredState(swerveModuleStates[1]);//Front-Right
         m_backLeft.setDesiredState(swerveModuleStates[2]);//Back-Left
         m_backRight.setDesiredState(swerveModuleStates[3]);//Back-Right
-      
+        
     }
+    /* 
+    public void moveToHeading(double x, double y, boolean fieldRelative){
+        double currentHeadingDegrees = gyro.getAngle();
+        double headingDiffrence = currentHeadingDegrees - LimelightHelpers.getCameraPose_TargetSpace("")[5];
+        double offsetHeadingDegrees = MathUtil.inputModulus(headingDiffrence, -180, 180);
+
+        double pidRotation =
+            ca
+    }
+     */
+
     public Rotation2d[] getLastRots() { 
         return rots;
     }
