@@ -1,8 +1,7 @@
 package frc.robot.commands.CoralClawCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.CoralClawSubsystem;
-import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.CoralClawSubsystems.CoralClawSubsystem;
 
 public class openCoralClawCommand extends Command{
 
@@ -16,6 +15,7 @@ public class openCoralClawCommand extends Command{
     @Override
     public void initialize(){
         // <Should outtake speed be from constants or container?>
+        // IMO, constants - Finn
         m_coralClawSubsystem.outtake(0);
     }
 

@@ -1,7 +1,6 @@
 package frc.robot.commands.moveElevatorCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import edu.wpi.first.wpilibj2.command.Subsystem;
 import frc.robot.Constants.elevatorConstants;
 import frc.robot.subsystems.ElevatorSubsystem;
 

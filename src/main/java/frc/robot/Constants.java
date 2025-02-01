@@ -7,6 +7,8 @@ package frc.robot;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.wpilibj.LEDPattern;
+import edu.wpi.first.wpilibj.util.Color;
 
 /**
  * The Constants class provides a convenient place for teams to hold robot-wide numerical or boolean
@@ -84,6 +86,8 @@ public static final class DriveConstants {
     public static final int kFrontRightTurningCanId = 15;
     public static final int kBackRightTurningCanId = 5;
 
+    public static final int kGryoi2cPort = 1;
+
     public static final boolean kGyroReversed = false;
   }
     
@@ -113,5 +117,44 @@ public static class elevatorConstants {
 
   public static final int leftMotorCanID = 0;
   public static final int rightMotorCanID = 1;
+}
+
+public static class coralClawConstants {
+  
+  public static final int[] positions = {
+    1, // retract/tucked in
+    1, // intake
+    1, // place coral
+  };
+
+  public static final int retractPositionIndex = 0; // pivot arm to be inside 
+  public static final int intakePositionIndex = 1; // pivot arm to intake
+  public static final int depositPositionIndex = 2; // better name pending. position for when we are placing coral down
+
+  //temp values for PID of claw pivot
+  public static final int kP = 1;
+  public static final int kI = 1;
+  public static final int kD = 1;
+
+  // preset values for how much the claw takes in <needs to be changed before use>
+  public static final int clawIntakeSpeed = -1;
+  public static final int clawOuttakeSpeed = -1;
+}
+
+public static class lightConstants {
+  public static final int upperLightsPort = 1;
+  public static final int lowerLightsPort = 1;
+
+
+  // list of all premade patterns 
+  public static final LEDPattern[] upperLightsPatterns = {
+    LEDPattern.solid(Color.kBlack), // off
+    null
+  };
+
+  public static final LEDPattern[] lowerlightsPattern = {
+    LEDPattern.solid(Color.kBlack), // off
+    null
+  };
 }
 }

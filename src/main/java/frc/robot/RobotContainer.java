@@ -6,15 +6,17 @@ package frc.robot;
 
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.OperatorConstants;
-
+import frc.robot.commands.TestLightCommand;
+import frc.robot.commands.SwerveDriveCommands.resetGyroCommand;
 import frc.robot.subsystems.SwerveDrive;
+import frc.robot.subsystems.SwerveDrive;
+import frc.robot.subsystems.VisionSubsystem;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.commands.PathPlannerAuto;
-import com.pathplanner.lib.path.PathPlannerPath;
-
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.shuffleboard.Shuffleboard;
+import edu.wpi.first.wpilibj.shuffleboard.ShuffleboardComponent;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -31,12 +33,16 @@ import edu.wpi.first.wpilibj2.command.button.Trigger;
 public class RobotContainer {
 
   private final SendableChooser<Command> autoChooser;
+  
   // The robot's subsystems and commands are defined here...
   private final SwerveDrive m_robotDrive = new SwerveDrive();
+  
+  private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
+  private final TestLightCommand testLightCommand = new TestLightCommand(m_VisionSubsystem, m_robotDrive);
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
-
+  private final VisionSubsystem m_vision = new VisionSubsystem();
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -48,10 +54,24 @@ public class RobotContainer {
           -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDeadband),
           -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDeadband),
           -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDeadband+.2),
-        OIConstants.fieldRelative, true), 
-        m_robotDrive));
-
+        true, false), 
+        m_robotDrive)); 
+    m_vision.setDefaultCommand(
+      new RunCommand( 
+        () -> m_vision.run(), m_vision
+      )
+    );
+ /*      m_SimSwerve.setDefaultCommand(
+        new RunCommand(
+          () -> m_SimSwerve.drive(
+            -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDeadband),
+            -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDeadband),
+            -MathUtil.applyDeadband(m_driverController.getLeftTriggerAxis(), OIConstants.kDeadband+.2),
+          true, true), 
+          m_SimSwerve));
+       */
     SmartDashboard.putData("Auto Chooser", autoChooser);
+
   }
 
   /**
@@ -65,11 +85,17 @@ public class RobotContainer {
    */
   private void configureBindings() {
 
-    /* <code form last year we arent sure what it does>
-    new RunCommand( // im not actualy sure what this does anymore
+    // <code form last year we arent sure what it does>
+   /*  new RunCommand( // im not actualy sure what this does anymore
             () -> m_robotDrive.setX(),
-            m_robotDrive);
-    */
+            m_robotDrive); */
+    resetGyroCommand resetGryo = new resetGyroCommand(m_robotDrive);
+    
+    Trigger yDriverButton = m_driverController.y();
+    //yDriverButton.whileTrue(testLightCommand);
+
+    Trigger xDriverButton = m_driverController.x();
+    SmartDashboard.putData("Auto Chooser", autoChooser);
   }
 
   /**
