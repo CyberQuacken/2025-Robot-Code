@@ -8,6 +8,9 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.commands.TestLightCommand;
 import frc.robot.commands.SwerveDriveCommands.resetGyroCommand;
+
+//import frc.robot.commands.SwerveDriveCommands.lastRotCommand;
+
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.SwerveDrive;
 import frc.robot.subsystems.VisionSubsystem;
@@ -23,6 +26,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -43,6 +47,7 @@ public class RobotContainer {
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
   private final VisionSubsystem m_vision = new VisionSubsystem();
+  //private final lastRotCommand lastRots = new lastRotCommand(m_robotDrive);
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -51,10 +56,10 @@ public class RobotContainer {
     m_robotDrive.setDefaultCommand(
       new RunCommand(
         () -> m_robotDrive.drive(
-          -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDeadband),
-          -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDeadband),
+          -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDeadband+.2),
+          -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDeadband+.2),
           -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDeadband+.2),
-        true, false), 
+        true), 
         m_robotDrive)); 
     m_vision.setDefaultCommand(
       new RunCommand( 
