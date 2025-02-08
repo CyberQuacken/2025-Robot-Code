@@ -18,7 +18,7 @@ public class SwerveDriveMananger {
 
     private PIDController distancePIDController;
     private PIDController rotateToHeadingPIDController;
-    private PIDController horizontalPIDController;
+    private PIDController yawPIDController;
     
     public void SwerveDriveMananger(SwerveDrive driveSystem, int[] aprilTaglist){
         this.driveSystem = driveSystem;
