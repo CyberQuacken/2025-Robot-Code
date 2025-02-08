@@ -4,9 +4,14 @@ public class Vector {
     double x;
     double y;
 
-    public void Vector(double x, double y){
+    public Vector(double x, double y){
         this.x = x;
         this.y = y;
+    }
+
+    public Vector(){
+        x = 0;
+        y = 0;
     }
 
     public double X (){
@@ -15,6 +20,14 @@ public class Vector {
 
     public double Y (){
         return y;
+    }
+
+    public void setX(double x){
+        this.x = x;
+    }
+
+    public void setY (double y){
+        this.y = y;
     }
 
     @Override

@@ -2,17 +2,17 @@ package frc.robot.commands.SwerveDriveCommands;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.SwerveDrive;
+import frc.robot.subsystems.SwerveDriveMananger;
 
 public class lastRotCommand extends Command {
-    private final SwerveDrive SwerveDrive;
+    private final SwerveDriveMananger driveMananger;
     private  Rotation2d[] rots;
     private Rotation2d[] prevRots;
-    public lastRotCommand(SwerveDrive SwerveDrive) { 
-        this.SwerveDrive = SwerveDrive;
-        rots = SwerveDrive.getLastRots();
+    public lastRotCommand(SwerveDriveMananger driveMananger) { 
+        this.driveMananger = driveMananger;
+        rots = driveMananger.driveSystem.getLastRots();
         prevRots = rots;
-        addRequirements(SwerveDrive);
+        addRequirements(driveMananger);
     }
 
     @Override
@@ -20,10 +20,10 @@ public class lastRotCommand extends Command {
     @Override
     public void execute() { 
         System.out.println("Rotating");
-        rots = SwerveDrive.getLastRots();
+        rots = driveMananger.driveSystem.getLastRots();
 
         if(rots[0] != null && rots[1] != null && rots[2] != null && rots[3] != null){ 
-        SwerveDrive.turn(rots);
+            driveMananger.driveSystem.turn(rots);
         }
    
 

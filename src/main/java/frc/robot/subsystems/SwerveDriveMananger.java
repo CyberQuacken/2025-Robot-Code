@@ -2,28 +2,62 @@ package frc.robot.subsystems;
 
 import frc.robot.LimelightHelpers;
 import frc.robot.Constants.limelightAutoConstants;
+import frc.robot.LimelightHelpers.PoseEstimate;
 import frc.robot.Objects.Vector;
-import edu.wpi.first.math.controller.PIDController;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
-public class SwerveDriveMananger {
-    private SwerveDrive driveSystem;
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPLTVController;
+
+import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.wpilibj.DriverStation;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.SubsystemBase;
+
+public class SwerveDriveMananger extends SubsystemBase{
+    public SwerveDrive driveSystem;
     private int[] currentAprilTags;
 
     private boolean autoDrive = false;
 
+    private boolean isBlue = false;
+    private boolean useLimelight = false;
     //current april tag robot is going to
     private int desiredAprilTagIndex;                          
 
     //next april tag after robot is finished with desiredAprilTag
     private int queudAprilTagIndex;
 
+    private Vector currentPos = new Vector();
+    private Vector desiredPose = new Vector(7.4, 4.7);
+    
+    public RobotConfig config;
+
     private PIDController distancePIDController;
     private PIDController rotateToHeadingPIDController;
     private PIDController horizontalPIDController;
-    
-    public void SwerveDriveMananger(SwerveDrive driveSystem, int[] aprilTaglist){
-        this.driveSystem = driveSystem;
+    private PIDController coordinatePIDController;
+
+    private final SwerveDrivePoseEstimator m_PoseEstimator = 
+        new SwerveDrivePoseEstimator(
+        driveSystem.kinematics,
+        driveSystem.gyro.getRotation2d(),
+        driveSystem.modulePosition,
+        new Pose2d());
+
+    /**
+     * 
+     * @param driveSystem
+     * Subsytem that controls drive
+     * @param aprilTaglist
+     * team specific aprilTags
+     */
+    public SwerveDriveMananger(int[] aprilTaglist){
+        driveSystem = new SwerveDrive();
         currentAprilTags = aprilTaglist;
 
         distancePIDController = new PIDController(
@@ -31,12 +65,26 @@ public class SwerveDriveMananger {
             limelightAutoConstants.distance_kI,
             limelightAutoConstants.distance_kD);
 
+        horizontalPIDController = new PIDController(
+            limelightAutoConstants.horizontal_kP, 
+            limelightAutoConstants.horizontal_kI, 
+            limelightAutoConstants.horizontal_kD);
+
+        coordinatePIDController = new PIDController(
+        limelightAutoConstants.coordinate_kP,
+        limelightAutoConstants.coordinate_kI,
+        limelightAutoConstants.coordinate_kD);
+
         SmartDashboard.putString("State: " , "manual");
+        driveSystem.odometry.resetPose(LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2("").pose);
+
     }
-    public void SwerveDriveMananger(SwerveDrive driveSystem, int[] aprilTaglist, boolean startInAuto){
-        this.driveSystem = driveSystem;
+    public SwerveDriveMananger(int[] aprilTaglist, boolean startInAuto){
+        driveSystem = new SwerveDrive();
         currentAprilTags = aprilTaglist;
         autoDrive = startInAuto;
+
+
         if (autoDrive){
             SmartDashboard.putString("State: " , "auto");
         }
@@ -46,13 +94,28 @@ public class SwerveDriveMananger {
     }
 
     public void ManangSwerveSystem(double controllerXvalue, double controllerYvalue, double controllerRotValue, boolean fieldCentric, boolean slewRate){
-        if (autoDrive){
+        SmartDashboard.putNumber("Distance", controllerRotValue);
+        if (!autoDrive){
             SmartDashboard.putString("State: " , "manual");
             driveSystem.drive(controllerXvalue, controllerYvalue, controllerRotValue, fieldCentric, slewRate);
         }
         else{ // if auto
+            double distanceX = desiredPose.X() - currentPos.X();
+            double distanceY = desiredPose.Y() - currentPos.Y();
             SmartDashboard.putString("State: " , "auto");
-            driveSystem.drive(LimelightHelpers.getTargetPose_CameraSpace("")[2],0,0,false, true);
+            driveSystem.drive(
+            /*
+            moveToDistance(LimelightHelpers.getTargetPose_CameraSpace("")[2], 3),
+            orbitOnAngle(LimelightHelpers.getTargetPose_CameraSpace("")[4], 0),
+            centerLimelight(),
+            false, true);*/
+
+            moveToCoordinateDistance(-distanceX,0),
+            moveToCoordinateDistance(-distanceY,0),
+            controllerRotValue,
+            true, true);
+
+
             //goTo(desiredAprilTagIndex);
         }
     }
@@ -65,19 +128,32 @@ public class SwerveDriveMananger {
      * @return
      * speed calculated input for controller
      */
-    public double moveToDistance(double distance){ // if a single value doesnt work, just make it zero
-        double calculatedSpeed = distancePIDController.calculate(distance);
+    public double moveToDistance(double currentDistance, double desiredDistance){ // if a single value doesnt work, just make it zero
+        SmartDashboard.putNumber("currentDistance: ", currentDistance);
+        SmartDashboard.putNumber("desiredDistance", desiredDistance);
+        double calculatedSpeed = distancePIDController.calculate(-currentDistance, -desiredDistance);
+        SmartDashboard.putNumber("calculated Speed", calculatedSpeed);
         return calculatedSpeed;
     }
 
-    public void rotateToHeading(double angle){ // rotate robot to specific heading
-
-        //return calculateSpeed
+    public double moveToCoordinateDistance(double currentDistance, double desiredDistance){
+        double calculatedSpeed = coordinatePIDController.calculate(-currentDistance, -desiredDistance);
+        return calculatedSpeed;
     }
 
-    public void orbitOnAngle(double degreesOff){ // move robot around point, such as april tag
+    public double rotateToHeading(double Currentangle, double desiredAngle){ // rotate robot to specific heading
+        double calculatedSpeed = rotateToHeadingPIDController.calculate(-Currentangle, -desiredAngle);
+        return calculatedSpeed;
+    }
 
-        //return calculateSpeed
+    public double orbitOnAngle(double currentDegreesOff, double desiredDegreesOff){ // move robot around point, such as april tag
+        double calculatedSpeed = horizontalPIDController.calculate(-currentDegreesOff, desiredDegreesOff);
+        return calculatedSpeed;
+    }
+
+    public double centerLimelight(){
+        double calculatedSpeed = LimelightHelpers.getTX("") * -limelightAutoConstants.alignment_kP * Math.PI;
+        return calculatedSpeed;
     }
 
     public void goTo(int aprilTagIndex){
@@ -131,5 +207,35 @@ public class SwerveDriveMananger {
         else {
             return false;
         }
+    }
+
+    @Override
+    public void periodic()
+    {
+        driveSystem.updateSystem();
+        updateRobotPos();
+    }
+
+    public void updateRobotPos(){
+        m_PoseEstimator.update(
+        driveSystem.gyro.getRotation2d(), 
+        driveSystem.modulePosition);
+
+        if (LimelightHelpers.getTV("")){
+            Pose2d visionMeasurement2d = LimelightHelpers.getBotPose2d("");
+        }
+
+        SmartDashboard.putNumber("X : ", currentPos.X());
+        SmartDashboard.putNumber("Y : ", currentPos.Y());
+    }
+
+    public void updateAlliance(boolean isBlue){
+        this.isBlue = isBlue;
+    }
+
+
+    //--------------------
+    public void toggleLimelightAuto(){
+        autoDrive = !autoDrive;
     }
 }
