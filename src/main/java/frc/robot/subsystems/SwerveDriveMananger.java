@@ -1,5 +1,7 @@
 package frc.robot.subsystems;
 
+import frc.robot.LimelightHelpers;
+import frc.robot.Constants.limelightAutoConstants;
 import frc.robot.Objects.Vector;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -11,7 +13,7 @@ public class SwerveDriveMananger {
     private boolean autoDrive = false;
 
     //current april tag robot is going to
-    private int desiredAprilTagIndex;
+    private int desiredAprilTagIndex;                          
 
     //next april tag after robot is finished with desiredAprilTag
     private int queudAprilTagIndex;
@@ -23,14 +25,24 @@ public class SwerveDriveMananger {
     public void SwerveDriveMananger(SwerveDrive driveSystem, int[] aprilTaglist){
         this.driveSystem = driveSystem;
         currentAprilTags = aprilTaglist;
+
+        distancePIDController = new PIDController(
+            limelightAutoConstants.distance_kP,
+            limelightAutoConstants.distance_kI,
+            limelightAutoConstants.distance_kD);
+
         SmartDashboard.putString("State: " , "manual");
     }
     public void SwerveDriveMananger(SwerveDrive driveSystem, int[] aprilTaglist, boolean startInAuto){
         this.driveSystem = driveSystem;
         currentAprilTags = aprilTaglist;
         autoDrive = startInAuto;
-
-        SmartDashboard.putString("State: " , "auto");
+        if (autoDrive){
+            SmartDashboard.putString("State: " , "auto");
+        }
+        else{
+            SmartDashboard.putString("State: " , "manual");
+        }
     }
 
     public void ManangSwerveSystem(double controllerXvalue, double controllerYvalue, double controllerRotValue, boolean fieldCentric, boolean slewRate){
@@ -40,7 +52,8 @@ public class SwerveDriveMananger {
         }
         else{ // if auto
             SmartDashboard.putString("State: " , "auto");
-            goTo(desiredAprilTagIndex);
+            driveSystem.drive(LimelightHelpers.getTargetPose_CameraSpace("")[2],0,0,false, true);
+            //goTo(desiredAprilTagIndex);
         }
     }
 
@@ -55,28 +68,6 @@ public class SwerveDriveMananger {
     public double moveToDistance(double distance){ // if a single value doesnt work, just make it zero
         double calculatedSpeed = distancePIDController.calculate(distance);
         return calculatedSpeed;
-    }
-
-    /**
-     * 
-     * @param relativeX
-     * distance in meters of new position relative to robot in x
-     * ex: xr = 5, xp = 2, relativeX = -3
-     */
-    public void moveToX(double relativeX){
-
-        //return calculateSpeed
-    }
-
-    /**
-     * 
-     * @param relativeY
-     * distance in meters of new Position relative to robot in y
-     */
-    public void moveToY(double relativeY){
-
-
-        //return calculateSpeed
     }
 
     public void rotateToHeading(double angle){ // rotate robot to specific heading
