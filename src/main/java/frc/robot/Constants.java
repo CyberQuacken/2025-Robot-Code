@@ -188,5 +188,9 @@ public static class limelightAutoConstants{
     2, 2, 2, 2 // barge tags (probally wont be used)
   };
 
+
+  public static final double distance_kP = .095;
+  public static final double distance_kI = .021;
+  public static final double distance_kD = 0.0;
 }
 }
