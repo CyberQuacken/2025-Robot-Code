@@ -190,51 +190,26 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
         SmartDashboard.putNumber("Target_Camera :", LimelightHelpers.getTargetPose_CameraSpace("")[4]);
         if (!limelightAuto){
             SmartDashboard.putString("drive", "Manual");
-            drive(xSpeed,ySpeed,rot,fieldRelative,rateLimit);
+            drive(xSpeed,ySpeed,rot,fieldRelative, false);
         }
         else{
-            /*
-            if (limelightySpeed == Math.abs(limelightySpeed)){
-                limelightySpeed = .1;
-            }
-            else if (limelightySpeed != Math.abs(limelightySpeed)){
-                limelightySpeed = -.1;
-            }
-                 */
             
-            PIDController horizontalPIDController = new PIDController(
-                SmartDashboard.getNumber("limelight_kp_y", .005), // .005
-                SmartDashboard.getNumber("limelight_ki_y", .004), // .004
-                SmartDashboard.getNumber("limelight_kd_y", 0));
-
-            limelightySpeed = horizontalPIDController.calculate(
-            -limelightySpeed ,
-            SmartDashboard.getNumber("limelight_horizontalOffset", 0)
-            );
-
-            PIDController verticalPidController = new PIDController(
-                SmartDashboard.getNumber("limelight_kp_x", 0),
-                SmartDashboard.getNumber("limelight_ki_x", 0),
-                SmartDashboard.getNumber("limelight_kd_x", 0));
-            if (LimelightHelpers.getTV("")){
-                SmartDashboard.putNumber("tZ", LimelightHelpers.getTargetPose_CameraSpace("")[2]);
-                SmartDashboard.putNumber("prior tZ", limelightxSpeed);
-                limelightxSpeed = verticalPidController.calculate(
-                limelightxSpeed * SmartDashboard.getNumber("inverse X", -1),
-                -SmartDashboard.getNumber("limelight_verticalOffset", 2));//meters
-            }
-            SmartDashboard.putNumber("Vertical PID", limelightxSpeed);
-            
+            double PIDySpeed = moveToHorizontal(limelightySpeed);
+            double PIDxSpeed = moveToDistance(limelightxSpeed, SmartDashboard.getNumber("limelight_verticalOffset", 3));
 
             SmartDashboard.putString("drive", "auto");
-            drive(limelightxSpeed, limelightySpeed, limelightRot, false, false);
+            drive(PIDxSpeed, PIDySpeed, limelightRot, false, false);
         }
     }
 
     // In robot container this is used every second or so
     // Take inputed values (from controller sticks), if drive will be relative to field, and if rate should be limited
-    public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative)
-    {
+    public void drive(double xSpeed, double ySpeed, double rot, boolean fieldRelative, boolean rateLimit)
+    {   
+        
+
+
+        /*
         double past = xSpeed;
         //If change in speed is greater than (deadzone), set change to deadzone. 
         //This is the purpose of the giant if statements. 
@@ -251,6 +226,7 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
                 xSpeed = prevXSpeed + deadzone;
             }
         }
+        */
 
 
         if(prevYSpeed > 0) { 
@@ -273,10 +249,55 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
         //System.out.println("Past: " + past + " Present: " + xSpeed); // Making sure limiter works
         double xSpeedCommand;
         double ySpeedCommand;
-     
-        xSpeedCommand = xSpeed;
-        ySpeedCommand = ySpeed;
-        m_currentRotation = rot;
+        if (rateLimit){
+
+            //Vector: direction and magnitude
+            double inputTranslationDir = Math.atan2(ySpeed, xSpeed);//Find angle given two points on circle
+            double inputTranslationMag = Math.sqrt(Math.pow(xSpeed, 2) + Math.pow(ySpeed, 2));//Pythagorean theorem
+
+            double directionSlewRate;
+            if (m_currentTranslationMag != 0.0){ //If driving
+                directionSlewRate = Math.abs(DriveConstants.kDirectionSlewRate / m_currentTranslationMag);
+            } else { 
+                directionSlewRate = 500.0;
+            }
+      double currentTime = WPIUtilJNI.now() * 1e-6;
+      double elapsedTime = currentTime - m_prevTime;
+      double angleDif = SwerveUtils.AngleDifference(inputTranslationDir, m_currentTranslationDir);//Change between goal and current in radians
+      //System.out.println(angleDif);
+      if (angleDif < 0.45*Math.PI) {
+        //System.out.println("SMALL!");
+        m_currentTranslationDir = SwerveUtils.StepTowardsCircular(m_currentTranslationDir, inputTranslationDir, directionSlewRate * elapsedTime);
+        m_currentTranslationMag = m_magLimiter.calculate(inputTranslationMag);
+      }
+      else if (angleDif > 0.85*Math.PI) {
+        //System.out.println("BIG");
+        if (m_currentTranslationMag > 1e-4) { //some small number to avoid floating-point errors with equality checking
+          // keep currentTranslationDir unchanged
+          m_currentTranslationMag = m_magLimiter.calculate(0.0);
+        }
+        else {
+          m_currentTranslationDir = SwerveUtils.WrapAngle(m_currentTranslationDir + Math.PI);
+          m_currentTranslationMag = m_magLimiter.calculate(inputTranslationMag);
+        }
+      }
+      else {
+        //System.out.println("MEDIUM!");
+        m_currentTranslationDir = SwerveUtils.StepTowardsCircular(m_currentTranslationDir, inputTranslationDir, directionSlewRate * elapsedTime);
+        m_currentTranslationMag = m_magLimiter.calculate(0.0);
+      }
+      m_prevTime = currentTime;
+      
+      xSpeedCommand = m_currentTranslationMag * Math.cos(m_currentTranslationDir);
+      ySpeedCommand = m_currentTranslationMag * Math.sin(m_currentTranslationDir);
+      m_currentRotation = m_rotLimiter.calculate(rot);
+
+
+        }else { 
+            xSpeedCommand = xSpeed;
+            ySpeedCommand = ySpeed;
+            m_currentRotation = rot;
+        }
         
         
 
@@ -315,24 +336,51 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
         m_backRight.setDesiredState(swerveModuleStates[3]);//Back-Right
         
     }
-    /* 
-    public void moveToHeading(double x, double y, boolean fieldRelative){
-        double currentHeadingDegrees = gyro.getAngle();
-        double headingDiffrence = currentHeadingDegrees - LimelightHelpers.getCameraPose_TargetSpace("")[5];
-        double offsetHeadingDegrees = MathUtil.inputModulus(headingDiffrence, -180, 180);
 
-        double pidRotation =
-            ca
+    public double moveToHorizontal(double horizontalSpeed){
+        PIDController horizontalPIDController = new PIDController(
+            SmartDashboard.getNumber("limelight_kp_y", .005), // .005
+            SmartDashboard.getNumber("limelight_ki_y", .004), // .004
+            SmartDashboard.getNumber("limelight_kd_y", 0));
+
+            horizontalSpeed = horizontalPIDController.calculate(
+        -horizontalSpeed ,
+        -SmartDashboard.getNumber("limelight_horizontalOffset", 0)
+        );
+
+        return horizontalSpeed;
     }
-     */
 
-     public double moveToHorizontal(){
-        double currentYaw = LimelightHelpers.getCameraPose_TargetSpace("")[5];
+    public double moveToDistance(double verticalSpeed, double distance){
 
-        double pidYaw = 0;
+        if (LimelightHelpers.getTV("")){
+            // Due to be removed
+            PIDController verticalPidController = new PIDController(
+            SmartDashboard.getNumber("limelight_kp_x", 0),
+            SmartDashboard.getNumber("limelight_ki_x", 0),
+            SmartDashboard.getNumber("limelight_kd_x", 0)); 
+            //
 
-        return pidYaw;
-     }
+            verticalPidController.setPID(
+            SmartDashboard.getNumber("limelight_kp_x", 0),
+            SmartDashboard.getNumber("limelight_ki_x", 0),
+            SmartDashboard.getNumber("limelight_kd_x", 0));
+    
+            SmartDashboard.putNumber("tZ", LimelightHelpers.getTargetPose_CameraSpace("")[2]);
+            SmartDashboard.putNumber("prior tZ", verticalSpeed);
+    
+            verticalSpeed = verticalPidController.calculate(
+            -verticalSpeed,
+            -SmartDashboard.getNumber("limelight_verticalOffset", 2));//meters
+        }
+
+        return verticalSpeed;
+    }
+
+    public void moveToHeading(double desiredAngle){
+        double currentAngle = 0;
+        double anglularOffset = currentAngle - desiredAngle;
+    }
 
     public Rotation2d[] getLastRots() { 
         return rots;

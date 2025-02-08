@@ -59,17 +59,21 @@ public class RobotContainer {
   public RobotContainer() {
         autoChooser = AutoBuilder.buildAutoChooser();
 
-    SmartDashboard.putNumber("limelight_kp_y", 0.005);
-    SmartDashboard.putNumber("limelight_ki_y", 0.004);
-    SmartDashboard.putNumber("limelight_kd_y", 0);
+    SmartDashboard.putNumber("limelight_kp_y", DriveConstants.limelight_auto_kp_horizontal);
+    SmartDashboard.putNumber("limelight_ki_y", DriveConstants.limelight_auto_ki_horizontal);
+    SmartDashboard.putNumber("limelight_kd_y", DriveConstants.limelight_auto_kd_horizontal);
 
-    SmartDashboard.putNumber("limelight_kp_x", 0);
-    SmartDashboard.putNumber("limelight_ki_x", 0);
-    SmartDashboard.putNumber("limelight_kd_x", 0);
+    SmartDashboard.putNumber("limelight_kp_x", DriveConstants.limelight_auto_kp_vertical);
+    SmartDashboard.putNumber("limelight_ki_x", DriveConstants.limelight_auto_ki_vertical);
+    SmartDashboard.putNumber("limelight_kd_x", DriveConstants.limelight_auto_kd_vertical);
     SmartDashboard.putNumber("inverse X", 1);
+
+    SmartDashboard.putNumber("limelight_kp_z", DriveConstants.limelight_auto_kp_rotation);
 
     SmartDashboard.putNumber("limelight_horizontalOffset", 0);
     SmartDashboard.putNumber("limelight_verticalOffset", 3);
+
+    LimelightHelpers.setPipelineIndex("", 1);
 
     // Configure the trigger bindings
     configureBindings();
@@ -85,7 +89,7 @@ public class RobotContainer {
         LimelightHelpers.getTargetPose_CameraSpace("")[2],
         LimelightHelpers.getTargetPose_CameraSpace("")[4],
         //-MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDeadband),
-        LimelightHelpers.getTX("") * -.003 * Math.PI),
+        LimelightHelpers.getTX("") * -SmartDashboard.getNumber("limelight_kp_z", .003) * Math.PI),
         m_robotDrive)); 
       // /* 
       //m_robotDrive.setDefaultCommand(new RunCommand(()-> m_robotDrive.moveRot(1, false), m_robotDrive));

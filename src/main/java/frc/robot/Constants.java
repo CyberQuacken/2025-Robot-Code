@@ -89,6 +89,19 @@ public static final class DriveConstants {
     public static final int kGryoi2cPort = 1;
 
     public static final boolean kGyroReversed = false;
+
+    //PID for auto horizontal alignment
+    public static final double limelight_auto_kp_horizontal = .0054;
+    public static final double limelight_auto_ki_horizontal = .0044;
+    public static final double limelight_auto_kd_horizontal = 0.0;
+
+    //PID fpr auto vertical/distance alignment
+    public static final double limelight_auto_kp_vertical = .095;
+    public static final double limelight_auto_ki_vertical = .0021;
+    public static final double limelight_auto_kd_vertical = 0.0;
+
+    //PID for auto alignment in facing april tags
+    public static final double limelight_auto_kp_rotation = 0.003;
   }
     
 public static class elevatorConstants {
@@ -156,5 +169,24 @@ public static class lightConstants {
     LEDPattern.solid(Color.kBlack), // off
     null
   };
+}
+
+public static class limelightAutoConstants{
+  // all tags for red team
+  private final int[] redAprilTags = new int[]{
+    1, // processer
+    2, 2, 2, 2, 2, 2, // reef, starts at point facing barge, and rotates clockwise
+    2, 2, // feeder tags
+    2, 2, 2, 2 // barge tags (probally wont be used)
+  };
+  
+  // all tags for blue team
+  private final int[] blueAprilTags = new int[]{
+    1, // processer
+    2, 2, 2, 2, 2, 2, // reef, starts at point facing barge, and rotates clockwise
+    2, 2, // feeder tags
+    2, 2, 2, 2 // barge tags (probally wont be used)
+  };
+
 }
 }
