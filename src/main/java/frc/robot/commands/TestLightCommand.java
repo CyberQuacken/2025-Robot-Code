@@ -10,22 +10,22 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.SwerveDrive;
+import frc.robot.subsystems.SwerveDriveMananger;
 import frc.robot.subsystems.VisionSubsystem;
 
 public class TestLightCommand extends Command {
     private final VisionSubsystem visionSubsystem;
-    private final SwerveDrive swerveDrive;
-    public TestLightCommand(VisionSubsystem visionSubsystem, SwerveDrive swerveDrive) { 
+    private final SwerveDriveMananger driveMananger;
+    public TestLightCommand(VisionSubsystem visionSubsystem, SwerveDriveMananger driveMananger) { 
         this.visionSubsystem = visionSubsystem;
-        this.swerveDrive = swerveDrive;
-        addRequirements(visionSubsystem, swerveDrive);
+        this.driveMananger = driveMananger;
+        addRequirements(visionSubsystem, driveMananger);
     }
     @Override
     public void execute() { 
         if(visionSubsystem.getDetection()) { 
             System.out.println("april");
-            swerveDrive.moveRot(visionSubsystem.getOffset(), true);
+            driveMananger.driveSystem.moveRot(visionSubsystem.getOffset(), true);
         } else { 
             System.out.println("NO!");
         }
