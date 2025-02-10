@@ -12,7 +12,7 @@ import frc.robot.Constants.elevatorConstants;
 import frc.robot.LimelightHelpers.LimelightResults;
 import frc.robot.commands.TestLightCommand;
 import frc.robot.commands.SwerveDriveCommands.resetGyroCommand;
-import frc.robot.commands.SwerveDriveCommands.toggleLimelightAuto;
+import frc.robot.commands.toggleLimelightAuto;
 import frc.robot.commands.moveElevatorCommands.moveElevatorDownCommand;
 import frc.robot.commands.moveElevatorCommands.moveElevatorHomeCommand;
 import frc.robot.commands.moveElevatorCommands.moveElevatorIntakeCommand;
