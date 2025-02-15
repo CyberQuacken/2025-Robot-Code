@@ -37,9 +37,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     leftEncoder = leftMotor.getEncoder();
     rightEncoder = rightMotor.getEncoder();
 
-    //not sure what this dos completely..
-    //leftPIDController = leftMotor.getClosedLoopController();
-    //rightPIDController = rightMotor.getClosedLoopController();
+
 
     pidController = new PIDController(
       elevatorConstants.kP,

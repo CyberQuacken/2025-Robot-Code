@@ -106,6 +106,7 @@ public static final class DriveConstants {
     
 public static class elevatorConstants {
 
+  //depends on motor data?
   public static final int[] positions ={
     1, // level one
     1, // level two
