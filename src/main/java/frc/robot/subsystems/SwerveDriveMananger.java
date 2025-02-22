@@ -42,12 +42,7 @@ public class SwerveDriveMananger extends SubsystemBase{
     private PIDController horizontalPIDController;
     private PIDController coordinatePIDController;
 
-    private final SwerveDrivePoseEstimator m_PoseEstimator = 
-        new SwerveDrivePoseEstimator(
-        driveSystem.kinematics,
-        driveSystem.gyro.getRotation2d(),
-        driveSystem.modulePosition,
-        new Pose2d());
+    private final SwerveDrivePoseEstimator m_PoseEstimator;
 
     /**
      * 
@@ -59,6 +54,12 @@ public class SwerveDriveMananger extends SubsystemBase{
     public SwerveDriveMananger(int[] aprilTaglist){
         driveSystem = new SwerveDrive();
         currentAprilTags = aprilTaglist;
+
+        m_PoseEstimator = new SwerveDrivePoseEstimator(
+            driveSystem.kinematics,
+            driveSystem.gyro.getRotation2d(),
+            driveSystem.modulePosition,
+            new Pose2d());
 
         distancePIDController = new PIDController(
             limelightAutoConstants.distance_kP,
@@ -83,6 +84,12 @@ public class SwerveDriveMananger extends SubsystemBase{
         driveSystem = new SwerveDrive();
         currentAprilTags = aprilTaglist;
         autoDrive = startInAuto;
+
+        m_PoseEstimator = new SwerveDrivePoseEstimator(
+            driveSystem.kinematics,
+            driveSystem.gyro.getRotation2d(),
+            driveSystem.modulePosition,
+            new Pose2d());
 
 
         if (autoDrive){
@@ -223,10 +230,13 @@ public class SwerveDriveMananger extends SubsystemBase{
 
         if (LimelightHelpers.getTV("")){
             Pose2d visionMeasurement2d = LimelightHelpers.getBotPose2d("");
+
+            m_PoseEstimator.addVisionMeasurement(visionMeasurement2d, LimelightHelpers.getLatency_Capture(""));
         }
 
-        SmartDashboard.putNumber("X : ", currentPos.X());
-        SmartDashboard.putNumber("Y : ", currentPos.Y());
+        
+        SmartDashboard.putNumber("X : ", m_PoseEstimator.getEstimatedPosition().getX());
+        SmartDashboard.putNumber("Y : ", m_PoseEstimator.getEstimatedPosition().getY());
     }
 
     public void updateAlliance(boolean isBlue){

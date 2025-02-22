@@ -95,7 +95,12 @@ public class SwerveDrive
 
     double time = WPIUtilJNI.now();
 
-    public SwerveModulePosition[] modulePosition;
+    public SwerveModulePosition[] modulePosition = new SwerveModulePosition[]{
+        m_frontLeft.getPosition(),
+        m_frontRight.getPosition(),
+        m_backLeft.getPosition(),
+        m_backRight.getPosition()
+    };
 
     //Constructor
     public SwerveDrive()
