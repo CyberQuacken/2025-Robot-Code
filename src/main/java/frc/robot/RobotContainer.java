@@ -18,11 +18,7 @@ import frc.robot.commands.moveElevatorCommands.moveElevatorDownCommand;
 import frc.robot.commands.moveElevatorCommands.moveElevatorHomeCommand;
 import frc.robot.commands.moveElevatorCommands.moveElevatorIntakeCommand;
 import frc.robot.commands.moveElevatorCommands.moveElevatorUpCommand;
-import frc.robot.commands.SwerveDriveCommands.lastRotCommand;
 import frc.robot.subsystems.ElevatorSubsystem;
-import frc.robot.subsystems.SwerveDrive;
-import frc.robot.subsystems.SwerveDrive;
-import frc.robot.commands.toggleLimelightAuto;
 
 import frc.robot.subsystems.SwerveDriveMananger;
 import frc.robot.subsystems.VisionSubsystem;
@@ -55,9 +51,7 @@ public class RobotContainer {
 
 
   // The robot's subsystems and commands are defined here...
-  //private final SwerveDrive m_robotDrive = new SwerveDrive();
-  //private final ElevatorSubsystem m_Elevator = new ElevatorSubsystem(elevatorConstants.leftMotorCanID, elevatorConstants.leftMotorCanID);
-  //public final SwerveDrive m_robotDrive = new SwerveDrive();
+  private final ElevatorSubsystem m_Elevator = new ElevatorSubsystem(elevatorConstants.leftMotorCanID, elevatorConstants.rightMotorCanID);
   public final SwerveDriveMananger m_DriveMananger = new SwerveDriveMananger(null);
   
   private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
@@ -78,7 +72,6 @@ public class RobotContainer {
 
   
 
-  //private final lastRotCommand lastRots = new lastRotCommand(m_robotDrive);
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
         autoChooser = AutoBuilder.buildAutoChooser();
@@ -100,9 +93,6 @@ public class RobotContainer {
       
 
       
-      // /* 
-      //m_robotDrive.setDefaultCommand(new RunCommand(()-> m_robotDrive.moveRot(1, false), m_robotDrive));
-      // */
             
 
     m_vision.setDefaultCommand(
@@ -130,10 +120,6 @@ public class RobotContainer {
    */
   private void configureBindings() {
 
-    // <code form last year we arent sure what it does>
-   /*  new RunCommand( // im not actualy sure what this does anymore
-            () -> m_robotDrive.setX(),
-            m_robotDrive); */
 
     Trigger aDriverButton = m_driverController.a();
     aDriverButton.toggleOnTrue(toggleLimelight);

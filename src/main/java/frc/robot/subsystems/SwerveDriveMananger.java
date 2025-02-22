@@ -90,6 +90,10 @@ public class SwerveDriveMananger extends SubsystemBase{
             limelightAutoConstants.rotation_kP,
             limelightAutoConstants.rotation_kI,
             limelightAutoConstants.rotation_kD);
+        SmartDashboard.putString("State: " , "manual");
+        if(LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2("") != null){
+        driveSystem.odometry.resetPose(LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2("").pose);
+        }
 
         SmartDashboard.putString("State: " , "manual");
         driveSystem.odometry.resetPose(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("").pose);
