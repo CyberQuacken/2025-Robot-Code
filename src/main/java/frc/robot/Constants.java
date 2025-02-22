@@ -113,7 +113,6 @@ public static class elevatorConstants {
     1, // level three
     1, // level four
     1, // intake
-    1, // home
   };
 
   public static final int levelOnePositionIndex = 1;
@@ -129,8 +128,8 @@ public static class elevatorConstants {
   public static final double kI = 1;
   public static final double kD = 1; 
 
-  public static final int leftMotorCanID = 0;
-  public static final int rightMotorCanID = 1;
+  public static final int leftMotorCanID = 18;
+  public static final int rightMotorCanID = 19;
 }
 
 public static class coralClawConstants {
@@ -198,11 +197,18 @@ public static class limelightAutoConstants{
   public static final double horizontal_kI = .004;
   public static final double horizontal_kD = 0.0;
 
-  public static final double coordinate_kP = .2;
-  public static final double coordinate_kI = 0.0;
+  public static final double coordinate_kP = .3;
+  public static final double coordinate_kI = 0.1;
   public static final double coordinate_kD = 0.0;
 
-  public static final double alignment_kP = .0032;
+  public static final double rotation_kP = .003;
+  public static final double rotation_kI = .001;
+  public static final double rotation_kD = .00;
 
+  public static final double alignment_kP = .004;
+
+
+  public static final double alignmentOffset = 1; //how far robot needs to move to align on reef pvc // + is left, - is right
+  public static final double distanceOffset = 1; // how far robot is supposed to be (verically) from limelight
 }
 }

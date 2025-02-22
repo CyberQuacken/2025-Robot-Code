@@ -11,6 +11,7 @@ import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.elevatorConstants;
 import frc.robot.LimelightHelpers.LimelightResults;
 import frc.robot.commands.TestLightCommand;
+import frc.robot.commands.toggleAlignment;
 import frc.robot.commands.SwerveDriveCommands.resetGyroCommand;
 import frc.robot.commands.toggleLimelightAuto;
 import frc.robot.commands.moveElevatorCommands.moveElevatorDownCommand;
@@ -54,8 +55,8 @@ public class RobotContainer {
 
 
   // The robot's subsystems and commands are defined here...
-  private final SwerveDrive m_robotDrive = new SwerveDrive();
-  private final ElevatorSubsystem m_Elevator = new ElevatorSubsystem(elevatorConstants.leftMotorCanID, elevatorConstants.leftMotorCanID);
+  //private final SwerveDrive m_robotDrive = new SwerveDrive();
+  //private final ElevatorSubsystem m_Elevator = new ElevatorSubsystem(elevatorConstants.leftMotorCanID, elevatorConstants.leftMotorCanID);
   //public final SwerveDrive m_robotDrive = new SwerveDrive();
   public final SwerveDriveMananger m_DriveMananger = new SwerveDriveMananger(null);
   
@@ -63,16 +64,17 @@ public class RobotContainer {
   //private final TestLightCommand testLightCommand = new TestLightCommand(m_VisionSubsystem, m_robotDrive);
 
   private final toggleLimelightAuto toggleLimelight = new toggleLimelightAuto(m_DriveMananger);
+  private final toggleAlignment toggleAlignment = new toggleAlignment(m_DriveMananger);
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
   private final VisionSubsystem m_vision = new VisionSubsystem();
 
   //Simple variable names, if yall want them to be more descriptive they can be changed.
-  private final moveElevatorDownCommand eDown = new moveElevatorDownCommand(m_Elevator);
-  private final moveElevatorHomeCommand eHome = new moveElevatorHomeCommand(m_Elevator);
-  private final moveElevatorIntakeCommand eIntake = new moveElevatorIntakeCommand(m_Elevator);
-  private final moveElevatorUpCommand eUp = new moveElevatorUpCommand(m_Elevator);
+  //private final moveElevatorDownCommand eDown = new moveElevatorDownCommand(m_Elevator);
+  //private final moveElevatorHomeCommand eHome = new moveElevatorHomeCommand(m_Elevator);
+  //private final moveElevatorIntakeCommand eIntake = new moveElevatorIntakeCommand(m_Elevator);
+  //private final moveElevatorUpCommand eUp = new moveElevatorUpCommand(m_Elevator);
 
   
 
@@ -80,20 +82,6 @@ public class RobotContainer {
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
         autoChooser = AutoBuilder.buildAutoChooser();
-
-    SmartDashboard.putNumber("limelight_kp_y", DriveConstants.limelight_auto_kp_horizontal);
-    SmartDashboard.putNumber("limelight_ki_y", DriveConstants.limelight_auto_ki_horizontal);
-    SmartDashboard.putNumber("limelight_kd_y", DriveConstants.limelight_auto_kd_horizontal);
-
-    SmartDashboard.putNumber("limelight_kp_x", DriveConstants.limelight_auto_kp_vertical);
-    SmartDashboard.putNumber("limelight_ki_x", DriveConstants.limelight_auto_ki_vertical);
-    SmartDashboard.putNumber("limelight_kd_x", DriveConstants.limelight_auto_kd_vertical);
-    SmartDashboard.putNumber("inverse X", 1);
-
-    SmartDashboard.putNumber("limelight_kp_z", DriveConstants.limelight_auto_kp_rotation);
-
-    SmartDashboard.putNumber("limelight_horizontalOffset", 0);
-    SmartDashboard.putNumber("limelight_verticalOffset", 3);
 
     LimelightHelpers.setPipelineIndex("", 1);
 
@@ -127,8 +115,8 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
     // Named commands
-    NamedCommands.registerCommand("Elevator up", eUp);
-    NamedCommands.registerCommand("Elevator down", eDown);
+    //NamedCommands.registerCommand("Elevator up", eUp);
+    //NamedCommands.registerCommand("Elevator down", eDown);
   }
 
   /**
@@ -151,6 +139,7 @@ public class RobotContainer {
     aDriverButton.toggleOnTrue(toggleLimelight);
 
     Trigger bDriverButton = m_driverController.b();
+    bDriverButton.toggleOnTrue(toggleAlignment);
     
     Trigger yDriverButton = m_driverController.y();
     //yDriverButton.whileTrue(testLightCommand);

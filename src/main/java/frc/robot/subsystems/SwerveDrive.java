@@ -44,6 +44,7 @@ public class SwerveDrive
     private double speed = 0.0;
     private double prevRot = 0.0;
     private final double deadzone = 0.05;
+    public double fieldCentricHeading;
     //Structs for AdvantageScope Simulation
     boolean limelightAuto = false;
     Pose2d pose = new Pose2d();
@@ -63,6 +64,7 @@ public class SwerveDrive
     RobotConfig config;
     SwerveDriveKinematics kinematics;
     SwerveDriveOdometry odometry;
+    SwerveDriveOdometry relativeOdometry;
     AHRS gyro;
     private double m_currentTranslationMag = 0.0;
     private double m_currentTranslationDir = 0.0;
@@ -120,7 +122,11 @@ public class SwerveDrive
             new Translation2d(Units.inchesToMeters(-12),Units.inchesToMeters(-12))
         );// this values are not true to our robot
 
-
+        relativeOdometry = new SwerveDriveOdometry(
+        kinematics, 
+        new Rotation2d(0),
+        new SwerveModulePosition[]{new SwerveModulePosition(),new SwerveModulePosition(),new SwerveModulePosition(),new SwerveModulePosition()},
+        new Pose2d(0,0,new Rotation2d()));
         
         odometry = new SwerveDriveOdometry
         (
@@ -345,7 +351,7 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
             m_backLeft.getPosition(),
              m_backRight.getPosition()
         };
-
+        relativeOdometry.update(new Rotation2d(0), modulePosition);
         odometry.update(gyro.getRotation2d(), modulePosition);
        //FL, FR, BL, BR
         double loggingState[] = { 
@@ -421,6 +427,14 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
       
     public void zeroHeading(){
         gyro.reset();
+    }
+
+    public void StoreFieldCentricHeading (){
+        fieldCentricHeading = gyro.getAngle();
+    }
+    public void SetGyroToFieldCentricHeading (){
+        gyro.reset();
+        gyro.setAngleAdjustment(fieldCentricHeading);
     }
 
   
