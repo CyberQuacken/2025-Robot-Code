@@ -77,7 +77,9 @@ public class SwerveDriveMananger extends SubsystemBase{
         limelightAutoConstants.coordinate_kD);
 
         SmartDashboard.putString("State: " , "manual");
+        if(LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2("") != null){
         driveSystem.odometry.resetPose(LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2("").pose);
+        }
 
     }
     public SwerveDriveMananger(int[] aprilTaglist, boolean startInAuto){
