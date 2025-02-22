@@ -136,7 +136,6 @@ public class SwerveDrive
             config = RobotConfig.fromGUISettings();
         } catch (Exception e){
             e.printStackTrace();
-            //System.out.println("AUTO!!!!");
         }
 
         AutoBuilder.configure(

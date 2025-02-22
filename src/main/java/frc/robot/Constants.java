@@ -91,13 +91,13 @@ public static final class DriveConstants {
     public static final boolean kGyroReversed = false;
 
     //PID for auto horizontal alignment
-    public static final double limelight_auto_kp_horizontal = .0054;
-    public static final double limelight_auto_ki_horizontal = .0044;
+    public static final double limelight_auto_kp_horizontal = 0.0054;
+    public static final double limelight_auto_ki_horizontal = 0.0044;
     public static final double limelight_auto_kd_horizontal = 0.0;
 
     //PID fpr auto vertical/distance alignment
-    public static final double limelight_auto_kp_vertical = .095;
-    public static final double limelight_auto_ki_vertical = .0021;
+    public static final double limelight_auto_kp_vertical = 0.095;
+    public static final double limelight_auto_ki_vertical = 0.0021;
     public static final double limelight_auto_kd_vertical = 0.0;
 
     //PID for auto alignment in facing april tags
@@ -106,6 +106,7 @@ public static final class DriveConstants {
     
 public static class elevatorConstants {
 
+  //depends on motor data?
   public static final int[] positions ={
     1, // level one
     1, // level two

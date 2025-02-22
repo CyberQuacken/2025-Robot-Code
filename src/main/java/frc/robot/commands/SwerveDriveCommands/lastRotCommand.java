@@ -19,7 +19,6 @@ public class lastRotCommand extends Command {
     public void initialize(){}
     @Override
     public void execute() { 
-        System.out.println("Rotating");
         rots = driveMananger.driveSystem.getLastRots();
 
         if(rots[0] != null && rots[1] != null && rots[2] != null && rots[3] != null){ 

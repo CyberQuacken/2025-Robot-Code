@@ -24,10 +24,8 @@ public class TestLightCommand extends Command {
     @Override
     public void execute() { 
         if(visionSubsystem.getDetection()) { 
-            System.out.println("april");
             driveMananger.driveSystem.moveRot(visionSubsystem.getOffset(), true);
         } else { 
-            System.out.println("NO!");
         }
     }
     

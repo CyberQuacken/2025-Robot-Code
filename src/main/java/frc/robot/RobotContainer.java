@@ -8,14 +8,26 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants.elevatorConstants;
 import frc.robot.LimelightHelpers.LimelightResults;
 import frc.robot.commands.TestLightCommand;
+import frc.robot.commands.SwerveDriveCommands.resetGyroCommand;
+import frc.robot.commands.toggleLimelightAuto;
+import frc.robot.commands.moveElevatorCommands.moveElevatorDownCommand;
+import frc.robot.commands.moveElevatorCommands.moveElevatorHomeCommand;
+import frc.robot.commands.moveElevatorCommands.moveElevatorIntakeCommand;
+import frc.robot.commands.moveElevatorCommands.moveElevatorUpCommand;
+import frc.robot.commands.SwerveDriveCommands.lastRotCommand;
+import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.SwerveDrive;
+import frc.robot.subsystems.SwerveDrive;
 import frc.robot.commands.toggleLimelightAuto;
 
 import frc.robot.subsystems.SwerveDriveMananger;
 import frc.robot.subsystems.VisionSubsystem;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.wpilibj.DriverStation;
@@ -39,7 +51,11 @@ public class RobotContainer {
 
   private final SendableChooser<Command> autoChooser;
   
+
+
   // The robot's subsystems and commands are defined here...
+  private final SwerveDrive m_robotDrive = new SwerveDrive();
+  private final ElevatorSubsystem m_Elevator = new ElevatorSubsystem(elevatorConstants.leftMotorCanID, elevatorConstants.leftMotorCanID);
   //public final SwerveDrive m_robotDrive = new SwerveDrive();
   public final SwerveDriveMananger m_DriveMananger = new SwerveDriveMananger(null);
   
@@ -51,6 +67,15 @@ public class RobotContainer {
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
   private final VisionSubsystem m_vision = new VisionSubsystem();
+
+  //Simple variable names, if yall want them to be more descriptive they can be changed.
+  private final moveElevatorDownCommand eDown = new moveElevatorDownCommand(m_Elevator);
+  private final moveElevatorHomeCommand eHome = new moveElevatorHomeCommand(m_Elevator);
+  private final moveElevatorIntakeCommand eIntake = new moveElevatorIntakeCommand(m_Elevator);
+  private final moveElevatorUpCommand eUp = new moveElevatorUpCommand(m_Elevator);
+
+  
+
   //private final lastRotCommand lastRots = new lastRotCommand(m_robotDrive);
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -100,6 +125,10 @@ public class RobotContainer {
 
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
+
+    // Named commands
+    NamedCommands.registerCommand("Elevator up", eUp);
+    NamedCommands.registerCommand("Elevator down", eDown);
   }
 
   /**
