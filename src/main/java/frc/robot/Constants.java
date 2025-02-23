@@ -189,12 +189,12 @@ public static class limelightAutoConstants{
   };
 
 
-  public static final double distance_kP = .095;
-  public static final double distance_kI = .021;
+  public static final double distance_kP = .150;
+  public static final double distance_kI = .0001;
   public static final double distance_kD = 0.0;
 
-  public static final double horizontal_kP = .005;
-  public static final double horizontal_kI = .004;
+  public static final double horizontal_kP = .006;
+  public static final double horizontal_kI = .0005;
   public static final double horizontal_kD = 0.0;
 
   public static final double coordinate_kP = .3;
@@ -202,7 +202,7 @@ public static class limelightAutoConstants{
   public static final double coordinate_kD = 0.0;
 
   public static final double rotation_kP = .003;
-  public static final double rotation_kI = .001;
+  public static final double rotation_kI = .00;
   public static final double rotation_kD = .00;
 
   public static final double alignment_kP = .004;

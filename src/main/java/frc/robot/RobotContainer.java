@@ -82,7 +82,6 @@ public class RobotContainer {
     configureBindings();
 
     LimelightHelpers.setPipelineIndex("", 1);
-    LimelightHelpers.setPriorityTagID("",10);
     
     m_DriveMananger.setDefaultCommand(
       new RunCommand( ()-> m_DriveMananger.ManangSwerveSystem(

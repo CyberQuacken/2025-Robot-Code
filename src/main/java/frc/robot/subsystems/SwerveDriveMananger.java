@@ -17,6 +17,7 @@ import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.RunCommand;
@@ -52,6 +53,8 @@ public class SwerveDriveMananger extends SubsystemBase{
     private PIDController coordinatePIDController;
 
     private final SwerveDrivePoseEstimator m_PoseEstimator;
+
+    private String alignVal;
 
     /**
      * 
@@ -91,9 +94,7 @@ public class SwerveDriveMananger extends SubsystemBase{
             limelightAutoConstants.rotation_kI,
             limelightAutoConstants.rotation_kD);
         SmartDashboard.putString("State: " , "manual");
-        if(LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2("") != null){
-        driveSystem.odometry.resetPose(LimelightHelpers.getBotPoseEstimate_wpiRed_MegaTag2("").pose);
-        }
+      
 
         SmartDashboard.putString("State: " , "manual");
         driveSystem.odometry.resetPose(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("").pose);
@@ -147,15 +148,25 @@ public class SwerveDriveMananger extends SubsystemBase{
             double distanceX = desiredPose.X() - currentPos.X();
             double distanceY = desiredPose.Y() - currentPos.Y();
             SmartDashboard.putString("State: " , "auto");
+            double horizontalDistance =  LimelightHelpers.getTargetPose_CameraSpace("")[2]*Math.sin(LimelightHelpers.getTX("") * (Math.PI/180));
+            double otherHorizontalDistance = LimelightHelpers.getTargetPose_CameraSpace("")[2]*Math.tan(LimelightHelpers.getTX("") * (Math.PI/180));
+            SmartDashboard.putNumber("TX", LimelightHelpers.getTX(""));
+            SmartDashboard.putNumber("OtherHorizontal", otherHorizontalDistance);
+            SmartDashboard.putNumber("HorizontalDistance", horizontalDistance);
+            SmartDashboard.putNumber("Distance", LimelightHelpers.getTargetPose_CameraSpace("")[2]);
+            SmartDashboard.putNumber("yaw", -LimelightHelpers.getTargetPose_CameraSpace("")[4]);
             if(align){
+                if(LimelightHelpers.getTV("") == true){ 
                 driveSystem.drive(
                     moveToDistance(LimelightHelpers.getTargetPose_CameraSpace("")[2], 1.5),
-                    orbitOnAngle(-LimelightHelpers.getTX(""),SmartDashboard.getNumber("Degrees off", 13)),//orbitOnAngle(LimelightHelpers.getTargetPose_CameraSpace("")[4], 0),
+                    //orbitOnAngle(-LimelightHelpers.getTX(""),SmartDashboard.getNumber("Degrees off", 10)),//orbitOnAngle(LimelightHelpers.getTargetPose_CameraSpace("")[4], 0),
+                    orbitOnAngle(-otherHorizontalDistance, .25),
                     rotateToHeading(-LimelightHelpers.getTargetPose_CameraSpace("")[4], 0),
                     false, true);
+                }
             }
             else{
-                driveSystem.drive(moveToCoordinateDistance(-driveSystem.relativeOdometry.getPoseMeters().getX(), -.75),0,0,false,true);
+                driveSystem.drive(moveToCoordinateDistance(-driveSystem.relativeOdometry.getPoseMeters().getX(), -.6),0,0,false,true);
             }
             /*
             moveToCoordinateDistance(-distanceX,0),
@@ -298,5 +309,14 @@ public class SwerveDriveMananger extends SubsystemBase{
 
     public void toggleAlignment(){
         align = !align;
+        
+        if(!align) { 
+            alignVal = "Translation";
+        } else { 
+            alignVal = "Rotation";
+        }
+        driveSystem.drive(.1, 0 ,0 , false, true);
+        driveSystem.relativeOdometry.resetPose(new Pose2d(0,0, new Rotation2d()));
+        SmartDashboard.putString("Auto motion", alignVal);
     }
 }
