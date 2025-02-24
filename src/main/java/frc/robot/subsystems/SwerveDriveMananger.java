@@ -136,7 +136,7 @@ public class SwerveDriveMananger extends SubsystemBase{
         }
     }
 
-    public void ManangSwerveSystem(double controllerXvalue, double controllerYvalue, double controllerRotValue, boolean fieldCentric, boolean slewRate){
+    public void ManageSwerveSystem(double controllerXvalue, double controllerYvalue, double controllerRotValue, boolean fieldCentric, boolean slewRate){
         SmartDashboard.putNumber("Distance", controllerRotValue);
         SmartDashboard.putNumber("PosX", driveSystem.relativeOdometry.getPoseMeters().getX());
         //SmartDashboard.putNumber("distance", driveSystem.gyro.getDisplacementX());
@@ -247,6 +247,7 @@ public class SwerveDriveMananger extends SubsystemBase{
         
     }
 
+    //Evil numbers?
     public boolean canBeSpotted(int aprilTagIndex){
         if (aprilTagIndex > 0 && aprilTagIndex <= 8){
             return true;
