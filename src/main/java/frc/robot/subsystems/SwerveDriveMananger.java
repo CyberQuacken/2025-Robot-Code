@@ -2,48 +2,27 @@ package frc.robot.subsystems;
 
 import frc.robot.LimelightHelpers;
 import frc.robot.Constants.limelightAutoConstants;
-import frc.robot.LimelightHelpers.PoseEstimate;
-import frc.robot.Objects.Vector;
-
-import static edu.wpi.first.units.Units.Rotation;
-
-import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
-import com.pathplanner.lib.controllers.PPLTVController;
-import com.reduxrobotics.canand.CanandAddress;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
-import edu.wpi.first.math.kinematics.SwerveModulePosition;
-import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class SwerveDriveMananger extends SubsystemBase{
     public SwerveDrive driveSystem;
-    private int[] currentAprilTags;
 
     private boolean autoDrive = false;
     private boolean align = true;
 
     private boolean isBlue = false;
-    private boolean useLimelight = false;
 
     // when true, align to the left of the april tag on the reef, when false go to the right
     private boolean alginOnLeft = false;
 
-    //current april tag robot is going to
-    private int desiredAprilTagIndex;                          
-
-    //next april tag after robot is finished with desiredAprilTag
-    private int queudAprilTagIndex;
-
-    private Vector currentPos = new Vector();
-    private Vector desiredPose = new Vector(7.4, 4.7);
+    private int stage = 0;
     
     public RobotConfig config;
 
@@ -65,7 +44,6 @@ public class SwerveDriveMananger extends SubsystemBase{
      */
     public SwerveDriveMananger(int[] aprilTaglist){
         driveSystem = new SwerveDrive();
-        currentAprilTags = aprilTaglist;
         driveSystem.gyro.resetDisplacement();
 
         m_PoseEstimator = new SwerveDrivePoseEstimator(
@@ -116,25 +94,10 @@ public class SwerveDriveMananger extends SubsystemBase{
         SmartDashboard.putNumber("Rotation_I", limelightAutoConstants.rotation_kI);
         SmartDashboard.putNumber("Rotation_D", limelightAutoConstants.rotation_kD);
     }
-    public SwerveDriveMananger(int[] aprilTaglist, boolean startInAuto){
-        driveSystem = new SwerveDrive();
-        currentAprilTags = aprilTaglist;
-        autoDrive = startInAuto;
-
-        m_PoseEstimator = new SwerveDrivePoseEstimator(
-            driveSystem.kinematics,
-            driveSystem.gyro.getRotation2d(),
-            driveSystem.modulePosition,
-            new Pose2d());
 
 
-        if (autoDrive){
-            SmartDashboard.putString("State: " , "auto");
-        }
-        else{
-            SmartDashboard.putString("State: " , "manual");
-        }
-    }
+
+
 
     public void ManangSwerveSystem(double controllerXvalue, double controllerYvalue, double controllerRotValue, boolean fieldCentric, boolean slewRate){
         SmartDashboard.putNumber("Distance", controllerRotValue);
@@ -145,16 +108,8 @@ public class SwerveDriveMananger extends SubsystemBase{
             driveSystem.drive(controllerXvalue, controllerYvalue, controllerRotValue, fieldCentric, slewRate);
         }
         else{ // if auto
-            double distanceX = desiredPose.X() - currentPos.X();
-            double distanceY = desiredPose.Y() - currentPos.Y();
             SmartDashboard.putString("State: " , "auto");
-            double horizontalDistance =  LimelightHelpers.getTargetPose_CameraSpace("")[2]*Math.sin(LimelightHelpers.getTX("") * (Math.PI/180));
             double otherHorizontalDistance = LimelightHelpers.getTargetPose_CameraSpace("")[2]*Math.tan(LimelightHelpers.getTX("") * (Math.PI/180));
-            SmartDashboard.putNumber("TX", LimelightHelpers.getTX(""));
-            SmartDashboard.putNumber("OtherHorizontal", otherHorizontalDistance);
-            SmartDashboard.putNumber("HorizontalDistance", horizontalDistance);
-            SmartDashboard.putNumber("Distance", LimelightHelpers.getTargetPose_CameraSpace("")[2]);
-            SmartDashboard.putNumber("yaw", -LimelightHelpers.getTargetPose_CameraSpace("")[4]);
             if(align){
                 if(LimelightHelpers.getTV("") == true){ 
                 driveSystem.drive(
@@ -163,19 +118,13 @@ public class SwerveDriveMananger extends SubsystemBase{
                     orbitOnAngle(-otherHorizontalDistance, .25),
                     rotateToHeading(-LimelightHelpers.getTargetPose_CameraSpace("")[4], 0),
                     false, true);
+                    // if at position (say) at position
+                    SmartDashboard.putBoolean("Aligned", alignedOnTag());
                 }
             }
             else{
-                driveSystem.drive(moveToCoordinateDistance(-driveSystem.relativeOdometry.getPoseMeters().getX(), -.6),0,0,false,true);
+                moveDistance(.6, 0);
             }
-            /*
-            moveToCoordinateDistance(-distanceX,0),
-            moveToCoordinateDistance(-distanceY,0),
-            controllerRotValue,
-            true, true);  */
-
-
-            //goTo(desiredAprilTagIndex);
         }
     }
 
@@ -215,44 +164,34 @@ public class SwerveDriveMananger extends SubsystemBase{
         return calculatedSpeed;
     }
 
-    public void goTo(int aprilTagIndex){
-
-        if (canBeSpotted(aprilTagIndex)){ // april tag can be spooted (reef and proccesor)
-            if(true){ // april tag spooted
-                OperateTags(aprilTagIndex);
-            }
-            else{
-                //pathfind(true, aprilTagIndex);
-            }
-        }
-        else{ // april tags can not be spooted (feeder and barge)
-            if(true){ // if at suitable Position to move to tag
-                OperateTags(aprilTagIndex);
-            }
-            else{ // pathfind to suitable Position
-                //pathfind(true, aprilTagIndex);
-            }
-        }
-
-    }
-    public void goTo(Vector desiredPosition){
-
-    }
-
-    public void OperateTags(int aprilTagIndex){
-        SmartDashboard.putString("auto Operation", "Operating: " + currentAprilTags[aprilTagIndex]);
-    }
-
     public void OperateReef(){
-        
-    }
-
-    public boolean canBeSpotted(int aprilTagIndex){
-        if (aprilTagIndex > 0 && aprilTagIndex <= 8){
-            return true;
+        if (stage == 1){
+            // FirstStage go to april tag
+                moveToTag();
+                // if at proper position, change stage to 2
+                if(atAprilTag()){
+                    stage ++;
+                }
         }
-        else {
-            return false;
+        else if (stage == 2){
+            // second stage, align on april tag
+            alignOnTag();
+
+            // if at proper position, change stage to 3
+            if(alignedOnTag()){
+                stage ++;
+            }
+        }
+        else if (stage == 3){
+            // third stage, prepare odomenty
+            resetRelativeOdometry();
+            stage ++;
+        }
+        else if (stage == 4){
+            // move forward .6 meters
+            moveDistance(.6, 0);
+
+            // if at position, stage = 0
         }
     }
 
@@ -281,6 +220,7 @@ public class SwerveDriveMananger extends SubsystemBase{
 
     }
 
+    // might be removed
     public void updateRobotPos(){
         m_PoseEstimator.update(
         driveSystem.gyro.getRotation2d(), 
@@ -305,6 +245,7 @@ public class SwerveDriveMananger extends SubsystemBase{
     //--------------------
     public void toggleLimelightAuto(){
         autoDrive = !autoDrive;
+        stage = 1;
     }
 
     public void toggleAlignment(){
@@ -315,8 +256,68 @@ public class SwerveDriveMananger extends SubsystemBase{
         } else { 
             alignVal = "Rotation";
         }
-        driveSystem.drive(.1, 0 ,0 , false, true);
-        driveSystem.relativeOdometry.resetPose(new Pose2d(0,0, new Rotation2d()));
+        resetRelativeOdometry();
         SmartDashboard.putString("Auto motion", alignVal);
+    }
+
+    public void moveDistance(double xDistance, double yDistance){
+        driveSystem.drive(
+        -moveToCoordinateDistance(driveSystem.relativeOdometry.getPoseMeters().getX(), -xDistance),
+        -moveToCoordinateDistance(driveSystem.relativeOdometry.getPoseMeters().getY(), -yDistance),
+          0, false, true);
+    }
+
+    public void moveToTag(double desiredDistanceOff, double desiredDegreesOff){
+        driveSystem.drive(
+            moveToDistance(LimelightHelpers.getTargetPose_CameraSpace("")[2], desiredDistanceOff), 
+            orbitOnAngle(LimelightHelpers.getTargetPose_CameraSpace("")[4], desiredDegreesOff),
+            centerLimelight(), 
+            false, true);
+    }
+
+    public void moveToTag(){
+        driveSystem.drive(
+            moveToDistance(LimelightHelpers.getTargetPose_CameraSpace("")[2], 1.5), 
+            orbitOnAngle(LimelightHelpers.getTargetPose_CameraSpace("")[4], 0),
+            centerLimelight(), 
+            false, true);
+    }
+
+    public void alignOnTag(){
+        driveSystem.drive(
+            moveToDistance(LimelightHelpers.getTargetPose_CameraSpace("")[2], 1.5),
+            //orbitOnAngle(-LimelightHelpers.getTX(""),SmartDashboard.getNumber("Degrees off", 10)),//orbitOnAngle(LimelightHelpers.getTargetPose_CameraSpace("")[4], 0),
+            orbitOnAngle(-LimelightHelpers.getTargetPose_CameraSpace("")[2]*Math.tan(LimelightHelpers.getTX("") * (Math.PI/180)), .25),
+            rotateToHeading(-LimelightHelpers.getTargetPose_CameraSpace("")[4], 0),
+            false, true);
+    }
+
+    public void alignOnTag(double distance){
+        driveSystem.drive(
+            moveToDistance(LimelightHelpers.getTargetPose_CameraSpace("")[2], 1.5),
+            //orbitOnAngle(-LimelightHelpers.getTX(""),SmartDashboard.getNumber("Degrees off", 10)),//orbitOnAngle(LimelightHelpers.getTargetPose_CameraSpace("")[4], 0),
+            orbitOnAngle(-LimelightHelpers.getTargetPose_CameraSpace("")[2]*Math.tan(LimelightHelpers.getTX("") * (Math.PI/180)), distance),
+            rotateToHeading(-LimelightHelpers.getTargetPose_CameraSpace("")[4], 0),
+            false, true);
+    }
+
+    public void resetRelativeOdometry(){
+        driveSystem.relativeOdometry.resetPose(new Pose2d(0,0, new Rotation2d()));
+        driveSystem.drive(.1, 0 ,0 , false, true);
+    }
+
+    public boolean atAprilTag(){
+        //returns true if robot is at april tag
+        return false;
+    }
+
+    public boolean alignedOnTag(){
+        // returns truenif robot is aligned correctly at the april tag
+        return horizontalPIDController.atSetpoint() && distancePIDController.atSetpoint() && rotateToHeadingPIDController.atSetpoint();
+    }
+
+    public boolean distanceMoved(){
+        // returns true if robot has move desired distance
+        return false;
     }
 }
