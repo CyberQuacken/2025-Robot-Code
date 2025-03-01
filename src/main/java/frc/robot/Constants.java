@@ -211,4 +211,11 @@ public static class limelightAutoConstants{
   public static final double alignmentOffset = 1; //how far robot needs to move to align on reef pvc // + is left, - is right
   public static final double distanceOffset = 1; // how far robot is supposed to be (verically) from limelight
 }
+
+public static class algaeHarvesterConstants { 
+    public static final int algaeHarvesterIntakeSpeed = 1;
+    public static final int pivotSpeed = 1;
+    public static final double minPivot = 10.0; //TODO: Change placeholder, careful with this, requires irl data and can break robot
+    public static final double maxPivot = 90.0; //TODO: change placeholder
+}
 }

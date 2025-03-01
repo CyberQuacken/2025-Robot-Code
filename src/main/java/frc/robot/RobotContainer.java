@@ -13,6 +13,9 @@ import frc.robot.LimelightHelpers.LimelightResults;
 import frc.robot.commands.TestLightCommand;
 import frc.robot.commands.toggleAlignment;
 import frc.robot.commands.SwerveDriveCommands.resetGyroCommand;
+import frc.robot.commands.algaeHarvesterCommands.algaeHarvesterIntakeCommand;
+import frc.robot.commands.algaeHarvesterCommands.algaeHarvesterPivotDownCommand;
+import frc.robot.commands.algaeHarvesterCommands.algaeHarvesterPivotUpCommand;
 import frc.robot.commands.toggleLimelightAuto;
 import frc.robot.commands.moveElevatorCommands.moveElevatorDownCommand;
 import frc.robot.commands.moveElevatorCommands.moveElevatorHomeCommand;
@@ -22,6 +25,8 @@ import frc.robot.subsystems.ElevatorSubsystem;
 
 import frc.robot.subsystems.SwerveDriveMananger;
 import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.algaeHarvesterIntakeSubsystem;
+import frc.robot.subsystems.algaeHarvesterPivot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
@@ -53,11 +58,16 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ElevatorSubsystem m_Elevator = new ElevatorSubsystem(elevatorConstants.leftMotorCanID, elevatorConstants.rightMotorCanID);
   public final SwerveDriveMananger m_DriveMananger = new SwerveDriveMananger(null);
-  
+  private final algaeHarvesterIntakeSubsystem m_algaeIntakeSubsystem = new algaeHarvesterIntakeSubsystem(999);//TODO: find actual id, i just put a placeholder
+  private final algaeHarvesterPivot m_AlgaeHarvesterPivot = new algaeHarvesterPivot(998);//TODO: find actual id, i just put a placeholder
   private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
   //private final TestLightCommand testLightCommand = new TestLightCommand(m_VisionSubsystem, m_robotDrive);
 
   private final toggleLimelightAuto toggleLimelight = new toggleLimelightAuto(m_DriveMananger);
+  private final algaeHarvesterIntakeCommand m_algaeIntake = new algaeHarvesterIntakeCommand(m_algaeIntakeSubsystem);
+  private final algaeHarvesterPivotUpCommand m_algaeUp = new algaeHarvesterPivotUpCommand(m_AlgaeHarvesterPivot);
+  private final algaeHarvesterPivotDownCommand m_algaeDown = new algaeHarvesterPivotDownCommand(m_AlgaeHarvesterPivot);
+
   private final toggleAlignment toggleAlignment = new toggleAlignment(m_DriveMananger);
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
