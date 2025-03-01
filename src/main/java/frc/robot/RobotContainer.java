@@ -84,7 +84,7 @@ public class RobotContainer {
     LimelightHelpers.setPipelineIndex("", 1);
     
     m_DriveMananger.setDefaultCommand(
-      new RunCommand( ()-> m_DriveMananger.ManangSwerveSystem(
+      new RunCommand( ()-> m_DriveMananger.ManageSwerveSystem(
         -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDeadband),
         -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDeadband),
         -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDeadband),
