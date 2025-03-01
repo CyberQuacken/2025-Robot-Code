@@ -23,9 +23,9 @@ import frc.robot.commands.moveElevatorCommands.moveElevatorIntakeCommand;
 import frc.robot.commands.moveElevatorCommands.moveElevatorUpCommand;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.AlgaeSubsytems.algaeHarvesterIntakeSubsystem;
+import frc.robot.subsystems.AlgaeSubsytems.algaeHarvesterPivot;
 import frc.robot.subsystems.DriveSubsytems.SwerveDriveMananger;
-import frc.robot.subsystems.AlgeaSubsytems.algaeHarvesterIntakeSubsystem;
-import frc.robot.subsystems.AlgeaSubsytems.algaeHarvesterPivot;
 
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;

@@ -1,15 +1,15 @@
-package frc.robot.subsystems.AlgeaSubsytems;
+package frc.robot.subsystems.AlgaeSubsytems;
 
 import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class AlgeaScrubberSubsystem extends SubsystemBase{
+public class AlgaeScrubberSubsystem extends SubsystemBase{
     
     private SparkMax motor;
 
-    public void AlgeaScrubberSubsystem(int motorID){
+    public AlgaeScrubberSubsystem(int motorID){
         motor = new SparkMax(motorID, MotorType.kBrushless);
     }
 

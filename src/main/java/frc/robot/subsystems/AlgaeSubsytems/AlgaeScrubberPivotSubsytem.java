@@ -1,4 +1,4 @@
-package frc.robot.subsystems.AlgeaSubsytems;
+package frc.robot.subsystems.AlgaeSubsytems;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;
@@ -8,7 +8,7 @@ import com.revrobotics.spark.config.SparkBaseConfig;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class AlgeaScrubberPivotSubsytem extends SubsystemBase{
+public class AlgaeScrubberPivotSubsytem extends SubsystemBase{
 
     private SparkMax motor;
     private SparkBaseConfig motorConfig;
@@ -17,7 +17,7 @@ public class AlgeaScrubberPivotSubsytem extends SubsystemBase{
     private boolean extended;
     
     
-    public AlgeaScrubberPivotSubsytem (int motorID){
+    public AlgaeScrubberPivotSubsytem (int motorID){
         motor = new SparkMax(motorID, MotorType.kBrushless);
 
         relativeEncoder = motor.getEncoder();

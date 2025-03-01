@@ -1,4 +1,4 @@
-package frc.robot.subsystems.AlgeaSubsytems;
+package frc.robot.subsystems.AlgaeSubsytems;
 
 import com.google.flatbuffers.Constants;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
