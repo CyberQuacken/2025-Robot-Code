@@ -10,6 +10,8 @@ import com.studica.frc.AHRS.NavXComType;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.estimator.PoseEstimator;
+import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -45,6 +47,8 @@ public class SwerveDrive
     private double prevRot = 0.0;
     private final double deadzone = 0.05;
     public double fieldCentricHeading;
+
+    private SwerveDrivePoseEstimator poseEstimator;
     //Structs for AdvantageScope Simulation
     boolean limelightAuto = false;
     Pose2d pose = new Pose2d();
@@ -156,7 +160,7 @@ public class SwerveDrive
     }
     //this //Set requirements
   );
-  
+  poseEstimator = new SwerveDrivePoseEstimator(kinematics, null, modulePosition, pose);
     }
 //Auto methods
 public Pose2d getPose(){
@@ -375,6 +379,15 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
 
         double acceleration = (speed - prevSpeed)/(time-prevTime);
         SmartDashboard.putNumber("Acceleration", acceleration);
+
+        poseEstimator.update(gyro.getRotation2d(), modulePosition);
+        if(LimelightHelpers.getTV("")){
+            poseEstimator.addVisionMeasurement(LimelightHelpers.getBotPose2d(""), LimelightHelpers.getLatency_Pipeline(""));
+        }
+    }
+
+    public Pose2d getPoseEstimation(){
+        return poseEstimator.getEstimatedPosition();
     }
 
     /*

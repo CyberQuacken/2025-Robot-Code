@@ -219,6 +219,9 @@ public class SwerveDriveMananger extends SubsystemBase{
         rotateToHeadingPIDController.setI(SmartDashboard.getNumber("Rotation_I", 0.0));
         rotateToHeadingPIDController.setD(SmartDashboard.getNumber("Rotation_D", 0.0));
 
+        SmartDashboard.putNumber("X pose", driveSystem.getPoseEstimation().getX());
+        SmartDashboard.putNumber("Y pose", driveSystem.getPoseEstimation().getY());
+
     }
 
     // might be removed

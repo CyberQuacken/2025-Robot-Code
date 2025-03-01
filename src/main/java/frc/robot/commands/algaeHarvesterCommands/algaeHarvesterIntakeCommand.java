@@ -3,7 +3,7 @@
 package frc.robot.commands.algaeHarvesterCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.algaeHarvesterIntakeSubsystem;
+import frc.robot.subsystems.AlgeaSubsytems.algaeHarvesterIntakeSubsystem;
 
 public class algaeHarvesterIntakeCommand extends Command{
 
