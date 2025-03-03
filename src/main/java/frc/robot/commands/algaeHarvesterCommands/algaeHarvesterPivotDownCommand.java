@@ -1,4 +1,4 @@
-package frc.robot.commands.AlgaeHarvesterCommands;
+package frc.robot.commands.algaeHarvesterCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.AlgaeSubsytems.Harvester.algaeHarvesterPivot;
