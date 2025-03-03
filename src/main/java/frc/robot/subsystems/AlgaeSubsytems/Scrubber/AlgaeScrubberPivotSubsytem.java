@@ -1,4 +1,4 @@
-package frc.robot.subsystems.AlgaeSubsytems;
+package frc.robot.subsystems.AlgaeSubsytems.Scrubber;
 
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkMax;

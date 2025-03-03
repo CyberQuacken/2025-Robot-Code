@@ -1,7 +1,7 @@
 package frc.robot.commands.AlgaeScrubberCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.AlgaeSubsytems.AlgaeScrubberPivotSubsytem;
+import frc.robot.subsystems.AlgaeSubsytems.Scrubber.AlgaeScrubberPivotSubsytem;
 
 public class moveScrubberIn extends Command{
     // will move the motor out to a suitable Position

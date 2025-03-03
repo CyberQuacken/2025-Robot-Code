@@ -1,7 +1,7 @@
 package frc.robot.commands.AlgaeHarvesterCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.AlgaeSubsytems.algaeHarvesterPivot;
+import frc.robot.subsystems.AlgaeSubsytems.Harvester.algaeHarvesterPivot;
 public class algaeHarvesterPivotDownCommand extends Command {
     private static algaeHarvesterPivot m_subsystem;
     public algaeHarvesterPivotDownCommand(algaeHarvesterPivot m_algaeHarvesterPivot){
