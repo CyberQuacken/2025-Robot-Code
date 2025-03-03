@@ -6,13 +6,13 @@ import com.revrobotics.spark.SparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.motorcontrol.Spark;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class CoralClawSubsystem extends SubsystemBase {
+public class CoralFeederSubsystem extends SubsystemBase {
 
     SparkMax motor;
     // distance sensor, used to see if we have a coral
     boolean hasCoral;
     
-    public CoralClawSubsystem (int motorID){
+    public CoralFeederSubsystem (int motorID){
         motor = new SparkMax(motorID, MotorType.kBrushless);
     }
 
@@ -31,7 +31,7 @@ public class CoralClawSubsystem extends SubsystemBase {
 
     public boolean testForCoral(){
         // if distance ims too small, return true
-        return false;
+        return false;//TODO: Add algorithm for this once we have system
     }
 
     @Override

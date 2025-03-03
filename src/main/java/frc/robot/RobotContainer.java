@@ -8,6 +8,7 @@ import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants.coralFeederConstants;
 import frc.robot.Constants.elevatorConstants;
 import frc.robot.LimelightHelpers.LimelightResults;
 import frc.robot.commands.TestLightCommand;
@@ -21,6 +22,7 @@ import frc.robot.commands.moveElevatorCommands.moveElevatorDownCommand;
 import frc.robot.commands.moveElevatorCommands.moveElevatorHomeCommand;
 import frc.robot.commands.moveElevatorCommands.moveElevatorIntakeCommand;
 import frc.robot.commands.moveElevatorCommands.moveElevatorUpCommand;
+import frc.robot.subsystems.CoralFeederSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.AlgaeSubsytems.Harvester.algaeHarvesterIntakeSubsystem;
@@ -56,6 +58,7 @@ public class RobotContainer {
 
   // The robot's subsystems and commands are defined here...
   private final ElevatorSubsystem m_Elevator = new ElevatorSubsystem(elevatorConstants.leftMotorCanID, elevatorConstants.rightMotorCanID);
+  private final CoralFeederSubsystem m_Coral = new CoralFeederSubsystem(coralFeederConstants.motorID);
   public final SwerveDriveMananger m_DriveMananger = new SwerveDriveMananger(null);
   private final algaeHarvesterIntakeSubsystem m_algaeIntakeSubsystem = new algaeHarvesterIntakeSubsystem(999);//TODO: find actual id, i just put a placeholder
   private final algaeHarvesterPivot m_AlgaeHarvesterPivot = new algaeHarvesterPivot(998);//TODO: find actual id, i just put a placeholder

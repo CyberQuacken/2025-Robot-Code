@@ -1,28 +1,28 @@
-package frc.robot.commands.CoralClawCommandss;
+package frc.robot.commands.CoralFeederCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.CoralClawSubsystem;
+import frc.robot.subsystems.CoralFeederSubsystem;
 
 public class automateIntakeCoral extends Command{
-    CoralClawSubsystem coralClaw;
+    CoralFeederSubsystem coralFeeder;
     boolean hasCoral;
     
-    public automateIntakeCoral (CoralClawSubsystem subsystem){
-        coralClaw = subsystem;
-        hasCoral = coralClaw.testForCoral();
+    public automateIntakeCoral (CoralFeederSubsystem subsystem){
+        coralFeeder = subsystem;
+        hasCoral = coralFeeder.testForCoral();
 
-        addRequirements(coralClaw);
+        addRequirements(coralFeeder);
     }
 
     @Override
     public void execute(){
-        coralClaw.intakeMotor();
+        coralFeeder.intakeMotor();
     }
 
     @Override
     public boolean isFinished(){
         // if nothing has change, continue the program
-        if(hasCoral == coralClaw.testForCoral()){
+        if(hasCoral == coralFeeder.testForCoral()){
             return false;
         }
         // else prepare to end the program
@@ -42,7 +42,7 @@ public class automateIntakeCoral extends Command{
     
     @Override
     public void end(boolean interrupted){
-        coralClaw.stopMotor();
+        coralFeeder.stopMotor();
     }
 
 }
