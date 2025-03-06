@@ -76,8 +76,9 @@ public class SwerveDriveMananger extends SubsystemBase{
       
 
         SmartDashboard.putString("State: " , "manual");
+        if(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("") != null){
         driveSystem.odometry.resetPose(LimelightHelpers.getBotPoseEstimate_wpiBlue_MegaTag2("").pose);
-
+        }
 
         SmartDashboard.putNumber("Distance_P", limelightAutoConstants.distance_kP);
         SmartDashboard.putNumber("Distance_I", limelightAutoConstants.distance_kI);

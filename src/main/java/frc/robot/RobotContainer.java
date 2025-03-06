@@ -14,15 +14,14 @@ import frc.robot.LimelightHelpers.LimelightResults;
 import frc.robot.commands.TestLightCommand;
 import frc.robot.commands.toggleAlignment;
 import frc.robot.commands.SwerveDriveCommands.resetGyroCommand;
+import frc.robot.commands.algaeHarvesterCommands.algaeHarvesterIntakeCommand;
+import frc.robot.commands.algaeHarvesterCommands.algaeHarvesterPivotDownCommand;
+import frc.robot.commands.algaeHarvesterCommands.algaeHarvesterPivotUpCommand;
 import frc.robot.commands.toggleLimelightAuto;
-import frc.robot.commands.AlgaeHarvesterCommands.algaeHarvesterIntakeCommand;
-import frc.robot.commands.AlgaeHarvesterCommands.algaeHarvesterPivotDownCommand;
-import frc.robot.commands.AlgaeHarvesterCommands.algaeHarvesterPivotUpCommand;
 import frc.robot.commands.moveElevatorCommands.moveElevatorDownCommand;
 import frc.robot.commands.moveElevatorCommands.moveElevatorHomeCommand;
 import frc.robot.commands.moveElevatorCommands.moveElevatorIntakeCommand;
 import frc.robot.commands.moveElevatorCommands.moveElevatorUpCommand;
-import frc.robot.subsystems.CoralFeederSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
 import frc.robot.subsystems.AlgaeSubsytems.Harvester.algaeHarvesterIntakeSubsystem;
@@ -42,7 +41,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
-
+import frc.robot.subsystems.CoralFeederSubsystem;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -58,17 +57,17 @@ public class RobotContainer {
 
   // The robot's subsystems and commands are defined here...
   private final ElevatorSubsystem m_Elevator = new ElevatorSubsystem(elevatorConstants.leftMotorCanID, elevatorConstants.rightMotorCanID);
-  private final CoralFeederSubsystem m_Coral = new CoralFeederSubsystem(coralFeederConstants.motorID);
+  //private final CoralFeederSubsystem m_Coral = new CoralFeederSubsystem(coralFeederConstants.motorID);
   public final SwerveDriveMananger m_DriveMananger = new SwerveDriveMananger(null);
-  private final algaeHarvesterIntakeSubsystem m_algaeIntakeSubsystem = new algaeHarvesterIntakeSubsystem(999);//TODO: find actual id, i just put a placeholder
-  private final algaeHarvesterPivot m_AlgaeHarvesterPivot = new algaeHarvesterPivot(998);//TODO: find actual id, i just put a placeholder
+  //private final algaeHarvesterIntakeSubsystem m_algaeIntakeSubsystem = new algaeHarvesterIntakeSubsystem(999);//TODO: find actual id, i just put a placeholder
+  //private final algaeHarvesterPivot m_AlgaeHarvesterPivot = new algaeHarvesterPivot(998);//TODO: find actual id, i just put a placeholder
   private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
   //private final TestLightCommand testLightCommand = new TestLightCommand(m_VisionSubsystem, m_robotDrive);
 
   private final toggleLimelightAuto toggleLimelight = new toggleLimelightAuto(m_DriveMananger);
-  private final algaeHarvesterIntakeCommand m_algaeIntake = new algaeHarvesterIntakeCommand(m_algaeIntakeSubsystem);
-  private final algaeHarvesterPivotUpCommand m_algaeUp = new algaeHarvesterPivotUpCommand(m_AlgaeHarvesterPivot);
-  private final algaeHarvesterPivotDownCommand m_algaeDown = new algaeHarvesterPivotDownCommand(m_AlgaeHarvesterPivot);
+  //private final algaeHarvesterIntakeCommand m_algaeIntake = new algaeHarvesterIntakeCommand(m_algaeIntakeSubsystem);
+  //private final algaeHarvesterPivotUpCommand m_algaeUp = new algaeHarvesterPivotUpCommand(m_AlgaeHarvesterPivot);
+  //private final algaeHarvesterPivotDownCommand m_algaeDown = new algaeHarvesterPivotDownCommand(m_AlgaeHarvesterPivot);
 
   private final toggleAlignment toggleAlignment = new toggleAlignment(m_DriveMananger);
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -95,14 +94,18 @@ public class RobotContainer {
 
     LimelightHelpers.setPipelineIndex("", 1);
     
+    /* 
     m_DriveMananger.setDefaultCommand(
       new RunCommand( ()-> m_DriveMananger.ManageSwerveSystem(
         -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDeadband),
         -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDeadband),
         -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDeadband),
         true, false),m_DriveMananger));
+        */
       
-
+    m_Elevator.setDefaultCommand(
+      new RunCommand( ()-> m_Elevator.moveElevator(-MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDeadband)), m_Elevator)
+    );
       
             
 

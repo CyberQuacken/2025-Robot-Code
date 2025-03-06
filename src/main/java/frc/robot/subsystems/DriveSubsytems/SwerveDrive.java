@@ -77,7 +77,12 @@ public class SwerveDrive
     private SlewRateLimiter m_rotLimiter = new SlewRateLimiter(DriveConstants.kRotationalSlewRate);
     private double m_prevTime = WPIUtilJNI.now() * 1e-7;
 
-
+  
+    private final MAXSwerveModule m_backLeft = new MAXSwerveModule(
+        DriveConstants.kBackLeftDrivingCanId,
+        DriveConstants.kBackLeftTurningCanId,
+        DriveConstants.kBackLeftChassisAngularOffset);
+        
     private final MAXSwerveModule m_frontLeft = new MAXSwerveModule(
         DriveConstants.kFrontLeftDrivingCanId,
         DriveConstants.kFrontLeftTurningCanId,
@@ -87,11 +92,6 @@ public class SwerveDrive
         DriveConstants.kFrontRightDrivingCanId,
         DriveConstants.kFrontRightTurningCanId,
         DriveConstants.kFrontRightChassisAngularOffset);
-  
-    private final MAXSwerveModule m_backLeft = new MAXSwerveModule(
-        DriveConstants.kBackLeftDrivingCanId,
-        DriveConstants.kBackLeftTurningCanId,
-        DriveConstants.kBackLeftChassisAngularOffset);
   
     private final MAXSwerveModule m_backRight = new MAXSwerveModule(
         DriveConstants.kBackRightDrivingCanId,
@@ -160,7 +160,7 @@ public class SwerveDrive
     }
     //this //Set requirements
   );
-  poseEstimator = new SwerveDrivePoseEstimator(kinematics, null, modulePosition, pose);
+  poseEstimator = new SwerveDrivePoseEstimator(kinematics, new Rotation2d(gyro.getAngle()), modulePosition, pose);//I put the rotation2d to fix an error, the param was previously null
     }
 //Auto methods
 public Pose2d getPose(){
