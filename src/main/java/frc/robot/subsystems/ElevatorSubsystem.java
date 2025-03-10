@@ -16,7 +16,7 @@ import frc.robot.Constants.elevatorConstants;
 public class ElevatorSubsystem extends SubsystemBase {
   SparkFlex leftMotor;
   SparkFlex rightMotor;
-  int[] positions; // list of all positions
+  double[] positions; // list of all positions
   int currentPosition; // index of the position we want the elevator to be att
   
   // possible to make indivual PIDocntrller or motor specific PIDcontroller
@@ -24,10 +24,13 @@ public class ElevatorSubsystem extends SubsystemBase {
 
   RelativeEncoder leftEncoder;
   RelativeEncoder rightEncoder;
+
+  double averagePosition = 0;
   // encoder for the motors
 
   /** Creates a new ExampleSubsystem. */
   public ElevatorSubsystem(int leftMotorID, int rightMotorID) {
+    SmartDashboard.putNumber("move", currentPosition);
     leftMotor = new SparkFlex(leftMotorID, MotorType.kBrushless);
     rightMotor = new SparkFlex(rightMotorID, MotorType.kBrushless);
 
@@ -37,7 +40,6 @@ public class ElevatorSubsystem extends SubsystemBase {
     // <I do not know if we need encoders for both motors>
     leftEncoder = leftMotor.getEncoder();
     rightEncoder = rightMotor.getEncoder();
-
 
 
     pidController = new PIDController(
@@ -52,10 +54,19 @@ public class ElevatorSubsystem extends SubsystemBase {
  * to change where the Elevator moves to, use the setCurrentPosition method
  */
   public void moveMotors(){
+    //double moveToPosition = SmartDashboard.getNumber("move", currentPosition); // temp variable to create ladder positions
+    double pidOutput = pidController.calculate(averagePosition, positions[currentPosition]);
+    //double pidOutput = pidController.calculate(averagePosition, moveToPosition); 
     // the PID controller requestest a distance, im not sure how to get distance or what it correlates to
-    leftMotor.set(-pidController.calculate(leftEncoder.getVelocity(), positions[currentPosition]));
-    rightMotor.set(pidController.calculate(rightEncoder.getVelocity(), positions[currentPosition]));
+    leftMotor.set(-Math.min(.2,pidOutput));//positions[currentPosition]));
+    rightMotor.set(Math.min(.2,pidOutput));//positions[currentPosition]));
+    SmartDashboard.putNumber("current Output", pidOutput);
     //sends data to motors
+    //System.out.println(moveToPosition);
+    if (pidController.atSetpoint()){
+      leftEncoder.setPosition(positions[currentPosition] + .5);
+      rightEncoder.setPosition(positions[currentPosition] + .5);
+    }
   }
 
   public void setCurrentPosition(int desiredPosition) {
@@ -68,7 +79,27 @@ public class ElevatorSubsystem extends SubsystemBase {
   public void moveElevator(double speed){
     leftMotor.set(-speed);
     rightMotor.set(speed);
+  }
 
-    SmartDashboard.putNumber("leftMotor", leftEncoder.getPosition());
+  @Override
+  public void periodic(){
+    //System.out.println("active");
+    SmartDashboard.putNumber("leftMotor", -leftEncoder.getPosition());
+    SmartDashboard.putNumber("RightMotor", rightEncoder.getPosition());
+    averagePosition = (rightEncoder.getPosition() + (-leftEncoder.getPosition())) / (2.0);
+    SmartDashboard.putNumber("average Encoder Position", averagePosition);
+    //currentPosition = SmartDashboard.getNumber("moving position", 0);
+
+    SmartDashboard.putNumber("desired Position Index", currentPosition);
+    SmartDashboard.putNumber("desired Position", positions[currentPosition]);
+
+    pidController.setP(SmartDashboard.getNumber("elevator P", elevatorConstants.kP));
+    pidController.setI(SmartDashboard.getNumber("elevator I", elevatorConstants.kI));
+    pidController.setD(SmartDashboard.getNumber("elevator D", elevatorConstants.kD));
+  }
+
+  public void resetEncoder (){
+    rightEncoder.setPosition(0);
+    leftEncoder.setPosition(0);
   }
 }

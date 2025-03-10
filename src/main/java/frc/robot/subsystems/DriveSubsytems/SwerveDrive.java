@@ -114,9 +114,8 @@ public class SwerveDrive
         for(int i = 0; i < 4; i++){
             currStates[i] = new SwerveModuleState();
         }
-        //.swerveModules = new SwerveModule[4]; //Creates Swerve Modules
-        gyro = new AHRS(NavXComType.kUSB1);
-        //swerveModules = new SwerveModule[4]; //Creates Swerve Modules
+
+        gyro = new AHRS(NavXComType.kMXP_UART); // prolly mxp
 
         kinematics = new SwerveDriveKinematics
         (

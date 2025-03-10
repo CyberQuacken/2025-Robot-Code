@@ -1,5 +1,6 @@
 package frc.robot.commands.moveElevatorCommands;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.elevatorConstants;
 import frc.robot.subsystems.ElevatorSubsystem;
@@ -10,19 +11,21 @@ public class moveElevatorDownCommand extends Command {
     public moveElevatorDownCommand(ElevatorSubsystem subsystem){
         m_Subsystem = subsystem;
         addRequirements(subsystem);
+        SmartDashboard.putBoolean("eUpcommand", true);
     }
 
     // Called when the command is initially scheduled.
     @Override
     public void initialize() {
         // if there is a position lower than the current positon. it subtracts to get that position
-        if (m_Subsystem.getCurrentPosition() > elevatorConstants.levelOnePositionIndex){ // 0 is the lowest position (home)
+        if (m_Subsystem.getCurrentPosition() > elevatorConstants.levelOnePositionIndex){ // 0 is the lowest position (intake)
             m_Subsystem.setCurrentPosition(m_Subsystem.getCurrentPosition()-1);
         }
-        else if (m_Subsystem.getCurrentPosition() == elevatorConstants.intakePositionIndex){
-            //if current level is equal to 5, change position from intake to level 2
-            m_Subsystem.setCurrentPosition(elevatorConstants.levelTwoPositionIndex);// level 2
-        }
+        System.out.println("Down");
+        //else if (m_Subsystem.getCurrentPosition() == elevatorConstants.intakePositionIndex){
+        //    //if current level is equal to 5, change position from intake to level 2
+        //    m_Subsystem.setCurrentPosition(elevatorConstants.levelTwoPositionIndex);// level 2
+        //}
     }
 
     // Called every time the scheduler runs while the command is scheduled.
@@ -36,6 +39,6 @@ public class moveElevatorDownCommand extends Command {
     // Returns true when the command should end.
     @Override
     public boolean isFinished() {
-        return false;
+        return true;
     }
 }

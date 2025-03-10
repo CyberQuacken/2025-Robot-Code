@@ -43,4 +43,8 @@ public class AlgaeScrubberPivotSubsytem extends SubsystemBase{
     public void resetEncoder(){
         relativeEncoder.setPosition(0);
     }
+
+    public void testMotor(double speed){
+        motor.set(speed);
+    }
 }
