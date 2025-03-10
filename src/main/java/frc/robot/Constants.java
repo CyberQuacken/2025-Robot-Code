@@ -107,12 +107,12 @@ public static final class DriveConstants {
 public static class elevatorConstants {
 
   //depends on motor data?
-  public static final int[] positions ={
-    1, // level one
-    1, // level two
-    1, // level three
-    1, // level four
-    1, // intake
+  public static final double[] positions ={
+    0, // intake
+    5, // level one
+    20.5, // level two
+    38.3, // level three
+    69, // level four
   };
 
   public static final int levelOnePositionIndex = 1;
@@ -120,16 +120,20 @@ public static class elevatorConstants {
   public static final int levelThreePositionIndex = 3;
   public static final int levelFourPositionIndex = 4;
 
-  public static final int homePositionIndex = 0; // home/reset it below level one, you just cant reach it
-  public static final int intakePositionIndex = 5;
+  public static final int intakePositionIndex = 0;
 
   // temp values for PID
-  public static final double kP = 1;
-  public static final double kI = 1;
-  public static final double kD = 1; 
+  public static final double kP = 0.12;
+  public static final double kI = 0.0015;
+  public static final double kD = 0.0001; 
 
   public static final int leftMotorCanID = 9;
   public static final int rightMotorCanID = 10;//Double check these
+}
+
+public static class algeaScrubberConstants {
+  public static final int algeaScrubberMotorID = 12;
+  public static final int algeaScrubberPivotMotorID = 13;
 }
 
 public static class coralFeederConstants {

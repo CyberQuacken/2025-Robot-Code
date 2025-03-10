@@ -20,4 +20,8 @@ public class AlgaeScrubberSubsystem extends SubsystemBase{
     public void stopMotor(){
         motor.stopMotor();
     }
+
+    public void testMotor(double speed){
+        motor.set(speed);
+    }
 }

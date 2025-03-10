@@ -29,6 +29,10 @@ public class CoralFeederSubsystem extends SubsystemBase {
         motor.set(-.5);
     }
 
+    public void testMotor(double speed){
+        motor.set(-speed);
+    }
+
     public boolean testForCoral(){
         // if distance ims too small, return true
         return false;//TODO: Add algorithm for this once we have system
