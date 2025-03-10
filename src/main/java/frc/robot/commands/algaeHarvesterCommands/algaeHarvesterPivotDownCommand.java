@@ -1,6 +1,7 @@
 package frc.robot.commands.algaeHarvesterCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.algaeHarvesterConstants;
 import frc.robot.subsystems.AlgaeSubsytems.Harvester.algaeHarvesterPivot;
 public class algaeHarvesterPivotDownCommand extends Command {
     private static algaeHarvesterPivot m_subsystem;
@@ -11,7 +12,9 @@ public class algaeHarvesterPivotDownCommand extends Command {
     @Override
     public void initialize(){
         // <Should outtake speed be from constants or container?>
-        m_subsystem.pivot(-1);
+        if(m_subsystem.getCurrentPosition() > algaeHarvesterConstants.horizontalIndex) { 
+            m_subsystem.setCurrentPosition(m_subsystem.getCurrentPosition()-1);
+        }
     }
 
     @Override

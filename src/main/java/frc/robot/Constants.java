@@ -224,5 +224,21 @@ public static class algaeHarvesterConstants {
     public static final int intakeMotorCANID = 12;
     public static final double minPivot = 10.0; //TODO: Change placeholder, careful with this, requires irl data and can break robot
     public static final double maxPivot = 90.0; //TODO: change placeholder
+
+    public static final double kP = 0.12;
+    public static final double kI = 0.0015;
+    public static final double kD = 0.0001; 
+
+
+    //TODO: get irl data, we'll need more precise positions, zero encoder
+    public static final double[] positions ={
+      10, //Unextended
+      45, // Medium
+      80, //parallel-ish to the horizontal. 
+    };
+    public static final int verticalIndex = 1;
+    public static final int mediumIndex = 2;
+    public static final int horizontalIndex = 3;
+
 }
 }
