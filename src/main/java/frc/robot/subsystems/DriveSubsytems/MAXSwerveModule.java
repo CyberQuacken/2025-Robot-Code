@@ -17,16 +17,12 @@ import com.revrobotics.spark.SparkBase.ResetMode;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.AbsoluteEncoder;
 import com.revrobotics.RelativeEncoder;
-import com.revrobotics.sim.SparkMaxSim;
 
 import frc.robot.Configs;
 
 public class MAXSwerveModule {
   private final SparkFlex m_drivingSpark;
   private final SparkMax m_turningSpark;
-
-/*   private final SparkMaxSim sim_turningSpark;
-  private final SparkMaxSim sim_drivingSpark; */
 
   private final RelativeEncoder m_drivingEncoder;
   private final AbsoluteEncoder m_turningEncoder;
@@ -47,9 +43,6 @@ public class MAXSwerveModule {
     m_drivingSpark = new SparkFlex(drivingCANId, MotorType.kBrushless);
     m_turningSpark = new SparkMax(turningCANId, MotorType.kBrushless);
 
-    /* sim_turningSpark = new SparkMaxSim(m_drivingSpark, null);
-    sim_drivingSpark = new SparkMaxSim(m_drivingSpark, null);
- */
     m_drivingEncoder = m_drivingSpark.getEncoder();
     m_turningEncoder = m_turningSpark.getAbsoluteEncoder();
 

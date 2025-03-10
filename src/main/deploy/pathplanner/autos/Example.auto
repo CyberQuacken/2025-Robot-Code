@@ -17,6 +17,24 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.02
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Score"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "eDown"
+          }
+        },
+        {
           "type": "path",
           "data": {
             "pathName": "Example 2"
