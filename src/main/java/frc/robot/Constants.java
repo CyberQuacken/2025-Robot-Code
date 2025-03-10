@@ -152,7 +152,7 @@ public static class coralFeederConstants {
   // preset values for how much the claw takes in <needs to be changed before use>
   public static final int clawIntakeSpeed = -1;
   public static final int clawOuttakeSpeed = 1;
-  public static final int motorID = 997;//TODO:Change placeholder with irl value
+  public static final int motorID = 11;//TODO:Change placeholder with irl value
 }
 
 public static class lightConstants {
@@ -216,6 +216,8 @@ public static class limelightAutoConstants{
 public static class algaeHarvesterConstants { 
     public static final int algaeHarvesterIntakeSpeed = 1;
     public static final int pivotSpeed = 1;
+    public static final int pivotMotorCANID = 13;//TODO: Double check
+    public static final int intakeMotorCANID = 12;
     public static final double minPivot = 10.0; //TODO: Change placeholder, careful with this, requires irl data and can break robot
     public static final double maxPivot = 90.0; //TODO: change placeholder
 }
