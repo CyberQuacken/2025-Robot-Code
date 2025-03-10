@@ -45,7 +45,7 @@ public final class Constants {
     public static final int kDriverControllerPort = 0;
     public static final double kDriveDeadband = 0.05;
     public static final boolean fieldRelative = true;
-    public static final double kDeadband = 0.1;
+    public static final double kDeadband = 0.15;
   }
   public static final class NeoMotorConstants {
     public static final double kFreeSpeedRpm = 5676;
@@ -76,15 +76,15 @@ public static final class DriveConstants {
     public static final double kBackRightChassisAngularOffset = Math.PI / 2;
 
     // SPARK MAX CAN IDs,  we will likely have to change these
-    public static final int kFrontLeftDrivingCanId = 13;
-    public static final int kBackLeftDrivingCanId = 3;
-    public static final int kFrontRightDrivingCanId = 16;
-    public static final int kBackRightDrivingCanId = 6;
+    public static final int kFrontLeftDrivingCanId = 2;
+    public static final int kBackLeftDrivingCanId = 1;
+    public static final int kFrontRightDrivingCanId = 3;
+    public static final int kBackRightDrivingCanId = 4;
 
-    public static final int kFrontLeftTurningCanId = 12;
-    public static final int kBackLeftTurningCanId = 2;
-    public static final int kFrontRightTurningCanId = 15;
-    public static final int kBackRightTurningCanId = 5;
+    public static final int kFrontLeftTurningCanId = 6;
+    public static final int kBackLeftTurningCanId = 5;
+    public static final int kFrontRightTurningCanId = 7;
+    public static final int kBackRightTurningCanId = 8;
 
     public static final int kGryoi2cPort = 1;
 
@@ -128,8 +128,8 @@ public static class elevatorConstants {
   public static final double kI = 1;
   public static final double kD = 1; 
 
-  public static final int leftMotorCanID = 18;
-  public static final int rightMotorCanID = 19;
+  public static final int leftMotorCanID = 9;
+  public static final int rightMotorCanID = 10;//Double check these
 }
 
 public static class coralFeederConstants {
