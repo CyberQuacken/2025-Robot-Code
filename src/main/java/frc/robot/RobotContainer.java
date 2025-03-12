@@ -12,6 +12,9 @@ import frc.robot.Constants.coralFeederConstants;
 import frc.robot.Constants.elevatorConstants;
 import frc.robot.commands.toggleAlignment;
 import frc.robot.commands.toggleLimelightAuto;
+import frc.robot.commands.CoralFeederCommands.manuoverCoral;
+import frc.robot.commands.CoralFeederCommands.pathPlannerCoral;
+import frc.robot.commands.SwerveDriveCommands.resetGyroCommand;
 import frc.robot.commands.algaeHarvesterCommands.algaeHarvesterIntakeCommand;
 import frc.robot.commands.algaeHarvesterCommands.algaeHarvesterPivotDownCommand;
 import frc.robot.commands.algaeHarvesterCommands.algaeHarvesterPivotUpCommand;
@@ -31,6 +34,7 @@ import frc.robot.subsystems.DriveSubsytems.SwerveDriveMananger;
 import java.lang.management.OperatingSystemMXBean;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.MathUtil;
@@ -88,9 +92,10 @@ public class RobotContainer {
   private final resetEncoderCommand resetEncoder = new resetEncoderCommand(m_Elevator);
   private final algaeHarvesterPivotUpCommand pivotHarvesterUp = new algaeHarvesterPivotUpCommand(m_algaeHarvesterPivot);
   private final algaeHarvesterPivotDownCommand pivotHarvesterDown = new algaeHarvesterPivotDownCommand(m_algaeHarvesterPivot);
-  private algaeHarvesterIntakeCommand harvesterIntake = new algaeHarvesterIntakeCommand(m_algaeIntake);
-
-
+  private final algaeHarvesterIntakeCommand harvesterIntake = new algaeHarvesterIntakeCommand(m_algaeIntake);
+  private final resetGyroCommand resetGyro = new resetGyroCommand(m_DriveMananger);
+  private final manuoverCoral intakeCoral = new manuoverCoral(m_Coral);
+  private final pathPlannerCoral namedAutoCoral = new pathPlannerCoral(m_Coral);
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     SmartDashboard.putNumber("elevator P", elevatorConstants.kP);
@@ -148,8 +153,10 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
     // Named commands
-    //NamedCommands.registerCommand("Elevator up", eUp);
-    //NamedCommands.registerCommand("Elevator down", eDown);
+
+    NamedCommands.registerCommand("eUp", eUp);
+    NamedCommands.registerCommand("Score", namedAutoCoral);
+    NamedCommands.registerCommand("eDown", eDown);
   }
 
   /**
@@ -169,7 +176,7 @@ public class RobotContainer {
 
     Trigger bDriverButton = m_driverController.b();
     //bDriverButton.toggleOnTrue(toggleAlignment);
-    
+    bDriverButton.onTrue(resetGyro);
     Trigger yDriverButton = m_driverController.y();
     //yDriverButton.whileTrue(testLightCommand);
 
@@ -180,13 +187,12 @@ public class RobotContainer {
     aScorerButton.toggleOnTrue(eIntake);
 
     Trigger bScorerButton = (m_scoringController.b());
-        bScorerButton.whileTrue(new RunCommand(()-> m_Coral.testMotor(.4), m_Coral));
-        bScorerButton.whileFalse(new RunCommand(()-> m_Coral.testMotor(0), m_Coral));
+        bScorerButton.whileTrue(intakeCoral);
     
         Trigger xScoreButton = m_scoringController.x();
-        xScoreButton.whileTrue(new RunCommand(()-> m_Coral.testMotor(-.4), m_Coral));
+        /* xScoreButton.whileTrue(new RunCommand(()-> m_Coral.testMotor(-.4), m_Coral));
         xScoreButton.whileFalse(new RunCommand(()-> m_Coral.testMotor(0), m_Coral));
-    
+     *////Not on button sheet
         Trigger yScoreButton = m_scoringController.y();
         yScoreButton.whileTrue(resetEncoder);
     

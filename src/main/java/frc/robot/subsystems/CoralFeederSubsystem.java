@@ -22,7 +22,7 @@ public class CoralFeederSubsystem extends SubsystemBase {
     }
 
     public void intakeMotor(){
-        motor.set(.5);
+        motor.set(.4);
     }
 
     public void outakeMotor(){

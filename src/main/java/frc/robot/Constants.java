@@ -236,9 +236,9 @@ public static class algaeHarvesterConstants {
       45, // Medium
       80, //parallel-ish to the horizontal. 
     };
-    public static final int verticalIndex = 1;
-    public static final int mediumIndex = 2;
-    public static final int horizontalIndex = 3;
+    public static final int verticalIndex = 0;
+    public static final int mediumIndex = 1;
+    public static final int horizontalIndex = 2;
 
 }
 }

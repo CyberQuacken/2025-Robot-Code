@@ -35,7 +35,6 @@ public class algaeHarvesterPivot extends SubsystemBase{
     //TODO: limit switches with encoders
     public void pivot(int direction){
         double pidOutput = pidController.calculate(absEncoder.getPosition(), positions[currPosition]);
-        double pidVOutput = pidController.calculate(absEncoder.getVelocity(), direction * positions[currPosition]);
         pivotMotor.set(pidOutput);
         
  
@@ -46,6 +45,12 @@ public class algaeHarvesterPivot extends SubsystemBase{
         } else { 
             pivotMotor.set(-1 * algaeHarvesterConstants.pivotSpeed);
         } */
+    }
+    public void RawPivot(double speed){ 
+        pivotMotor.set(speed);
+    }
+    public void rawPivotDirection(int direction) { 
+        pivotMotor.set(algaeHarvesterConstants.pivotSpeed * direction);
     }
     public void setCurrentPosition(int desiredPosition) {
         currPosition = desiredPosition;
