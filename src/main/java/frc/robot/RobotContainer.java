@@ -7,12 +7,15 @@ package frc.robot;
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.algaeHarvesterConstants;
-import frc.robot.Constants.algeaScrubberConstants;
+import frc.robot.Constants.algaeScrubberConstants;
 import frc.robot.Constants.coralFeederConstants;
 import frc.robot.Constants.elevatorConstants;
 import frc.robot.commands.toggleAlignment;
 import frc.robot.commands.toggleLimelightAuto;
-import frc.robot.commands.CoralFeederCommands.manuoverCoral;
+import frc.robot.commands.AlgaeScrubberCommands.moveScrubberIn;
+import frc.robot.commands.AlgaeScrubberCommands.moveScrubberOut;
+import frc.robot.commands.AlgaeScrubberCommands.ScrubAlgae;
+import frc.robot.commands.CoralFeederCommands.maneuverCoral;
 import frc.robot.commands.CoralFeederCommands.pathPlannerCoral;
 import frc.robot.commands.SwerveDriveCommands.resetGyroCommand;
 import frc.robot.commands.algaeHarvesterCommands.algaeHarvesterIntakeCommand;
@@ -66,15 +69,14 @@ public class RobotContainer {
   private final algaeHarvesterPivot m_algaeHarvesterPivot = new algaeHarvesterPivot(algaeHarvesterConstants.pivotMotorCANID);
   
   public final SwerveDriveMananger m_DriveMananger = new SwerveDriveMananger(null);
-  //private final algaeHarvesterPivot m_AlgaeHarvesterPivot = new algaeHarvesterPivot(998);//TODO: find actual id, i just put a placeholder
   private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
   //private final TestLightCommand testLightCommand = new TestLightCommand(m_VisionSubsystem, m_robotDrive);
 
   private final toggleLimelightAuto toggleLimelight = new toggleLimelightAuto(m_DriveMananger);
 
 
-  private final AlgaeScrubberPivotSubsytem m_scrubberPivot = new AlgaeScrubberPivotSubsytem(algeaScrubberConstants.algeaScrubberPivotMotorID);
-  private final AlgaeScrubberSubsystem m_scrubber = new AlgaeScrubberSubsystem(algeaScrubberConstants.algeaScrubberMotorID);
+  private final AlgaeScrubberPivotSubsytem m_scrubberPivot = new AlgaeScrubberPivotSubsytem(algaeScrubberConstants.algeaScrubberPivotMotorID);
+  private final AlgaeScrubberSubsystem m_scrubber = new AlgaeScrubberSubsystem(algaeScrubberConstants.algeaScrubberMotorID);
 
   private final toggleAlignment toggleAlignment = new toggleAlignment(m_DriveMananger);
   // Replace with CommandPS4Controller or CommandJoystick if needed
@@ -96,14 +98,18 @@ public class RobotContainer {
   private final algaeHarvesterIntakeCommand harvesterIntake = new algaeHarvesterIntakeCommand(m_algaeIntake);
   private final algaeHarvesterOuttakeCommand harvestOuttake = new algaeHarvesterOuttakeCommand(m_algaeIntake);
   private final resetGyroCommand resetGyro = new resetGyroCommand(m_DriveMananger);
-  private final manuoverCoral intakeCoral = new manuoverCoral(m_Coral);
+  private final maneuverCoral intakeCoral = new maneuverCoral(m_Coral);
   private final pathPlannerCoral namedAutoCoral = new pathPlannerCoral(m_Coral);
+  private final ScrubAlgae scrub = new ScrubAlgae(m_scrubberPivot, m_scrubber);
+  private final moveScrubberIn moveScrubberIn = new moveScrubberIn(m_scrubberPivot);
+  private final moveScrubberOut moveScrubberOut = new moveScrubberOut(m_scrubberPivot);
+
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     SmartDashboard.putNumber("elevator P", elevatorConstants.kP);
     SmartDashboard.putNumber("elevator I", elevatorConstants.kI);
     SmartDashboard.putNumber("elevator D", elevatorConstants.kD);
-        autoChooser = AutoBuilder.buildAutoChooser();
+    autoChooser = AutoBuilder.buildAutoChooser();
 
     LimelightHelpers.setPipelineIndex("", 1);
 
@@ -155,7 +161,9 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
     // Named commands
-
+    NamedCommands.registerCommand("ScrubIn", moveScrubberIn);
+    NamedCommands.registerCommand("ScrubOut", moveScrubberOut);
+    NamedCommands.registerCommand("Scrub", scrub);
     NamedCommands.registerCommand("eUp", eUp);
     NamedCommands.registerCommand("Score", namedAutoCoral);
     NamedCommands.registerCommand("eDown", eDown);

@@ -4,10 +4,10 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.coralFeederConstants;
 import frc.robot.subsystems.CoralFeederSubsystem;
 
-public class manuoverCoral extends Command{
+public class maneuverCoral extends Command{
     CoralFeederSubsystem coralFeeder;
     
-    public manuoverCoral (CoralFeederSubsystem subsystem){
+    public maneuverCoral (CoralFeederSubsystem subsystem){
         coralFeeder = subsystem;
 
         addRequirements(coralFeeder);
