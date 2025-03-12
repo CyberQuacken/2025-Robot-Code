@@ -2,6 +2,7 @@ package frc.robot.commands.CoralFeederCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import frc.robot.Constants.coralFeederConstants;
 import frc.robot.subsystems.CoralFeederSubsystem;
 
 public class pathPlannerCoral extends Command{
@@ -15,7 +16,7 @@ public class pathPlannerCoral extends Command{
 
     @Override
     public void execute(){
-        coralFeeder.outakeMotor();
+        coralFeeder.testMotor(coralFeederConstants.clawIntakeSpeed);
         new WaitCommand(1);//TODO: Mess around with this number
         coralFeeder.stopMotor();
     }
