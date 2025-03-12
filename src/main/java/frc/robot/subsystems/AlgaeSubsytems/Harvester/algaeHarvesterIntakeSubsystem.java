@@ -9,7 +9,7 @@ import frc.robot.Constants.algaeHarvesterConstants;
 public class algaeHarvesterIntakeSubsystem extends SubsystemBase{
     
     private final SparkMax intakeMotor;
-    private boolean intake;
+    private boolean intake; // for toggle able option, will flip between having algae and not
     public algaeHarvesterIntakeSubsystem(int m_intakeMotor){
         intakeMotor = new SparkMax(m_intakeMotor, MotorType.kBrushless);
         intake = true;
@@ -18,6 +18,11 @@ public class algaeHarvesterIntakeSubsystem extends SubsystemBase{
     public void intake(){
         intakeMotor.set(algaeHarvesterConstants.algaeHarvesterIntakeSpeed);
     }
+
+    public void outake(){
+        intakeMotor.set(-algaeHarvesterConstants.algaeHarvesterIntakeSpeed);
+    }
+
     public void stop() { 
         intakeMotor.stopMotor();
     }

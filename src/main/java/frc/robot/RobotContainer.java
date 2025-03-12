@@ -16,6 +16,7 @@ import frc.robot.commands.CoralFeederCommands.manuoverCoral;
 import frc.robot.commands.CoralFeederCommands.pathPlannerCoral;
 import frc.robot.commands.SwerveDriveCommands.resetGyroCommand;
 import frc.robot.commands.algaeHarvesterCommands.algaeHarvesterIntakeCommand;
+import frc.robot.commands.algaeHarvesterCommands.algaeHarvesterOuttakeCommand;
 import frc.robot.commands.algaeHarvesterCommands.algaeHarvesterPivotDownCommand;
 import frc.robot.commands.algaeHarvesterCommands.algaeHarvesterPivotUpCommand;
 import frc.robot.commands.moveElevatorCommands.moveElevatorDownCommand;
@@ -93,6 +94,7 @@ public class RobotContainer {
   private final algaeHarvesterPivotUpCommand pivotHarvesterUp = new algaeHarvesterPivotUpCommand(m_algaeHarvesterPivot);
   private final algaeHarvesterPivotDownCommand pivotHarvesterDown = new algaeHarvesterPivotDownCommand(m_algaeHarvesterPivot);
   private final algaeHarvesterIntakeCommand harvesterIntake = new algaeHarvesterIntakeCommand(m_algaeIntake);
+  private final algaeHarvesterOuttakeCommand harvestOuttake = new algaeHarvesterOuttakeCommand(m_algaeIntake);
   private final resetGyroCommand resetGyro = new resetGyroCommand(m_DriveMananger);
   private final manuoverCoral intakeCoral = new manuoverCoral(m_Coral);
   private final pathPlannerCoral namedAutoCoral = new pathPlannerCoral(m_Coral);
@@ -133,14 +135,14 @@ public class RobotContainer {
     );
     
   
-    
+    // ---------------- [To Be Replaced] --------------------- //
     m_scrubberPivot.setDefaultCommand(
       //new RunCommand( ()-> m_scrubberPivot.testMotor(-MathUtil.applyDeadband(m_scoringController.getLeftY(), OIConstants.kDeadband)), m_scrubberPivot)
       new RunCommand(()-> m_scrubberPivot.testMotor(-MathUtil.applyDeadband(m_scoringController.getRightY(), OIConstants.kDeadband)), m_scrubberPivot)
       );
-    m_scrubber.setDefaultCommand(
-      new RunCommand( ()-> m_scrubber.testMotor(-MathUtil.applyDeadband(m_scoringController.getRightY(), OIConstants.kDeadband)), m_scrubber)
-    );
+      m_scrubber.setDefaultCommand(
+        new RunCommand( ()-> m_scrubber.testMotor(-MathUtil.applyDeadband(m_scoringController.getRightY(), OIConstants.kDeadband)), m_scrubber)
+      );
       
             
 
@@ -172,10 +174,11 @@ public class RobotContainer {
 
 
     Trigger aDriverButton = m_driverController.a();
-    //aDriverButton.toggleOnTrue(toggleLimelight);
+    aDriverButton.toggleOnTrue(toggleLimelight);
 
     Trigger bDriverButton = m_driverController.b();
-    //bDriverButton.toggleOnTrue(toggleAlignment);
+    bDriverButton.toggleOnTrue(toggleAlignment);
+
     bDriverButton.onTrue(resetGyro);
     Trigger yDriverButton = m_driverController.y();
     //yDriverButton.whileTrue(testLightCommand);
@@ -186,7 +189,7 @@ public class RobotContainer {
     //Trigger scorerLeftY = m_scoringController.leftStick();
 
     Trigger aScorerButton = m_scoringController.a();
-    aScorerButton.toggleOnTrue(eIntake);
+    aScorerButton.whileTrue(eIntake);
 
     Trigger bScorerButton = (m_scoringController.b());
         bScorerButton.whileTrue(intakeCoral);
@@ -208,6 +211,10 @@ public class RobotContainer {
         //upScorerButton.toggleOnTrue(eUp); // make while true for hold and move
         Trigger rightScorerBumper = m_scoringController.rightBumper();
         rightScorerBumper.whileTrue(Commands.parallel(pivotHarvesterDown,harvesterIntake)).whileFalse(Commands.parallel(pivotHarvesterUp));
+
+        // [Second varration until we find a better way to remove the algea, left bumper will relase algae] // i do worry about having two while falsing intersecting (despite being the smae command))
+        Trigger leftScorerBumper = m_scoringController.rightBumper();
+        leftScorerBumper.whileTrue(Commands.parallel(pivotHarvesterDown,harvestOuttake)).whileFalse(Commands.parallel(pivotHarvesterUp));
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
   }
