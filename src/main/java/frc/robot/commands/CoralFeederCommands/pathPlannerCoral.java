@@ -3,6 +3,7 @@ package frc.robot.commands.CoralFeederCommands;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
 import frc.robot.Constants.coralFeederConstants;
+import frc.robot.Constants.coralFeederConstants;
 import frc.robot.subsystems.CoralFeederSubsystem;
 
 public class pathPlannerCoral extends Command{
