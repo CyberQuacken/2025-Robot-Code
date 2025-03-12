@@ -167,6 +167,8 @@ public class RobotContainer {
     Trigger xDriverButton = m_driverController.x();
     //xDriverButton.whileTrue(lastRots);
 
+    //Trigger scorerLeftY = m_scoringController.leftStick();
+
     Trigger aScorerButton = m_scoringController.a();
     aScorerButton.toggleOnTrue(eIntake);
 

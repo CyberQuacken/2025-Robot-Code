@@ -56,17 +56,26 @@ public class ElevatorSubsystem extends SubsystemBase {
   public void moveMotors(){
     //double moveToPosition = SmartDashboard.getNumber("move", currentPosition); // temp variable to create ladder positions
     double pidOutput = pidController.calculate(averagePosition, positions[currentPosition]);
+    boolean isNegative = pidOutput / Math.abs(pidOutput) == -1;
     //double pidOutput = pidController.calculate(averagePosition, moveToPosition); 
     // the PID controller requestest a distance, im not sure how to get distance or what it correlates to
-    leftMotor.set(-Math.min(.2,pidOutput));//positions[currentPosition]));
-    rightMotor.set(Math.min(.2,pidOutput));//positions[currentPosition]));
+    if (isNegative){
+      leftMotor.set(-Math.max(-.2,pidOutput));//positions[currentPosition]));
+      rightMotor.set(Math.max(-.2,pidOutput));//positions[currentPosition]));
+      SmartDashboard.putString("Elevators", "Down");
+    }
+    else{
+      leftMotor.set(-Math.min(.2,pidOutput));//positions[currentPosition]));
+      rightMotor.set(Math.min(.2,pidOutput));//positions[currentPosition]));
+      SmartDashboard.putString("Elevators", "Up");
+    }
     SmartDashboard.putNumber("current Output", pidOutput);
     //sends data to motors
     //System.out.println(moveToPosition);
-    if (pidController.atSetpoint()){
-      leftEncoder.setPosition(positions[currentPosition] + .5);
-      rightEncoder.setPosition(positions[currentPosition] + .5);
-    }
+    //if (pidController.atSetpoint()){
+    //  leftEncoder.setPosition(positions[currentPosition]);
+    //  rightEncoder.setPosition(positions[currentPosition]);
+    //}
   }
 
   public void setCurrentPosition(int desiredPosition) {
@@ -79,6 +88,10 @@ public class ElevatorSubsystem extends SubsystemBase {
   public void moveElevator(double speed){
     leftMotor.set(-speed);
     rightMotor.set(speed);
+  }
+
+  public double getAveragePosition(){
+    return averagePosition;
   }
 
   @Override

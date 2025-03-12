@@ -20,8 +20,8 @@ import edu.wpi.first.wpilibj.util.Color;
  */
 public final class Constants {
   public static class OperatorConstants {
-    public static final int kDriverControllerPort = 0;
-    public static final int kScorerControllerPort = 1;
+    public static final int kDriverControllerPort = 1;
+    public static final int kScorerControllerPort = 0;
 
   }
   public static final class ModuleConstants {
@@ -109,18 +109,18 @@ public static class elevatorConstants {
   //depends on motor data?
   public static final double[] positions ={
     0, // intake
-    5, // level one
+    15, // level one // doesnt work
     20.5, // level two
     38.3, // level three
     69, // level four
   };
+  
+  public static final int intakePositionIndex = 0;
 
   public static final int levelOnePositionIndex = 1;
   public static final int levelTwoPositionIndex = 2;
   public static final int levelThreePositionIndex = 3;
   public static final int levelFourPositionIndex = 4;
-
-  public static final int intakePositionIndex = 0;
 
   // temp values for PID
   public static final double kP = 0.12;
@@ -137,26 +137,10 @@ public static class algeaScrubberConstants {
 }
 
 public static class coralFeederConstants {
-  
-  /* public static final int[] positions = {
-    1, // retract/tucked in
-    1, // intake
-    1, // place coral
-  };
-
-  public static final int retractPositionIndex = 0; // pivot arm to be inside 
-  public static final int intakePositionIndex = 1; // pivot arm to intake
-  public static final int depositPositionIndex = 2; // better name pending. position for when we are placing coral down
- */
-  //temp values for PID of claw pivot
-  public static final int kP = 1;
-  public static final int kI = 1;
-  public static final int kD = 1;
 
   // preset values for how much the claw takes in <needs to be changed before use>
-  public static final int clawIntakeSpeed = -1;
-  public static final int clawOuttakeSpeed = 1;
-  public static final int motorID = 11;//TODO:Change placeholder with irl value
+  public static final double clawIntakeSpeed = .5;
+  public static final int motorID = 11;
 }
 
 public static class lightConstants {
@@ -220,7 +204,7 @@ public static class limelightAutoConstants{
 public static class algaeHarvesterConstants { 
     public static final int algaeHarvesterIntakeSpeed = 1;
     public static final int pivotSpeed = 1;
-    public static final int pivotMotorCANID = 13;//TODO: Double check
+    public static final int pivotMotorCANID = 13;
     public static final int intakeMotorCANID = 12;
     public static final double minPivot = 10.0; //TODO: Change placeholder, careful with this, requires irl data and can break robot
     public static final double maxPivot = 90.0; //TODO: change placeholder

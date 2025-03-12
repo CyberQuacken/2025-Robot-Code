@@ -1,6 +1,7 @@
 package frc.robot.commands.CoralFeederCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.coralFeederConstants;
 import frc.robot.subsystems.CoralFeederSubsystem;
 
 public class automateIntakeCoral extends Command{
@@ -16,7 +17,7 @@ public class automateIntakeCoral extends Command{
 
     @Override
     public void execute(){
-        coralFeeder.intakeMotor();
+        coralFeeder.intakeMotor(coralFeederConstants.clawIntakeSpeed);
     }
 
     @Override
