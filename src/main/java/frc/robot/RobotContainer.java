@@ -6,11 +6,18 @@ package frc.robot;
 
 import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.OperatorConstants;
+import frc.robot.Constants.algaeHarvesterConstants;
 import frc.robot.Constants.algeaScrubberConstants;
 import frc.robot.Constants.coralFeederConstants;
 import frc.robot.Constants.elevatorConstants;
 import frc.robot.commands.toggleAlignment;
 import frc.robot.commands.toggleLimelightAuto;
+import frc.robot.commands.CoralFeederCommands.manuoverCoral;
+import frc.robot.commands.CoralFeederCommands.pathPlannerCoral;
+import frc.robot.commands.SwerveDriveCommands.resetGyroCommand;
+import frc.robot.commands.algaeHarvesterCommands.algaeHarvesterIntakeCommand;
+import frc.robot.commands.algaeHarvesterCommands.algaeHarvesterPivotDownCommand;
+import frc.robot.commands.algaeHarvesterCommands.algaeHarvesterPivotUpCommand;
 import frc.robot.commands.moveElevatorCommands.moveElevatorDownCommand;
 import frc.robot.commands.moveElevatorCommands.moveElevatorIntakeCommand;
 import frc.robot.commands.moveElevatorCommands.moveElevatorUpCommand;
@@ -18,6 +25,8 @@ import frc.robot.commands.moveElevatorCommands.resetEncoderCommand;
 import frc.robot.subsystems.CoralFeederSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.AlgaeSubsytems.Harvester.algaeHarvesterIntakeSubsystem;
+import frc.robot.subsystems.AlgaeSubsytems.Harvester.algaeHarvesterPivot;
 import frc.robot.subsystems.AlgaeSubsytems.Scrubber.AlgaeScrubberPivotSubsytem;
 import frc.robot.subsystems.AlgaeSubsytems.Scrubber.AlgaeScrubberSubsystem;
 import frc.robot.subsystems.DriveSubsytems.SwerveDriveMananger;
@@ -25,6 +34,7 @@ import frc.robot.subsystems.DriveSubsytems.SwerveDriveMananger;
 import java.lang.management.OperatingSystemMXBean;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.MathUtil;
@@ -34,6 +44,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
+import edu.wpi.first.wpilibj2.command.Commands;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -50,16 +61,16 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ElevatorSubsystem m_Elevator = new ElevatorSubsystem(elevatorConstants.leftMotorCanID, elevatorConstants.rightMotorCanID);
   private final CoralFeederSubsystem m_Coral = new CoralFeederSubsystem(coralFeederConstants.motorID);
+  private final algaeHarvesterIntakeSubsystem m_algaeIntake = new algaeHarvesterIntakeSubsystem(algaeHarvesterConstants.intakeMotorCANID);
+  private final algaeHarvesterPivot m_algaeHarvesterPivot = new algaeHarvesterPivot(algaeHarvesterConstants.pivotMotorCANID);
+  
   public final SwerveDriveMananger m_DriveMananger = new SwerveDriveMananger(null);
-  //private final algaeHarvesterIntakeSubsystem m_algaeIntakeSubsystem = new algaeHarvesterIntakeSubsystem(999);//TODO: find actual id, i just put a placeholder
   //private final algaeHarvesterPivot m_AlgaeHarvesterPivot = new algaeHarvesterPivot(998);//TODO: find actual id, i just put a placeholder
   private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
   //private final TestLightCommand testLightCommand = new TestLightCommand(m_VisionSubsystem, m_robotDrive);
 
   private final toggleLimelightAuto toggleLimelight = new toggleLimelightAuto(m_DriveMananger);
-  //private final algaeHarvesterIntakeCommand m_algaeIntake = new algaeHarvesterIntakeCommand(m_algaeIntakeSubsystem);
-  //private final algaeHarvesterPivotUpCommand m_algaeUp = new algaeHarvesterPivotUpCommand(m_AlgaeHarvesterPivot);
-  //private final algaeHarvesterPivotDownCommand m_algaeDown = new algaeHarvesterPivotDownCommand(m_AlgaeHarvesterPivot);
+
 
   private final AlgaeScrubberPivotSubsytem m_scrubberPivot = new AlgaeScrubberPivotSubsytem(algeaScrubberConstants.algeaScrubberPivotMotorID);
   private final AlgaeScrubberSubsystem m_scrubber = new AlgaeScrubberSubsystem(algeaScrubberConstants.algeaScrubberMotorID);
@@ -79,9 +90,12 @@ public class RobotContainer {
   private final moveElevatorUpCommand eUp = new moveElevatorUpCommand(m_Elevator);
 
   private final resetEncoderCommand resetEncoder = new resetEncoderCommand(m_Elevator);
-
-  
-
+  private final algaeHarvesterPivotUpCommand pivotHarvesterUp = new algaeHarvesterPivotUpCommand(m_algaeHarvesterPivot);
+  private final algaeHarvesterPivotDownCommand pivotHarvesterDown = new algaeHarvesterPivotDownCommand(m_algaeHarvesterPivot);
+  private final algaeHarvesterIntakeCommand harvesterIntake = new algaeHarvesterIntakeCommand(m_algaeIntake);
+  private final resetGyroCommand resetGyro = new resetGyroCommand(m_DriveMananger);
+  private final manuoverCoral intakeCoral = new manuoverCoral(m_Coral);
+  private final pathPlannerCoral namedAutoCoral = new pathPlannerCoral(m_Coral);
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
     SmartDashboard.putNumber("elevator P", elevatorConstants.kP);
@@ -139,8 +153,10 @@ public class RobotContainer {
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
     // Named commands
-    //NamedCommands.registerCommand("Elevator up", eUp);
-    //NamedCommands.registerCommand("Elevator down", eDown);
+
+    NamedCommands.registerCommand("eUp", eUp);
+    NamedCommands.registerCommand("Score", namedAutoCoral);
+    NamedCommands.registerCommand("eDown", eDown);
   }
 
   /**
@@ -160,7 +176,7 @@ public class RobotContainer {
 
     Trigger bDriverButton = m_driverController.b();
     //bDriverButton.toggleOnTrue(toggleAlignment);
-    
+    bDriverButton.onTrue(resetGyro);
     Trigger yDriverButton = m_driverController.y();
     //yDriverButton.whileTrue(testLightCommand);
 
@@ -172,25 +188,26 @@ public class RobotContainer {
     Trigger aScorerButton = m_scoringController.a();
     aScorerButton.toggleOnTrue(eIntake);
 
-    Trigger bScorerButton = m_scoringController.b();
-    bScorerButton.whileTrue(new RunCommand(()-> m_Coral.testMotor(.4), m_Coral));
-    bScorerButton.whileFalse(new RunCommand(()-> m_Coral.testMotor(0), m_Coral));
-
-    Trigger xScoreButton = m_scoringController.x();
-    xScoreButton.whileTrue(new RunCommand(()-> m_Coral.testMotor(-.4), m_Coral));
-    xScoreButton.whileFalse(new RunCommand(()-> m_Coral.testMotor(0), m_Coral));
-
-    Trigger yScoreButton = m_scoringController.y();
-    yScoreButton.whileTrue(resetEncoder);
-
-    Trigger downScorerButton = m_scoringController.povDown();
-    downScorerButton.toggleOnTrue(eDown); // make while true for hold and mov
-    //downScorerButton.toggleOnFalse(null);
-
-    Trigger upScorerButton = m_scoringController.povUp();
-    upScorerButton.toggleOnTrue(eUp);
-    //upScorerButton.toggleOnFalse();
-    //upScorerButton.toggleOnTrue(eUp); // make while true for hold and move
+    Trigger bScorerButton = (m_scoringController.b());
+        bScorerButton.whileTrue(intakeCoral);
+    
+        Trigger xScoreButton = m_scoringController.x();
+        /* xScoreButton.whileTrue(new RunCommand(()-> m_Coral.testMotor(-.4), m_Coral));
+        xScoreButton.whileFalse(new RunCommand(()-> m_Coral.testMotor(0), m_Coral));
+     *////Not on button sheet
+        Trigger yScoreButton = m_scoringController.y();
+        yScoreButton.whileTrue(resetEncoder);
+    
+        Trigger downScorerButton = m_scoringController.povDown();
+        downScorerButton.toggleOnTrue(eDown); // make while true for hold and mov
+        //downScorerButton.toggleOnFalse(null);
+    
+        Trigger upScorerButton = m_scoringController.povUp();
+        upScorerButton.toggleOnTrue(eUp);
+        //upScorerButton.toggleOnFalse();
+        //upScorerButton.toggleOnTrue(eUp); // make while true for hold and move
+        Trigger rightScorerBumper = m_scoringController.rightBumper();
+        rightScorerBumper.whileTrue(Commands.parallel(pivotHarvesterDown,harvesterIntake)).whileFalse(Commands.parallel(pivotHarvesterUp));
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
   }
