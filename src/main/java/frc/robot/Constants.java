@@ -134,6 +134,10 @@ public static class elevatorConstants {
 public static class algeaScrubberConstants {
   public static final int algeaScrubberMotorID = 12;
   public static final int algeaScrubberPivotMotorID = 13;
+  public static final double algeaScrubberSpeed = .25;
+
+  public static final int scrubberOutPosition = 0; // replace with encoder value 90degress off
+  public static final double scrubberInPosition = 0; // replace with encoder value of resting position;
 }
 
 public static class coralFeederConstants {
