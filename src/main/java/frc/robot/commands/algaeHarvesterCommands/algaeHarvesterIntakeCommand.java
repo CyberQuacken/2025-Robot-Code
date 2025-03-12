@@ -14,7 +14,7 @@ public class algaeHarvesterIntakeCommand extends Command{
 
     @Override
     public void initialize(){
-        // <Should outtake speed be from constants or container?>
+        // <Should outtake speed be from constants or container?> // -- Constants
         m_subsystem.intake();
     }
 

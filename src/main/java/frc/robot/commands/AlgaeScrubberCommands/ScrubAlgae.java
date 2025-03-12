@@ -1,6 +1,7 @@
 package frc.robot.commands.AlgaeScrubberCommands;
 
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.algeaScrubberConstants;
 import frc.robot.subsystems.AlgaeSubsytems.Scrubber.AlgaeScrubberPivotSubsytem;
 import frc.robot.subsystems.AlgaeSubsytems.Scrubber.AlgaeScrubberSubsystem;
 

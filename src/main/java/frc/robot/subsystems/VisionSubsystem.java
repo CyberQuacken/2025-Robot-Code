@@ -44,7 +44,7 @@ public class VisionSubsystem extends SubsystemBase {
         double txnc = LimelightHelpers.getTXNC("");  // Horizontal offset from principal pixel/point to target in degrees
         double tync = LimelightHelpers.getTYNC("");  // Vertical  offset from principal pixel/point to target in degrees
         
-        LimelightHelpers.setPipelineIndex("", 0);
+        LimelightHelpers.setPipelineIndex("", 1);
         // Set a custom crop window for improved performance (-1 to 1 for each value)
         LimelightHelpers.setCropWindow("", -0.5, 0.5, -0.5, 0.5);
 
