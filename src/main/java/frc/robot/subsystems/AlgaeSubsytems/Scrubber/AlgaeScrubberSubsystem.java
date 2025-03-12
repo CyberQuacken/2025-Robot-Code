@@ -4,7 +4,7 @@ import com.revrobotics.spark.SparkMax;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import frc.robot.Constants.algeaScrubberConstants;
+import frc.robot.Constants.algaeScrubberConstants;
 
 public class AlgaeScrubberSubsystem extends SubsystemBase{
     
@@ -15,7 +15,7 @@ public class AlgaeScrubberSubsystem extends SubsystemBase{
     }
 
     public void scrub(){
-        motor.set(algeaScrubberConstants.algeaScrubberSpeed);
+        motor.set(algaeScrubberConstants.algeaScrubberSpeed);
     }
 
     public void moveMotor(){

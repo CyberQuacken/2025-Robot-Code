@@ -131,7 +131,7 @@ public static class elevatorConstants {
   public static final int rightMotorCanID = 10;//Double check these
 }
 
-public static class algeaScrubberConstants {
+public static class algaeScrubberConstants {
   public static final int algeaScrubberMotorID = 12;
   public static final int algeaScrubberPivotMotorID = 13;
   public static final double algeaScrubberSpeed = .25;
