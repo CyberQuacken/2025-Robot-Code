@@ -132,8 +132,8 @@ public static class elevatorConstants {
 }
 
 public static class algaeScrubberConstants {
-  public static final int algeaScrubberMotorID = 12;
-  public static final int algeaScrubberPivotMotorID = 13;
+  public static final int algeaScrubberMotorID = 15;
+  public static final int algeaScrubberPivotMotorID = 14;
   public static final double algeaScrubberSpeed = .25;
 
   public static final int scrubberOutPosition = 0; // replace with encoder value 90degress off
@@ -145,6 +145,7 @@ public static class coralFeederConstants {
   // preset values for how much the claw takes in <needs to be changed before use>
   public static final double clawIntakeSpeed = .5;
   public static final int motorID = 11;
+  public static final int sensorPort = 0; // TODO - set port
 }
 
 public static class lightConstants {
