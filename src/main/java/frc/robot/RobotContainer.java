@@ -64,7 +64,7 @@ public class RobotContainer {
 
   // The robot's subsystems and commands are defined here...
   private final ElevatorSubsystem m_Elevator = new ElevatorSubsystem(elevatorConstants.leftMotorCanID, elevatorConstants.rightMotorCanID);
-  private final CoralFeederSubsystem m_Coral = new CoralFeederSubsystem(coralFeederConstants.motorID);
+  private final CoralFeederSubsystem m_Coral = new CoralFeederSubsystem(coralFeederConstants.motorID,coralFeederConstants.sensorPort);
   private final algaeHarvesterIntakeSubsystem m_algaeIntake = new algaeHarvesterIntakeSubsystem(algaeHarvesterConstants.intakeMotorCANID);
   private final algaeHarvesterPivot m_algaeHarvesterPivot = new algaeHarvesterPivot(algaeHarvesterConstants.pivotMotorCANID);
   
@@ -111,12 +111,8 @@ public class RobotContainer {
     SmartDashboard.putNumber("elevator D", elevatorConstants.kD);
     autoChooser = AutoBuilder.buildAutoChooser();
 
-    LimelightHelpers.setPipelineIndex("", 1);
-
     // Configure the trigger bindings
     configureBindings();
-
-    LimelightHelpers.setPipelineIndex("", 1);
     
     /* 
     m_DriveMananger.setDefaultCommand(
@@ -199,7 +195,7 @@ public class RobotContainer {
     Trigger aScorerButton = m_scoringController.a();
     aScorerButton.whileTrue(eIntake);
 
-    Trigger bScorerButton = (m_scoringController.b());
+    Trigger bScorerButton = m_scoringController.b();
         bScorerButton.whileTrue(intakeCoral);
     
         Trigger xScoreButton = m_scoringController.x();
@@ -218,11 +214,11 @@ public class RobotContainer {
         //upScorerButton.toggleOnFalse();
         //upScorerButton.toggleOnTrue(eUp); // make while true for hold and move
         Trigger rightScorerBumper = m_scoringController.rightBumper();
-        rightScorerBumper.whileTrue(Commands.parallel(pivotHarvesterDown,harvesterIntake)).whileFalse(Commands.parallel(pivotHarvesterUp));
+        //rightScorerBumper.whileTrue(Commands.parallel(pivotHarvesterDown,harvesterIntake)).whileFalse(Commands.parallel(pivotHarvesterUp));
 
         // [Second varration until we find a better way to remove the algea, left bumper will relase algae] // i do worry about having two while falsing intersecting (despite being the smae command))
         Trigger leftScorerBumper = m_scoringController.rightBumper();
-        leftScorerBumper.whileTrue(Commands.parallel(pivotHarvesterDown,harvestOuttake)).whileFalse(Commands.parallel(pivotHarvesterUp));
+        //leftScorerBumper.whileTrue(Commands.parallel(pivotHarvesterDown,harvestOuttake)).whileFalse(Commands.parallel(pivotHarvesterUp));
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
   }
