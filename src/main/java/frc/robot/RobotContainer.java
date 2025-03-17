@@ -65,7 +65,7 @@ public class RobotContainer {
 
 
   // The robot's subsystems and commands are defined here...
-  private final ElevatorSubsystem m_Elevator = new ElevatorSubsystem(elevatorConstants.leftMotorCanID, elevatorConstants.rightMotorCanID);
+  //private final ElevatorSubsystem m_Elevator = new ElevatorSubsystem(elevatorConstants.leftMotorCanID, elevatorConstants.rightMotorCanID);
   private final CoralFeederSubsystem m_Coral = new CoralFeederSubsystem(coralFeederConstants.motorID,coralFeederConstants.sensorPort);
   //private final algaeHarvesterIntakeSubsystem m_algaeIntake = new algaeHarvesterIntakeSubsystem(algaeHarvesterConstants.intakeMotorCANID);
   //private final algaeHarvesterPivot m_algaeHarvesterPivot = new algaeHarvesterPivot(algaeHarvesterConstants.pivotMotorCANID);
@@ -92,12 +92,12 @@ public class RobotContainer {
   private final VisionSubsystem m_vision = new VisionSubsystem();
 
   //Simple variable names, if yall want them to be more descriptive they can be changed.
-  private final moveElevatorDownCommand eDown = new moveElevatorDownCommand(m_Elevator);
+  //private final moveElevatorDownCommand eDown = new moveElevatorDownCommand(m_Elevator);
   //private final moveElevatorHomeCommand eHome = new moveElevatorHomeCommand(m_Elevator);
-  private final moveElevatorIntakeCommand eIntake = new moveElevatorIntakeCommand(m_Elevator);
-  private final moveElevatorUpCommand eUp = new moveElevatorUpCommand(m_Elevator);
+  //private final moveElevatorIntakeCommand eIntake = new moveElevatorIntakeCommand(m_Elevator);
+  //private final moveElevatorUpCommand eUp = new moveElevatorUpCommand(m_Elevator);
 
-  private final resetEncoderCommand resetEncoder = new resetEncoderCommand(m_Elevator);//
+  //private final resetEncoderCommand resetEncoder = new resetEncoderCommand(m_Elevator);//
   //private final algaeHarvesterPivotUpCommand pivotHarvesterUp = new algaeHarvesterPivotUpCommand(m_algaeHarvesterPivot);
   //private final algaeHarvesterPivotDownCommand pivotHarvesterDown = new algaeHarvesterPivotDownCommand(m_algaeHarvesterPivot);
   //private final algaeHarvesterIntakeCommand harvesterIntake = new algaeHarvesterIntakeCommand(m_algaeIntake);
@@ -137,9 +137,9 @@ public class RobotContainer {
     */
 
     
-    m_Elevator.setDefaultCommand(
+/*     m_Elevator.setDefaultCommand(
       new RunCommand( ()-> m_Elevator.moveMotors(), m_Elevator)
-    );
+    ); */
 
     
     /*
@@ -167,9 +167,9 @@ public class RobotContainer {
     NamedCommands.registerCommand("ScrubIn", moveScrubberIn);
     NamedCommands.registerCommand("ScrubOut", moveScrubberOut);
     NamedCommands.registerCommand("Scrub", scrub);
-    NamedCommands.registerCommand("eUp", eUp);
+    //NamedCommands.registerCommand("eUp", eUp);
     NamedCommands.registerCommand("Score", namedAutoCoral);
-    NamedCommands.registerCommand("eDown", eDown);
+    //NamedCommands.registerCommand("eDown", eDown);
   }
 
   /**
@@ -201,7 +201,7 @@ public class RobotContainer {
     //Trigger scorerLeftY = m_scoringController.leftStick();
 
     Trigger aScorerButton = m_scoringController.a();
-    aScorerButton.toggleOnTrue(eIntake);
+    //aScorerButton.toggleOnTrue(eIntake);
 
     Trigger bScorerButton = m_scoringController.b();
         bScorerButton.toggleOnTrue(intakeCoral2);
@@ -211,14 +211,14 @@ public class RobotContainer {
         xScoreButton.whileFalse(new RunCommand(()-> m_Coral.testMotor(0), m_Coral));
      *////Not on button sheet
         Trigger yScoreButton = m_scoringController.y();
-        yScoreButton.whileTrue(resetEncoder);
+        //yScoreButton.whileTrue(resetEncoder);
     
         Trigger downScorerButton = m_scoringController.povDown();
-        downScorerButton.toggleOnTrue(eDown); // make while true for hold and mov
+        //downScorerButton.toggleOnTrue(eDown); // make while true for hold and mov
         //downScorerButton.toggleOnFalse(null);
     
         Trigger upScorerButton = m_scoringController.povUp();
-        upScorerButton.toggleOnTrue(eUp);
+        //upScorerButton.toggleOnTrue(eUp);
 
         Trigger rightTrigger = m_scoringController.rightTrigger();
         rightTrigger.whileTrue(scrub).whileFalse(moveScrubberIn);
