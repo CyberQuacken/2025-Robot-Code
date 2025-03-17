@@ -29,8 +29,10 @@ public class automateIntakeCoral extends Command{
         // else prepare to end the program
         else{
             //____I Don't think we need two cases, but just in case____
+            hasCoral = coralFeeder.testForCoral();
             // if claw started with coral
             if(hasCoral){
+            
                 return true;
             }
             // if claw is taking in coral

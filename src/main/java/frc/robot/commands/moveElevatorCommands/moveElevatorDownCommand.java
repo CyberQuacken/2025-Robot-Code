@@ -18,7 +18,7 @@ public class moveElevatorDownCommand extends Command {
     @Override
     public void initialize() {
         // if there is a position lower than the current positon. it subtracts to get that position
-        if (m_Subsystem.getCurrentPosition() > elevatorConstants.levelOnePositionIndex){ // 0 is the lowest position (intake)
+        if (m_Subsystem.getCurrentPosition() > 0){ // 0 is the lowest position (intake)
             m_Subsystem.setCurrentPosition(m_Subsystem.getCurrentPosition()-1);
         }
         System.out.println("Down");

@@ -26,7 +26,7 @@ public class CoralFeederSubsystem extends SubsystemBase {
     }
 
     public void intakeMotor(double speed){
-        motor.set(speed);
+        motor.set(-speed);
     }
 
     public void testMotor(double speed){

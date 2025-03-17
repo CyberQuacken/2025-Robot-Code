@@ -20,11 +20,13 @@ public class ScrubAlgae extends Command{
     @Override
     public void execute(){
         scrubberPivot.moveMotorIn();
-        scrubber.scrub();
+        scrubber.scrub(); // Find a way to turn it off after a certain
     }
 
     @Override
     public void end(boolean interrupted){
         scrubberPivot.stopMotor();
+        scrubber.stopMotor();
     }
+
 }

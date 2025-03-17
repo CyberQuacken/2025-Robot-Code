@@ -4,11 +4,14 @@
 
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.motorcontrol.LimitSwitchNormal;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
+import com.revrobotics.spark.config.LimitSwitchConfig;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.elevatorConstants;
@@ -18,7 +21,8 @@ public class ElevatorSubsystem extends SubsystemBase {
   SparkFlex rightMotor;
   double[] positions; // list of all positions
   int currentPosition; // index of the position we want the elevator to be att
-  
+  DigitalInput theSwitch = new DigitalInput(1);
+
   // possible to make indivual PIDocntrller or motor specific PIDcontroller
   PIDController pidController;
 
@@ -109,6 +113,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     pidController.setP(SmartDashboard.getNumber("elevator P", elevatorConstants.kP));
     pidController.setI(SmartDashboard.getNumber("elevator I", elevatorConstants.kI));
     pidController.setD(SmartDashboard.getNumber("elevator D", elevatorConstants.kD));
+    SmartDashboard.putBoolean("limitSwitch", theSwitch.isAnalogTrigger());
   }
 
   public void resetEncoder (){

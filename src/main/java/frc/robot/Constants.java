@@ -110,9 +110,9 @@ public static class elevatorConstants {
   public static final double[] positions ={
     0, // intake
     15, // level one // doesnt work
-    20.5, // level two
-    38.3, // level three
-    69, // level four
+    19.5, // level two
+    39.3, // level three
+    71, // level four
   };
   
   public static final int intakePositionIndex = 0;
@@ -123,7 +123,7 @@ public static class elevatorConstants {
   public static final int levelFourPositionIndex = 4;
 
   // temp values for PID
-  public static final double kP = 0.12;
+  public static final double kP = 0.09;
   public static final double kI = 0.0015;
   public static final double kD = 0.0001; 
 
@@ -132,18 +132,23 @@ public static class elevatorConstants {
 }
 
 public static class algaeScrubberConstants {
-  public static final int algeaScrubberMotorID = 15;
-  public static final int algeaScrubberPivotMotorID = 14;
+  public static final int algeaScrubberMotorID = 13;
+  public static final int algeaScrubberPivotMotorID = 12;
   public static final double algeaScrubberSpeed = .25;
 
   public static final int scrubberOutPosition = 0; // replace with encoder value 90degress off
   public static final double scrubberInPosition = 0; // replace with encoder value of resting position;
+
+  // TODO tune these
+  public static final double kP = 0.005;
+  public static final double kI = 0.0;
+  public static final double kD = 0.0;
 }
 
 public static class coralFeederConstants {
 
   // preset values for how much the claw takes in <needs to be changed before use>
-  public static final double clawIntakeSpeed = .5;
+  public static final double clawIntakeSpeed = .7;
   public static final int motorID = 11;
   public static final int sensorPort = 0; // TODO - set port
 }

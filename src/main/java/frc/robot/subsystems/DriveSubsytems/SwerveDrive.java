@@ -8,6 +8,9 @@ import com.pathplanner.lib.controllers.PPLTVController;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
 
+//import com.kauailabs.navx.frc.AHRS;
+
+import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.PoseEstimator;
@@ -115,7 +118,7 @@ public class SwerveDrive
             currStates[i] = new SwerveModuleState();
         }
 
-        gyro = new AHRS(NavXComType.kMXP_UART); // prolly mxp
+        gyro = new AHRS(NavXComType.kMXP_SPI);
 
         kinematics = new SwerveDriveKinematics
         (
@@ -148,16 +151,16 @@ public class SwerveDrive
         }
 
         AutoBuilder.configure(
-            this::getPose,
-            this::resetOdometry,
-            this::getSpeeds,
-            (speeds, feedforwards) -> driveRobotRelative(speeds),
-            new PPLTVController(0.02),
-            config,
+            this::getPose,  //Pose Supplier
+            this::resetOdometry, //Pose consumer
+            this::getSpeeds,   //Speeds supplier
+            (speeds, feedforwards) -> driveRobotRelative(speeds), //Output
+            new PPLTVController(0.02), // Controller
+            config, // Robot Configuration
             () -> {     
-      return false;
+      return false;  //Field side, I think blue is false(not sure though)
     }
-    //this //Set requirements
+    //his //Set requirements
   );
   poseEstimator = new SwerveDrivePoseEstimator(kinematics, new Rotation2d(gyro.getAngle()), modulePosition, pose);//I put the rotation2d to fix an error, the param was previously null
     }
@@ -383,6 +386,7 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
         if(LimelightHelpers.getTV("")){
             poseEstimator.addVisionMeasurement(LimelightHelpers.getBotPose2d(""), LimelightHelpers.getLatency_Pipeline(""));
         }
+        SmartDashboard.putNumber("gyro: ", gyro.getAngle());
     }
 
     public Pose2d getPoseEstimation(){

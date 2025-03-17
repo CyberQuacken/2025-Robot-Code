@@ -4,6 +4,7 @@
   "holonomicMode": true,
   "pathFolders": [
     "Example Paths",
+    "Test",
     "Weaving"
   ],
   "autoFolders": [],

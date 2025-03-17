@@ -15,6 +15,7 @@ import frc.robot.commands.toggleLimelightAuto;
 import frc.robot.commands.AlgaeScrubberCommands.moveScrubberIn;
 import frc.robot.commands.AlgaeScrubberCommands.moveScrubberOut;
 import frc.robot.commands.AlgaeScrubberCommands.ScrubAlgae;
+import frc.robot.commands.CoralFeederCommands.automateIntakeCoral;
 import frc.robot.commands.CoralFeederCommands.maneuverCoral;
 import frc.robot.commands.CoralFeederCommands.pathPlannerCoral;
 import frc.robot.commands.SwerveDriveCommands.resetGyroCommand;
@@ -29,6 +30,7 @@ import frc.robot.commands.moveElevatorCommands.resetEncoderCommand;
 import frc.robot.subsystems.CoralFeederSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
+import frc.robot.subsystems.lightsSubsystems;
 import frc.robot.subsystems.AlgaeSubsytems.Harvester.algaeHarvesterIntakeSubsystem;
 import frc.robot.subsystems.AlgaeSubsytems.Harvester.algaeHarvesterPivot;
 import frc.robot.subsystems.AlgaeSubsytems.Scrubber.AlgaeScrubberPivotSubsytem;
@@ -65,8 +67,11 @@ public class RobotContainer {
   // The robot's subsystems and commands are defined here...
   private final ElevatorSubsystem m_Elevator = new ElevatorSubsystem(elevatorConstants.leftMotorCanID, elevatorConstants.rightMotorCanID);
   private final CoralFeederSubsystem m_Coral = new CoralFeederSubsystem(coralFeederConstants.motorID,coralFeederConstants.sensorPort);
-  private final algaeHarvesterIntakeSubsystem m_algaeIntake = new algaeHarvesterIntakeSubsystem(algaeHarvesterConstants.intakeMotorCANID);
-  private final algaeHarvesterPivot m_algaeHarvesterPivot = new algaeHarvesterPivot(algaeHarvesterConstants.pivotMotorCANID);
+  //private final algaeHarvesterIntakeSubsystem m_algaeIntake = new algaeHarvesterIntakeSubsystem(algaeHarvesterConstants.intakeMotorCANID);
+  //private final algaeHarvesterPivot m_algaeHarvesterPivot = new algaeHarvesterPivot(algaeHarvesterConstants.pivotMotorCANID);
+  
+
+  private final lightsSubsystems m_LED = new lightsSubsystems(0,120);
   
   public final SwerveDriveMananger m_DriveMananger = new SwerveDriveMananger(null);
   private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
@@ -92,20 +97,22 @@ public class RobotContainer {
   private final moveElevatorIntakeCommand eIntake = new moveElevatorIntakeCommand(m_Elevator);
   private final moveElevatorUpCommand eUp = new moveElevatorUpCommand(m_Elevator);
 
-  private final resetEncoderCommand resetEncoder = new resetEncoderCommand(m_Elevator);
-  private final algaeHarvesterPivotUpCommand pivotHarvesterUp = new algaeHarvesterPivotUpCommand(m_algaeHarvesterPivot);
-  private final algaeHarvesterPivotDownCommand pivotHarvesterDown = new algaeHarvesterPivotDownCommand(m_algaeHarvesterPivot);
-  private final algaeHarvesterIntakeCommand harvesterIntake = new algaeHarvesterIntakeCommand(m_algaeIntake);
-  private final algaeHarvesterOuttakeCommand harvestOuttake = new algaeHarvesterOuttakeCommand(m_algaeIntake);
+  private final resetEncoderCommand resetEncoder = new resetEncoderCommand(m_Elevator);//
+  //private final algaeHarvesterPivotUpCommand pivotHarvesterUp = new algaeHarvesterPivotUpCommand(m_algaeHarvesterPivot);
+  //private final algaeHarvesterPivotDownCommand pivotHarvesterDown = new algaeHarvesterPivotDownCommand(m_algaeHarvesterPivot);
+  //private final algaeHarvesterIntakeCommand harvesterIntake = new algaeHarvesterIntakeCommand(m_algaeIntake);
+  //private final algaeHarvesterOuttakeCommand harvestOuttake = new algaeHarvesterOuttakeCommand(m_algaeIntake);
   private final resetGyroCommand resetGyro = new resetGyroCommand(m_DriveMananger);
   private final maneuverCoral intakeCoral = new maneuverCoral(m_Coral);
   private final pathPlannerCoral namedAutoCoral = new pathPlannerCoral(m_Coral);
   private final ScrubAlgae scrub = new ScrubAlgae(m_scrubberPivot, m_scrubber);
   private final moveScrubberIn moveScrubberIn = new moveScrubberIn(m_scrubberPivot);
   private final moveScrubberOut moveScrubberOut = new moveScrubberOut(m_scrubberPivot);
+  private final automateIntakeCoral intakeCoral2 = new automateIntakeCoral(m_Coral);
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
+    SmartDashboard.putNumber("light index", -.17);
     SmartDashboard.putNumber("elevator P", elevatorConstants.kP);
     SmartDashboard.putNumber("elevator I", elevatorConstants.kI);
     SmartDashboard.putNumber("elevator D", elevatorConstants.kD);
@@ -114,29 +121,28 @@ public class RobotContainer {
     // Configure the trigger bindings
     configureBindings();
     
-    /* 
+    
     m_DriveMananger.setDefaultCommand(
       new RunCommand( ()-> m_DriveMananger.ManageSwerveSystem(
         -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDeadband),
         -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDeadband),
         -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDeadband),
         true, false),m_DriveMananger));
-      */
 
-
+    
     /* 
     m_Elevator.setDefaultCommand(
       new RunCommand( ()-> m_Elevator.moveElevator(-MathUtil.applyDeadband(m_scoringController.getLeftY(), OIConstants.kDeadband)), m_Elevator)
-    );
-  */
-    
+    ); 
+    */
 
-  
+    
     m_Elevator.setDefaultCommand(
       new RunCommand( ()-> m_Elevator.moveMotors(), m_Elevator)
     );
+
     
-  
+    /*
     // ---------------- [To Be Replaced] --------------------- //
     m_scrubberPivot.setDefaultCommand(
       //new RunCommand( ()-> m_scrubberPivot.testMotor(-MathUtil.applyDeadband(m_scoringController.getLeftY(), OIConstants.kDeadband)), m_scrubberPivot)
@@ -147,12 +153,13 @@ public class RobotContainer {
       );
       
             
-
+    
     m_vision.setDefaultCommand(
       new RunCommand( 
         () -> m_vision.run(), m_vision
       )
     );
+    */
 
     SmartDashboard.putData("Auto Chooser", autoChooser);
 
@@ -183,8 +190,9 @@ public class RobotContainer {
     Trigger bDriverButton = m_driverController.b();
     bDriverButton.toggleOnTrue(toggleAlignment);
 
-    bDriverButton.onTrue(resetGyro);
+    //bDriverButton.onTrue(resetGyro);
     Trigger yDriverButton = m_driverController.y();
+    yDriverButton.onTrue(resetGyro);
     //yDriverButton.whileTrue(testLightCommand);
 
     Trigger xDriverButton = m_driverController.x();
@@ -196,7 +204,7 @@ public class RobotContainer {
     aScorerButton.whileTrue(eIntake);
 
     Trigger bScorerButton = m_scoringController.b();
-        bScorerButton.whileTrue(intakeCoral);
+        bScorerButton.toggleOnTrue(intakeCoral2);
     
         Trigger xScoreButton = m_scoringController.x();
         /* xScoreButton.whileTrue(new RunCommand(()-> m_Coral.testMotor(-.4), m_Coral));
@@ -213,6 +221,10 @@ public class RobotContainer {
         upScorerButton.toggleOnTrue(eUp);
         //upScorerButton.toggleOnFalse();
         //upScorerButton.toggleOnTrue(eUp); // make while true for hold and move
+
+        Trigger rightTrigger = m_scoringController.rightTrigger();
+        rightTrigger.onTrue(moveScrubberOut).onFalse(scrub);
+
         Trigger rightScorerBumper = m_scoringController.rightBumper();
         //rightScorerBumper.whileTrue(Commands.parallel(pivotHarvesterDown,harvesterIntake)).whileFalse(Commands.parallel(pivotHarvesterUp));
 
