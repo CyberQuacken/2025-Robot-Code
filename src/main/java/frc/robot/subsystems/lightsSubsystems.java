@@ -15,19 +15,22 @@ public class lightsSubsystems extends SubsystemBase{
     private AddressableLED lights;
     private AddressableLEDBuffer lightBuffer;
 
-    ;
+    /*
+     * solid colors and their Spark Max value
+     * 
+     * 0.61-red
+     * 0.65-orange
+     * 0.69-yellow
+     * 0.77-green
+     * 0.83-sky blue
+     * 0.85-dark blue
+     * 0.91-violet
+     * 0.57-hot pink
+     * 0.93-white
+     * 
+     */
 
-    LEDPattern red = LEDPattern.solid(Color.kRed);
-    LEDPattern orange = LEDPattern.solid(Color.kOrange);
-    LEDPattern yellow = LEDPattern.solid(Color.kYellow);
-    LEDPattern green = LEDPattern.solid(Color.kGreen);
-    LEDPattern lightBlue = LEDPattern.solid(Color.kLightBlue);
-    LEDPattern darkBlue = LEDPattern.solid(Color.kDarkBlue);
-    LEDPattern purple = LEDPattern.solid(Color.kPurple);
-    LEDPattern magenta = LEDPattern.solid(Color.kMagenta);
-    LEDPattern white = LEDPattern.solid(Color.kWhite);
-
-    private LEDPattern[] patterns = {red, orange, yellow, green, lightBlue, darkBlue, purple, magenta, white};
+    private double[] patterns = {0.61, 0.65, 0.69, 0.77, 0.83, 0.85, 0.91, 0.57, 0.93};
     
     private int LEDindex;
 
@@ -55,17 +58,18 @@ public class lightsSubsystems extends SubsystemBase{
         //lights.stop();
     }
 
-    public Command runPattern(LEDPattern pattern) {
+    public Command runPattern(double pattern) {
         return run(()-> setColor());
         //return run(() -> red.applyTo(lightBuffer));
     }
 
     public void setColor (){
+        light.set(-.97);
         light.set(SmartDashboard.getNumber("light index", 0));
-        System.out.println("LED light set");
+        //System.out.println("LED light set");
     }
 
-    public LEDPattern getColorChange(int currentIndex)
+    public double getColorChange(int currentIndex)
     {
         return patterns[currentIndex];
     }

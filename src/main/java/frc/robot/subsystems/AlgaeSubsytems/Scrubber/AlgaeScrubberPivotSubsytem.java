@@ -28,18 +28,19 @@ public class AlgaeScrubberPivotSubsytem extends SubsystemBase{
         motor = new SparkMax(motorID, MotorType.kBrushless);
 
         relativeEncoder = motor.getEncoder();
-        relativeEncoder.setPosition(0);
+        //relativeEncoder.setPosition(0);
     }
 
 
     public void moveMotorOut(){
        double pidOutput = pidController.calculate(relativeEncoder.getPosition(), algaeScrubberConstants.scrubberOutPosition);
-       motor.set(-Math.max(-.2,pidOutput));
+       //motor.set(-Math.max(-.2,pidOutput));
+       motor.set(Math.min(.2,pidOutput));
     }
 
     public void moveMotorIn(){
         double pidOutput = pidController.calculate(relativeEncoder.getPosition(), algaeScrubberConstants.scrubberInPosition);
-        motor.set(-Math.min(.2,pidOutput));
+        motor.set(Math.max(-.2,pidOutput));
     }
 
     public void stopMotor(){

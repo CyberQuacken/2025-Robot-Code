@@ -19,8 +19,11 @@ public class ScrubAlgae extends Command{
 
     @Override
     public void execute(){
-        scrubberPivot.moveMotorIn();
-        scrubber.scrub(); // Find a way to turn it off after a certain
+        scrubberPivot.moveMotorOut();
+        if (!(scrubberPivot.getEncoderValue() >= .4)){
+            scrubber.scrub();
+        }
+        // Find a way to turn it off after a certain
     }
 
     @Override

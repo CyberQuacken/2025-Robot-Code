@@ -124,7 +124,7 @@ public static class elevatorConstants {
 
   // temp values for PID
   public static final double kP = 0.09;
-  public static final double kI = 0.0015;
+  public static final double kI = 0.0005;
   public static final double kD = 0.0001; 
 
   public static final int leftMotorCanID = 9;
@@ -132,15 +132,15 @@ public static class elevatorConstants {
 }
 
 public static class algaeScrubberConstants {
-  public static final int algeaScrubberMotorID = 13;
-  public static final int algeaScrubberPivotMotorID = 12;
+  public static final int algeaScrubberMotorID = 12;
+  public static final int algeaScrubberPivotMotorID = 13;
   public static final double algeaScrubberSpeed = .25;
 
-  public static final int scrubberOutPosition = 0; // replace with encoder value 90degress off
-  public static final double scrubberInPosition = 0; // replace with encoder value of resting position;
+  public static final double scrubberOutPosition = -2.5; // replace with encoder value 90degress off
+  public static final double scrubberInPosition = 1; // replace with encoder value of resting position;
 
   // TODO tune these
-  public static final double kP = 0.005;
+  public static final double kP = 0.12;
   public static final double kI = 0.0;
   public static final double kD = 0.0;
 }

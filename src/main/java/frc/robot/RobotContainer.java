@@ -201,7 +201,7 @@ public class RobotContainer {
     //Trigger scorerLeftY = m_scoringController.leftStick();
 
     Trigger aScorerButton = m_scoringController.a();
-    aScorerButton.whileTrue(eIntake);
+    aScorerButton.toggleOnTrue(eIntake);
 
     Trigger bScorerButton = m_scoringController.b();
         bScorerButton.toggleOnTrue(intakeCoral2);
@@ -219,19 +219,11 @@ public class RobotContainer {
     
         Trigger upScorerButton = m_scoringController.povUp();
         upScorerButton.toggleOnTrue(eUp);
-        //upScorerButton.toggleOnFalse();
-        //upScorerButton.toggleOnTrue(eUp); // make while true for hold and move
 
         Trigger rightTrigger = m_scoringController.rightTrigger();
-        rightTrigger.onTrue(moveScrubberOut).onFalse(scrub);
+        rightTrigger.whileTrue(scrub).whileFalse(moveScrubberIn);
 
-        Trigger rightScorerBumper = m_scoringController.rightBumper();
-        //rightScorerBumper.whileTrue(Commands.parallel(pivotHarvesterDown,harvesterIntake)).whileFalse(Commands.parallel(pivotHarvesterUp));
-
-        // [Second varration until we find a better way to remove the algea, left bumper will relase algae] // i do worry about having two while falsing intersecting (despite being the smae command))
-        Trigger leftScorerBumper = m_scoringController.rightBumper();
-        //leftScorerBumper.whileTrue(Commands.parallel(pivotHarvesterDown,harvestOuttake)).whileFalse(Commands.parallel(pivotHarvesterUp));
-
+        
     SmartDashboard.putData("Auto Chooser", autoChooser);
   }
   /**

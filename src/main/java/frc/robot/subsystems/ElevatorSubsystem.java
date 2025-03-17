@@ -21,7 +21,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   SparkFlex rightMotor;
   double[] positions; // list of all positions
   int currentPosition; // index of the position we want the elevator to be att
-  DigitalInput theSwitch = new DigitalInput(1);
+  DigitalInput theSwitch;
 
   // possible to make indivual PIDocntrller or motor specific PIDcontroller
   PIDController pidController;
@@ -37,6 +37,8 @@ public class ElevatorSubsystem extends SubsystemBase {
     SmartDashboard.putNumber("move", currentPosition);
     leftMotor = new SparkFlex(leftMotorID, MotorType.kBrushless);
     rightMotor = new SparkFlex(rightMotorID, MotorType.kBrushless);
+
+    theSwitch = new DigitalInput(1);
 
     positions = elevatorConstants.positions; // copies saved positions from constant
     currentPosition = 0; // or whatever the number is from the starting position
@@ -113,7 +115,11 @@ public class ElevatorSubsystem extends SubsystemBase {
     pidController.setP(SmartDashboard.getNumber("elevator P", elevatorConstants.kP));
     pidController.setI(SmartDashboard.getNumber("elevator I", elevatorConstants.kI));
     pidController.setD(SmartDashboard.getNumber("elevator D", elevatorConstants.kD));
-    SmartDashboard.putBoolean("limitSwitch", theSwitch.isAnalogTrigger());
+    SmartDashboard.putBoolean("elevator all down", theSwitch.get());
+  }
+
+  public boolean getSwitch (){
+    return theSwitch.get();
   }
 
   public void resetEncoder (){

@@ -8,6 +8,7 @@ import frc.robot.subsystems.ElevatorSubsystem;
 public class moveElevatorIntakeCommand extends Command {
     private static ElevatorSubsystem m_subsystem;
     private static double oldPosition = 0.0;
+    private static boolean end = false;
 
     public moveElevatorIntakeCommand(ElevatorSubsystem subsystem) {
         m_subsystem = subsystem;
@@ -24,14 +25,21 @@ public class moveElevatorIntakeCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_subsystem.moveElevator(-.1);
+    m_subsystem.moveElevator(-.15);
     //oldPosition = m_subsystem.getAveragePosition();
+    end = m_subsystem.getSwitch();
   }
 
   // Called once the command ends or is interrupted.
   @Override
   public void end(boolean interrupted) {
+    m_subsystem.resetEncoder();
+    m_subsystem.setCurrentPosition(0);
   }
 
   // Returns true when the command should end.
+  @Override
+  public boolean isFinished() {
+      return end;
+  }
 }
