@@ -19,6 +19,7 @@ import frc.robot.commands.CoralFeederCommands.automateIntakeCoral;
 import frc.robot.commands.CoralFeederCommands.maneuverCoral;
 import frc.robot.commands.CoralFeederCommands.pathPlannerCoral;
 import frc.robot.commands.SwerveDriveCommands.resetGyroCommand;
+import frc.robot.commands.SwerveDriveCommands.toggleDriveModeCommand;
 import frc.robot.commands.algaeHarvesterCommands.algaeHarvesterIntakeCommand;
 import frc.robot.commands.algaeHarvesterCommands.algaeHarvesterOuttakeCommand;
 import frc.robot.commands.algaeHarvesterCommands.algaeHarvesterPivotDownCommand;
@@ -35,7 +36,7 @@ import frc.robot.subsystems.AlgaeSubsytems.Harvester.algaeHarvesterIntakeSubsyst
 import frc.robot.subsystems.AlgaeSubsytems.Harvester.algaeHarvesterPivot;
 import frc.robot.subsystems.AlgaeSubsytems.Scrubber.AlgaeScrubberPivotSubsytem;
 import frc.robot.subsystems.AlgaeSubsytems.Scrubber.AlgaeScrubberSubsystem;
-import frc.robot.subsystems.DriveSubsytems.SwerveDriveMananger;
+import frc.robot.subsystems.DriveSubsytems.SwerveDriveManager;
 
 import java.lang.management.OperatingSystemMXBean;
 
@@ -48,9 +49,11 @@ import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -73,17 +76,17 @@ public class RobotContainer {
 
   private final lightsSubsystems m_LED = new lightsSubsystems(0,120);
   
-  public final SwerveDriveMananger m_DriveMananger = new SwerveDriveMananger(null);
+  public final SwerveDriveManager m_DriveManager = new SwerveDriveManager(null);
   private final VisionSubsystem m_VisionSubsystem = new VisionSubsystem();
   //private final TestLightCommand testLightCommand = new TestLightCommand(m_VisionSubsystem, m_robotDrive);
 
-  private final toggleLimelightAuto toggleLimelight = new toggleLimelightAuto(m_DriveMananger);
+  private final toggleLimelightAuto toggleLimelight = new toggleLimelightAuto(m_DriveManager);
 
 
   private final AlgaeScrubberPivotSubsytem m_scrubberPivot = new AlgaeScrubberPivotSubsytem(algaeScrubberConstants.algeaScrubberPivotMotorID);
   private final AlgaeScrubberSubsystem m_scrubber = new AlgaeScrubberSubsystem(algaeScrubberConstants.algeaScrubberMotorID);
 
-  private final toggleAlignment toggleAlignment = new toggleAlignment(m_DriveMananger);
+  private final toggleAlignment toggleAlignment = new toggleAlignment(m_DriveManager);
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
@@ -102,13 +105,16 @@ public class RobotContainer {
   //private final algaeHarvesterPivotDownCommand pivotHarvesterDown = new algaeHarvesterPivotDownCommand(m_algaeHarvesterPivot);
   //private final algaeHarvesterIntakeCommand harvesterIntake = new algaeHarvesterIntakeCommand(m_algaeIntake);
   //private final algaeHarvesterOuttakeCommand harvestOuttake = new algaeHarvesterOuttakeCommand(m_algaeIntake);
-  private final resetGyroCommand resetGyro = new resetGyroCommand(m_DriveMananger);
+  private final resetGyroCommand resetGyro = new resetGyroCommand(m_DriveManager);
   private final maneuverCoral intakeCoral = new maneuverCoral(m_Coral);
   private final pathPlannerCoral namedAutoCoral = new pathPlannerCoral(m_Coral);
   private final ScrubAlgae scrub = new ScrubAlgae(m_scrubberPivot, m_scrubber);
   private final moveScrubberIn moveScrubberIn = new moveScrubberIn(m_scrubberPivot);
   private final moveScrubberOut moveScrubberOut = new moveScrubberOut(m_scrubberPivot);
   private final automateIntakeCoral intakeCoral2 = new automateIntakeCoral(m_Coral);
+  private final toggleDriveModeCommand toggleMode = new toggleDriveModeCommand();//This is a real duct tape fix that has a probability of not working.
+
+  public static boolean fieldCentric = true;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -122,12 +128,12 @@ public class RobotContainer {
     configureBindings();
     
     
-    m_DriveMananger.setDefaultCommand(
-      new RunCommand( ()-> m_DriveMananger.ManageSwerveSystem(
+    m_DriveManager.setDefaultCommand(
+      new RunCommand( ()-> m_DriveManager.ManageSwerveSystem(
         -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDeadband),
         -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDeadband),
         -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDeadband),
-        true, false),m_DriveMananger));
+        fieldCentric, false),m_DriveManager));
 
     
     /* 
@@ -196,7 +202,7 @@ public class RobotContainer {
     //yDriverButton.whileTrue(testLightCommand);
 
     Trigger xDriverButton = m_driverController.x();
-    //xDriverButton.whileTrue(lastRots);
+    xDriverButton.onTrue(toggleMode);
 
     //Trigger scorerLeftY = m_scoringController.leftStick();
 
@@ -235,5 +241,23 @@ public class RobotContainer {
   public Command getAutonomousCommand() { 
     // runs preplanned pathplanner
     return autoChooser.getSelected();
+  }
+
+
+  //This auto is for testing, to discover if the issue with auto
+  //is pathplanner related or auto related.
+  //If it works, pathplanner is the source of the error
+  //If it doesnt work, something really weird is likely happening or the code is just bad.
+  public Command getManualAutonomousCommand() { 
+    return
+    new ParallelRaceGroup( 
+      new RunCommand(() ->m_DriveManager.ManageSwerveSystem(
+        -0.3,
+        0.0,
+        0.0,
+        false, false),m_DriveManager),
+        new WaitCommand(3)
+    );
+
   }
 }

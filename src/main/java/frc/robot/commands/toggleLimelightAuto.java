@@ -1,13 +1,13 @@
 package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.DriveSubsytems.SwerveDriveMananger;
+import frc.robot.subsystems.DriveSubsytems.SwerveDriveManager;
 
 public class toggleLimelightAuto extends Command{
     
-    private SwerveDriveMananger swerveMananger;
+    private SwerveDriveManager swerveMananger;
 
-    public toggleLimelightAuto(SwerveDriveMananger swerveMananger) {
+    public toggleLimelightAuto(SwerveDriveManager swerveMananger) {
         this.swerveMananger = swerveMananger;
         addRequirements(swerveMananger);
     }

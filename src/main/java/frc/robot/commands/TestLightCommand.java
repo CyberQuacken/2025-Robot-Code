@@ -11,12 +11,12 @@ package frc.robot.commands;
 
 import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.subsystems.VisionSubsystem;
-import frc.robot.subsystems.DriveSubsytems.SwerveDriveMananger;
+import frc.robot.subsystems.DriveSubsytems.SwerveDriveManager;
 
 public class TestLightCommand extends Command {
     private final VisionSubsystem visionSubsystem;
-    private final SwerveDriveMananger driveMananger;
-    public TestLightCommand(VisionSubsystem visionSubsystem, SwerveDriveMananger driveMananger) { 
+    private final SwerveDriveManager driveMananger;
+    public TestLightCommand(VisionSubsystem visionSubsystem, SwerveDriveManager driveMananger) { 
         this.visionSubsystem = visionSubsystem;
         this.driveMananger = driveMananger;
         addRequirements(visionSubsystem, driveMananger);

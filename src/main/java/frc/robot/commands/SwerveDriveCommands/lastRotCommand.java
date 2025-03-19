@@ -2,13 +2,13 @@ package frc.robot.commands.SwerveDriveCommands;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
-import frc.robot.subsystems.DriveSubsytems.SwerveDriveMananger;
+import frc.robot.subsystems.DriveSubsytems.SwerveDriveManager;
 
 public class lastRotCommand extends Command {
-    private final SwerveDriveMananger driveMananger;
+    private final SwerveDriveManager driveMananger;
     private  Rotation2d[] rots;
     private Rotation2d[] prevRots;
-    public lastRotCommand(SwerveDriveMananger driveMananger) { 
+    public lastRotCommand(SwerveDriveManager driveMananger) { 
         this.driveMananger = driveMananger;
         rots = driveMananger.driveSystem.getLastRots();
         prevRots = rots;

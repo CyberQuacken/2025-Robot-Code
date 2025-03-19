@@ -50,6 +50,7 @@ public class SwerveDrive
     private double prevRot = 0.0;
     private final double deadzone = 0.05;
     public double fieldCentricHeading;
+    private SwerveDriveManager manager = new SwerveDriveManager(null);
 
     private SwerveDrivePoseEstimator poseEstimator;
     //Structs for AdvantageScope Simulation
@@ -159,8 +160,8 @@ public class SwerveDrive
             config, // Robot Configuration
             () -> {     
       return false;  //Field side, I think blue is false(not sure though)
-    }
-    //his //Set requirements
+    },
+    manager //Set requirements
   );
   poseEstimator = new SwerveDrivePoseEstimator(kinematics, new Rotation2d(gyro.getAngle()), modulePosition, pose);//I put the rotation2d to fix an error, the param was previously null
     }
@@ -359,25 +360,13 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
         };
         relativeOdometry.update(new Rotation2d(0), modulePosition);
         odometry.update(gyro.getRotation2d(), modulePosition);
-       //FL, FR, BL, BR
-        double loggingState[] = { 
-            currStates[0].angle.getDegrees(),
-            currStates[0].speedMetersPerSecond,
-            currStates[1].angle.getDegrees(),
-            currStates[1].speedMetersPerSecond,            
-            currStates[2].angle.getDegrees(),
-            currStates[2].speedMetersPerSecond,            
-            currStates[3].angle.getDegrees(),
-            currStates[3].speedMetersPerSecond,            
-        };
         double x = getSpeeds().vxMetersPerSecond;
         double y = getSpeeds().vyMetersPerSecond;
         prevSpeed = speed;
         prevTime = time;
         time = WPIUtilJNI.now();
-         speed = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
+        speed = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
         SmartDashboard.putNumber("Speed", speed);
-        SmartDashboard.putNumberArray("SwerveModuleStates", loggingState);
 
         double acceleration = (speed - prevSpeed)/(time-prevTime);
         SmartDashboard.putNumber("Acceleration", acceleration);
@@ -392,48 +381,6 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
     public Pose2d getPoseEstimation(){
         return poseEstimator.getEstimatedPosition();
     }
-
-    /*
-    @Override
-    public void periodic()
-    {
-        pose = getPose();
-        publisher.set(pose);
-        swervePublisher.set(currStates);
-        // Update the odometry
-        odometry.update(gyro.getRotation2d(), new SwerveModulePosition[]{
-            m_frontLeft.getPosition(),
-            m_frontRight.getPosition(),
-            m_backLeft.getPosition(),
-             m_backRight.getPosition()
-        });
-       //FL, FR, BL, BR
-        double loggingState[] = { 
-            currStates[0].angle.getDegrees(),
-            currStates[0].speedMetersPerSecond,
-            currStates[1].angle.getDegrees(),
-            currStates[1].speedMetersPerSecond,            
-            currStates[2].angle.getDegrees(),
-            currStates[2].speedMetersPerSecond,            
-            currStates[3].angle.getDegrees(),
-            currStates[3].speedMetersPerSecond,            
-        };
-        double x = getSpeeds().vxMetersPerSecond;
-        double y = getSpeeds().vyMetersPerSecond;
-        prevSpeed = speed;
-        prevTime = time;
-        time = WPIUtilJNI.now();
-         speed = Math.sqrt(Math.pow(x,2) + Math.pow(y,2));
-        SmartDashboard.putNumber("Speed", speed);
-        SmartDashboard.putNumberArray("SwerveModuleStates", loggingState);
-
-        double acceleration = (speed - prevSpeed)/(time-prevTime);
-        SmartDashboard.putNumber("Acceleration", acceleration);
-
-        
-
-
-    }*/
     public void setX() {
          m_frontLeft.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(45)));
         m_frontRight.setDesiredState(new SwerveModuleState(0, Rotation2d.fromDegrees(-45)));

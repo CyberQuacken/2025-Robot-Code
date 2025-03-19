@@ -12,7 +12,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
-public class SwerveDriveMananger extends SubsystemBase{
+public class SwerveDriveManager extends SubsystemBase{
     public SwerveDrive driveSystem;
 
     private boolean autoDrive = false;
@@ -43,7 +43,7 @@ public class SwerveDriveMananger extends SubsystemBase{
      * @param aprilTaglist
      * team specific aprilTags
      */
-    public SwerveDriveMananger(int[] aprilTaglist){
+    public SwerveDriveManager(int[] aprilTaglist){
         driveSystem = new SwerveDrive();
         driveSystem.gyro.resetDisplacement();
 
