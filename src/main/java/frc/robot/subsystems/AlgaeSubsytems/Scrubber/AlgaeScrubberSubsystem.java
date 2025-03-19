@@ -15,7 +15,7 @@ public class AlgaeScrubberSubsystem extends SubsystemBase{
     }
 
     public void scrub(){
-        motor.set(algaeScrubberConstants.algeaScrubberSpeed);
+        motor.set(algaeScrubberConstants.algaeScrubberSpeed);
     }
 
     public void moveMotor(){
