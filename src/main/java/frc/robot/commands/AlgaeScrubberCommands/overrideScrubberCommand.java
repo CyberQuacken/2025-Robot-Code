@@ -1,0 +1,34 @@
+package frc.robot.commands.AlgaeScrubberCommands;
+
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.Constants.algaeScrubberConstants;
+import frc.robot.subsystems.ElevatorSubsystem;
+import frc.robot.subsystems.AlgaeSubsytems.Scrubber.AlgaeScrubberPivotSubsytem;
+import frc.robot.subsystems.AlgaeSubsytems.Scrubber.AlgaeScrubberSubsystem;
+
+public class overrideScrubberCommand extends Command {
+    private final AlgaeScrubberSubsystem m_Subsystem;
+
+    public overrideScrubberCommand(AlgaeScrubberSubsystem subsystem){
+        m_Subsystem = subsystem;
+        addRequirements(subsystem);
+        SmartDashboard.putBoolean("overriden elevator", true);
+    }
+
+    // Called every time the scheduler runs while the command is scheduled.
+    @Override
+    public void execute() {
+        m_Subsystem.override();
+    }
+
+    // Called once the command ends or is interrupted.
+    @Override
+    public void end(boolean interrupted) {}
+
+    // Returns true when the command should end.
+    @Override
+    public boolean isFinished() {
+        return false;
+    }
+}

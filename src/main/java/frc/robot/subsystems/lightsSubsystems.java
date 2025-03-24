@@ -30,7 +30,7 @@ public class lightsSubsystems extends SubsystemBase{
      * 
      */
 
-    private double[] patterns = {0.61, 0.65, 0.69, 0.77, 0.83, 0.85, 0.91, 0.57, 0.93};
+    private double[] patterns = {-.57, 0.65, 0.69, 0.77, 0.83, 0.85, 0.91, 0.57, 0.93};
     
     private int LEDindex;
 

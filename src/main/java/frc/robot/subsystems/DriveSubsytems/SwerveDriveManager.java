@@ -1,15 +1,32 @@
 package frc.robot.subsystems.DriveSubsytems;
 
 import frc.robot.LimelightHelpers;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.limelightAutoConstants;
 
+import com.pathplanner.lib.config.ModuleConfig;
+import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
 
+import static edu.wpi.first.units.Units.Inches;
+import static edu.wpi.first.units.Units.Meters;
+
+import java.util.function.Function;
+
+import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
+import com.pathplanner.lib.controllers.PPLTVController;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
+import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public class SwerveDriveManager extends SubsystemBase{
@@ -31,6 +48,7 @@ public class SwerveDriveManager extends SubsystemBase{
     private PIDController rotateToHeadingPIDController;
     private PIDController horizontalPIDController;
     private PIDController coordinatePIDController;
+    private double alignment = limelightAutoConstants.alignmentOffset; // starts left
 
     private final SwerveDrivePoseEstimator m_PoseEstimator;
 
@@ -95,16 +113,56 @@ public class SwerveDriveManager extends SubsystemBase{
         SmartDashboard.putNumber("Rotation_P", limelightAutoConstants.rotation_kP);
         SmartDashboard.putNumber("Rotation_I", limelightAutoConstants.rotation_kI);
         SmartDashboard.putNumber("Rotation_D", limelightAutoConstants.rotation_kD);
+          
+ //The autobuilder below doesnt have errors, but it will remain commented out for safety
+/*  config = new RobotConfig(50, 1.89
+ , new ModuleConfig(2, 5, alignment, null, null, stage)
+ , new Translation2d[]{new Translation2d()}); */
+
+/*  try { 
+    config = RobotConfig.fromGUISettings();
+    AutoBuilder.configure(
+            this::getPose,  //Pose Supplier
+            this::resetOdometry, //Pose consumer
+            this::getSpeeds,   //Speeds supplier
+            (speeds, feedforwards) -> driveSystem.driveRobotRelative(speeds), //Output
+            new PPHolonomicDriveController(
+                new PIDConstants(5, 0, 0),
+                new PIDConstants(5, 0, 0)
+        ), // Controller
+            config, // Robot Configuration
+            () -> { 
+                var alliance = DriverStation.getAlliance();
+                if(alliance.isPresent()) { 
+                    return alliance.get() == DriverStation.Alliance.Red;
+                }    
+      return false;  //Field side, I think blue is false(not sure though) This will have to be dealt with before any actual games
+    }
+    
+     //Set requirements
+  );
+ } catch(Exception e) { 
+    AutoBuilder.configureCustom(null, null, null, alginOnLeft);
+    e.printStackTrace();
+ } */
+
+    
     }
 
 
 
 
 
-    public void ManageSwerveSystem(double controllerXvalue, double controllerYvalue, double controllerRotValue, boolean fieldCentric, boolean slewRate){
+    public void ManageSwerveSystem(double controllerXvalue, double controllerYvalue, double controllerRotValue, boolean fieldCentric, boolean slewRate, boolean reducedSpeed){
         SmartDashboard.putNumber("Distance", controllerRotValue);
         SmartDashboard.putNumber("PosX", driveSystem.relativeOdometry.getPoseMeters().getX());
+        SmartDashboard.putBoolean("ROBOT MODE", fieldCentric); // field centric will be green, robot centric wils be red
         //SmartDashboard.putNumber("distance", driveSystem.gyro.getDisplacementX());
+         if(reducedSpeed){
+            controllerXvalue /= 4;
+          controllerYvalue /= 4;
+         controllerRotValue /= 4;
+        }
         if (!autoDrive){
             SmartDashboard.putString("State: " , "manual");
             driveSystem.drive(controllerXvalue, controllerYvalue, controllerRotValue, fieldCentric, slewRate);
@@ -114,12 +172,15 @@ public class SwerveDriveManager extends SubsystemBase{
             double otherHorizontalDistance = LimelightHelpers.getTargetPose_CameraSpace("")[2]*Math.tan(LimelightHelpers.getTX("") * (Math.PI/180));
             if(align){
                 if(LimelightHelpers.getTV("") == true){ 
+                    /* 
                 driveSystem.drive(
                     moveToDistance(LimelightHelpers.getTargetPose_CameraSpace("")[2], 1.5),
                     //orbitOnAngle(-LimelightHelpers.getTX(""),SmartDashboard.getNumber("Degrees off", 10)),//orbitOnAngle(LimelightHelpers.getTargetPose_CameraSpace("")[4], 0),
                     orbitOnAngle(-otherHorizontalDistance, .25),
                     rotateToHeading(-LimelightHelpers.getTargetPose_CameraSpace("")[4], 0),
                     false, true);
+                    */
+                    alignOnTag(alignment);// .25 // is at 13 and -13
                     // if at position (say) at position
                     SmartDashboard.putBoolean("Aligned", alignedOnTag());
                 }
@@ -167,6 +228,8 @@ public class SwerveDriveManager extends SubsystemBase{
     }
 
     public void OperateReef(){
+        // if (aligning){}
+        // when at bottom, if at position, aligning == false
         if (stage == 1){
             // FirstStage go to april tag
                 moveToTag();
@@ -253,6 +316,10 @@ public class SwerveDriveManager extends SubsystemBase{
         stage = 1;
     }
 
+    public void setLimelightAuto(boolean value){
+        autoDrive = value;
+    }
+
     public void toggleAlignment(){
         align = !align;
         
@@ -299,9 +366,10 @@ public class SwerveDriveManager extends SubsystemBase{
 
     public void alignOnTag(double distance){
         driveSystem.drive(
-            moveToDistance(LimelightHelpers.getTargetPose_CameraSpace("")[2], 1.5),
+            moveToDistance(LimelightHelpers.getTargetPose_CameraSpace("")[2], 1),
             //orbitOnAngle(-LimelightHelpers.getTX(""),SmartDashboard.getNumber("Degrees off", 10)),//orbitOnAngle(LimelightHelpers.getTargetPose_CameraSpace("")[4], 0),
-            orbitOnAngle(-LimelightHelpers.getTargetPose_CameraSpace("")[2]*Math.tan(LimelightHelpers.getTX("") * (Math.PI/180)), distance),
+            //orbitOnAngle(-LimelightHelpers.getTargetPose_CameraSpace("")[2]*Math.tan(LimelightHelpers.getTX("") * (Math.PI/180)), distance),
+            orbitOnAngle(-LimelightHelpers.getTX(""), distance),
             rotateToHeading(-LimelightHelpers.getTargetPose_CameraSpace("")[4], 0),
             false, true);
     }
@@ -325,4 +393,26 @@ public class SwerveDriveManager extends SubsystemBase{
         // returns true if robot has move desired distance
         return false;
     }
+
+    public void alignLeft(){
+        alignment = limelightAutoConstants.alignmentOffset;
+    }
+
+    public void alignRight(){
+        alignment = -limelightAutoConstants.alignmentOffset;
+    }
+
+    public void alignCenter(){
+        alignment = 0;
+    }
+
+public Pose2d getPose(){
+    return driveSystem.getPose();
+}
+public ChassisSpeeds getSpeeds(){
+    return driveSystem.getSpeeds();
+}
+public void resetOdometry(Pose2d pose) {
+    driveSystem.resetOdometry(pose);
+}
 }

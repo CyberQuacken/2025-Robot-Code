@@ -7,7 +7,25 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Example"
+            "pathName": "Far blue side1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "eUp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "eUp"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "eUp"
           }
         },
         {
@@ -19,7 +37,7 @@
         {
           "type": "wait",
           "data": {
-            "waitTime": 0.02
+            "waitTime": 0.5
           }
         },
         {
@@ -29,21 +47,33 @@
           }
         },
         {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
+          }
+        },
+        {
           "type": "named",
           "data": {
-            "name": "eDown"
+            "name": "eIntake"
+          }
+        },
+        {
+          "type": "wait",
+          "data": {
+            "waitTime": 0.5
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Example 2"
+            "pathName": "FarBlueSide2"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Examples and Testing",
+  "folder": "Autos",
   "choreoAuto": false
 }

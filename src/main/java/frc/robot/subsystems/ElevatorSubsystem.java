@@ -10,10 +10,13 @@ import com.revrobotics.spark.SparkFlex;
 import com.revrobotics.spark.SparkLowLevel.MotorType;
 import com.revrobotics.spark.config.LimitSwitchConfig;
 
+import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.DigitalInput;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
+import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.elevatorConstants;
 
 public class ElevatorSubsystem extends SubsystemBase {
@@ -30,13 +33,16 @@ public class ElevatorSubsystem extends SubsystemBase {
   RelativeEncoder rightEncoder;
 
   double averagePosition = 0;
+  CommandXboxController controller;
   // encoder for the motors
 
   /** Creates a new ExampleSubsystem. */
-  public ElevatorSubsystem(int leftMotorID, int rightMotorID) {
+  public ElevatorSubsystem(int leftMotorID, int rightMotorID, CommandXboxController inputController) {
     SmartDashboard.putNumber("move", currentPosition);
     leftMotor = new SparkFlex(leftMotorID, MotorType.kBrushless);
     rightMotor = new SparkFlex(rightMotorID, MotorType.kBrushless);
+
+    controller = inputController;
 
     theSwitch = new DigitalInput(1);
 
@@ -65,14 +71,15 @@ public class ElevatorSubsystem extends SubsystemBase {
     boolean isNegative = pidOutput / Math.abs(pidOutput) == -1;
     //double pidOutput = pidController.calculate(averagePosition, moveToPosition); 
     // the PID controller requestest a distance, im not sure how to get distance or what it correlates to
+    SmartDashboard.putString("Elevator", "operating");
     if (isNegative){
-      leftMotor.set(-Math.max(-.2,pidOutput));//positions[currentPosition]));
-      rightMotor.set(Math.max(-.2,pidOutput));//positions[currentPosition]));
+      leftMotor.set(-Math.max(-elevatorConstants.maxSpeed,pidOutput));//positions[currentPosition]));
+      rightMotor.set(Math.max(-elevatorConstants.maxSpeed,pidOutput));//positions[currentPosition]));
       SmartDashboard.putString("Elevators", "Down");
     }
     else{
-      leftMotor.set(-Math.min(.2,pidOutput));//positions[currentPosition]));
-      rightMotor.set(Math.min(.2,pidOutput));//positions[currentPosition]));
+      leftMotor.set(-Math.min(elevatorConstants.maxSpeed,pidOutput));//positions[currentPosition]));
+      rightMotor.set(Math.min(elevatorConstants.maxSpeed,pidOutput));//positions[currentPosition]));
       SmartDashboard.putString("Elevators", "Up");
     }
     SmartDashboard.putNumber("current Output", pidOutput);
@@ -96,6 +103,12 @@ public class ElevatorSubsystem extends SubsystemBase {
     rightMotor.set(speed);
   }
 
+  // expermimtal
+  public void override(){
+    moveElevator(-MathUtil.applyDeadband(controller.getLeftY(), OIConstants.kDeadband));
+    SmartDashboard.putString("Elevator", "overriden");
+  }
+
   public double getAveragePosition(){
     return averagePosition;
   }
@@ -116,6 +129,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     pidController.setI(SmartDashboard.getNumber("elevator I", elevatorConstants.kI));
     pidController.setD(SmartDashboard.getNumber("elevator D", elevatorConstants.kD));
     SmartDashboard.putBoolean("elevator all down", theSwitch.get());
+
   }
 
   public boolean getSwitch (){

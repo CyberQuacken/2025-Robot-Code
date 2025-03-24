@@ -1,9 +1,12 @@
 package frc.robot.subsystems.DriveSubsytems;
+
 import org.dyn4j.exception.SameObjectException;
 
 import com.ctre.phoenix6.swerve.jni.SwerveJNI.ModulePosition;
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.config.PIDConstants;
 import com.pathplanner.lib.config.RobotConfig;
+import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.controllers.PPLTVController;
 import com.studica.frc.AHRS;
 import com.studica.frc.AHRS.NavXComType;
@@ -12,7 +15,9 @@ import com.studica.frc.AHRS.NavXComType;
 
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.controller.HolonomicDriveController;
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
 import edu.wpi.first.math.estimator.PoseEstimator;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.filter.SlewRateLimiter;
@@ -24,6 +29,8 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
+import edu.wpi.first.math.trajectory.TrapezoidProfile;
+import edu.wpi.first.math.trajectory.constraint.MaxVelocityConstraint;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.networktables.StructArrayPublisher;
@@ -40,7 +47,7 @@ import frc.robot.SwerveUtils;
  * for calculating where to drive
  * and sending directions to the SwerveModules
  */
-public class SwerveDrive
+public class SwerveDrive extends SubsystemBase
 {
     private Rotation2d[] tempRots = new Rotation2d[4];
     private double prevXSpeed = 0.0;
@@ -50,7 +57,6 @@ public class SwerveDrive
     private double prevRot = 0.0;
     private final double deadzone = 0.05;
     public double fieldCentricHeading;
-    private SwerveDriveManager manager = new SwerveDriveManager(null);
 
     private SwerveDrivePoseEstimator poseEstimator;
     //Structs for AdvantageScope Simulation
@@ -150,19 +156,9 @@ public class SwerveDrive
         } catch (Exception e){
             e.printStackTrace();
         }
-
-        AutoBuilder.configure(
-            this::getPose,  //Pose Supplier
-            this::resetOdometry, //Pose consumer
-            this::getSpeeds,   //Speeds supplier
-            (speeds, feedforwards) -> driveRobotRelative(speeds), //Output
-            new PPLTVController(0.02), // Controller
-            config, // Robot Configuration
-            () -> {     
-      return false;  //Field side, I think blue is false(not sure though)
-    },
-    manager //Set requirements
-  );
+        
+       
+  
   poseEstimator = new SwerveDrivePoseEstimator(kinematics, new Rotation2d(gyro.getAngle()), modulePosition, pose);//I put the rotation2d to fix an error, the param was previously null
     }
 //Auto methods

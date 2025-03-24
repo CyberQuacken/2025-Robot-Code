@@ -43,5 +43,6 @@ public class CoralFeederSubsystem extends SubsystemBase {
     @Override
     public void periodic() {
         hasCoral = testForCoral();
+        SmartDashboard.putBoolean("CORAL : ", hasCoral);
     }
 }

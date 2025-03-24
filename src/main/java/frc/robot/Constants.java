@@ -91,7 +91,7 @@ public static final class DriveConstants {
     public static final boolean kGyroReversed = false;
 
     //PID for auto horizontal alignment
-    public static final double limelight_auto_kp_horizontal = 0.0054;
+    public static final double limelight_auto_kp_horizontal = 0.001;
     public static final double limelight_auto_ki_horizontal = 0.0044;
     public static final double limelight_auto_kd_horizontal = 0.0;
 
@@ -110,9 +110,9 @@ public static class elevatorConstants {
   public static final double[] positions ={
     0, // intake
     15, // level one // doesnt work
-    19.5, // level two
-    39.3, // level three
-    71, // level four
+    21, // level two
+    42, // level three
+    70, // level four
   };
   
   public static final int intakePositionIndex = 0;
@@ -129,6 +129,8 @@ public static class elevatorConstants {
 
   public static final int leftMotorCanID = 9;
   public static final int rightMotorCanID = 10;//Double check these
+
+  public static final double maxSpeed = .75;
 }
 
 public static class algaeScrubberConstants {
@@ -188,34 +190,38 @@ public static class limelightAutoConstants{
   };
 
 
+  // how far away it is
   public static final double distance_kP = .150;
   public static final double distance_kI = .0001;
   public static final double distance_kD = 0.0;
 
-  public static final double horizontal_kP = .006;
+  // angle it is at
+  public static final double horizontal_kP = .008;
   public static final double horizontal_kI = .0005;
-  public static final double horizontal_kD = 0.0;
+  public static final double horizontal_kD = 0.00002;
 
+  // just another version of distance
   public static final double coordinate_kP = .3;
   public static final double coordinate_kI = 0.1;
   public static final double coordinate_kD = 0.0;
 
+  // how fast it can rotate
   public static final double rotation_kP = .003;
   public static final double rotation_kI = .00;
-  public static final double rotation_kD = .00;
+  public static final double rotation_kD = .00001;
 
   public static final double alignment_kP = .004;
 
 
-  public static final double alignmentOffset = 1; //how far robot needs to move to align on reef pvc // + is left, - is right
+  public static final double alignmentOffset = 13; //how far robot needs to move to align on reef pvc // + is left, - is right
   public static final double distanceOffset = 1; // how far robot is supposed to be (verically) from limelight
 }
 
 public static class algaeHarvesterConstants { 
     public static final int algaeHarvesterIntakeSpeed = 1;
     public static final int pivotSpeed = 1;
-    public static final int pivotMotorCANID = 13;
-    public static final int intakeMotorCANID = 12;
+    public static final int pivotMotorCANID = 15;
+    public static final int intakeMotorCANID = 14;
     public static final double minPivot = 10.0; //TODO: Change placeholder, careful with this, requires irl data and can break robot
     public static final double maxPivot = 90.0; //TODO: change placeholder
 
