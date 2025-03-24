@@ -19,7 +19,7 @@
         {
           "type": "named",
           "data": {
-            "name": "Score2"
+            "name": "Score1"
           }
         },
         {
@@ -32,6 +32,12 @@
           "type": "path",
           "data": {
             "pathName": "Red1Coral2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeCoral"
           }
         }
       ]

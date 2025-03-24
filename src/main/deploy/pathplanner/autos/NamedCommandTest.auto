@@ -13,13 +13,19 @@
         {
           "type": "named",
           "data": {
-            "name": "Score2"
+            "name": "Score1"
           }
         },
         {
           "type": "named",
           "data": {
             "name": "eIntake"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "IntakeCoral"
           }
         }
       ]

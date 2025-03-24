@@ -189,14 +189,12 @@ public class RobotContainer {
     //NamedCommands.registerCommand("ScrubOut", moveScrubberOut);
     //NamedCommands.registerCommand("Scrub", scrub);
     NamedCommands.registerCommand("eUp", eUp);
-    NamedCommands.registerCommand("Score", namedAutoCoral);
+    NamedCommands.registerCommand("Score0", namedAutoCoral);
     NamedCommands.registerCommand("eDown", eDown);
     NamedCommands.registerCommand("eIntake", eIntake);
     NamedCommands.registerCommand("L4", autoL4);
-    NamedCommands.registerCommand("Score2",new ParallelRaceGroup( 
-        intakeCoral,
-        new WaitCommand(1)
-    ));
+    NamedCommands.registerCommand("Score1",new ParallelRaceGroup(intakeCoral, new WaitCommand(1)));
+    NamedCommands.registerCommand("IntakeCoral", intakeCoral2);
   }
 
   /**
