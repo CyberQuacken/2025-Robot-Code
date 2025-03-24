@@ -7,31 +7,37 @@
         {
           "type": "path",
           "data": {
-            "pathName": "part1 Path"
+            "pathName": "Far blue side1"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "L4"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "Score2"
+          }
+        },
+        {
+          "type": "named",
+          "data": {
+            "name": "eIntake"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "part2 Path"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "part3 Path"
-          }
-        },
-        {
-          "type": "path",
-          "data": {
-            "pathName": "part4 Path"
+            "pathName": "FarBlueSide2"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Examples and Testing",
+  "folder": "Autos",
   "choreoAuto": false
 }

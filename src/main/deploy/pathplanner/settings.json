@@ -3,9 +3,10 @@
   "robotLength": 0.762,
   "holonomicMode": true,
   "pathFolders": [
-    "Example Paths",
-    "Actual auto",
-    "Weaving"
+    "Blu1Coral",
+    "Example&Test Paths",
+    "Med1Coral",
+    "Red1Coral"
   ],
   "autoFolders": [
     "Examples and Testing",

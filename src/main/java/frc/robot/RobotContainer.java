@@ -37,6 +37,7 @@ import frc.robot.commands.algaeHarvesterCommands.algaeHarvesterIntakeCommand;
 import frc.robot.commands.algaeHarvesterCommands.algaeHarvesterOuttakeCommand;
 import frc.robot.commands.algaeHarvesterCommands.algaeHarvesterPivotDownCommand;
 import frc.robot.commands.algaeHarvesterCommands.algaeHarvesterPivotUpCommand;
+import frc.robot.commands.moveElevatorCommands.autoL4Command;
 import frc.robot.commands.moveElevatorCommands.moveElevatorDownCommand;
 
 import frc.robot.commands.moveElevatorCommands.moveElevatorIntakeCommand;
@@ -139,7 +140,7 @@ public class RobotContainer {
   private final toggleDriveModeCommand toggleMode = new toggleDriveModeCommand();//This is a real duct tape fix that has a probability of not working.
   private final DriveFieldCommand fieldCentricC = new DriveFieldCommand();
   private final DriveRobotCommand robotCentricC = new DriveRobotCommand();
-
+  private final autoL4Command autoL4 = new autoL4Command(m_Elevator);
 
   public static boolean fieldCentric = true;
   public static boolean reducedSpeed = false;
@@ -191,6 +192,11 @@ public class RobotContainer {
     NamedCommands.registerCommand("Score", namedAutoCoral);
     NamedCommands.registerCommand("eDown", eDown);
     NamedCommands.registerCommand("eIntake", eIntake);
+    NamedCommands.registerCommand("L4", autoL4);
+    NamedCommands.registerCommand("Score2",new ParallelRaceGroup( 
+        intakeCoral,
+        new WaitCommand(1)
+    ));
   }
 
   /**

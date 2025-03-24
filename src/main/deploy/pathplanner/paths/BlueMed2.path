@@ -3,25 +3,25 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 0.659,
-        "y": 4.78
+        "x": 5.7525,
+        "y": 4.2005
       },
       "prevControl": null,
       "nextControl": {
-        "x": 0.30224999999636515,
-        "y": 4.5515000000028785
+        "x": 8.180250000000001,
+        "y": 5.3315
       },
       "isLocked": false,
-      "linkedName": null
+      "linkedName": "MedBlue1End"
     },
     {
       "anchor": {
-        "x": 0.536,
-        "y": 2.9135000000028777
+        "x": 1.6672500000000001,
+        "y": 7.466749999999999
       },
       "prevControl": {
-        "x": 0.7505,
-        "y": 2.3675000000028787
+        "x": 2.34,
+        "y": 6.969499999999999
       },
       "nextControl": null,
       "isLocked": false,
@@ -42,13 +42,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -52.431407971172604
   },
   "reversed": false,
-  "folder": "Example&Test Paths",
+  "folder": "Med1Coral",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": 179.77531182037552
   },
   "useDefaultConstraints": true
 }

@@ -69,6 +69,7 @@ public class ElevatorSubsystem extends SubsystemBase {
     //double moveToPosition = SmartDashboard.getNumber("move", currentPosition); // temp variable to create ladder positions
     double pidOutput = pidController.calculate(averagePosition, positions[currentPosition]);
     boolean isNegative = pidOutput / Math.abs(pidOutput) == -1;
+    
     //double pidOutput = pidController.calculate(averagePosition, moveToPosition); 
     // the PID controller requestest a distance, im not sure how to get distance or what it correlates to
     SmartDashboard.putString("Elevator", "operating");
@@ -139,5 +140,9 @@ public class ElevatorSubsystem extends SubsystemBase {
   public void resetEncoder (){
     rightEncoder.setPosition(0);
     leftEncoder.setPosition(0);
+  }
+
+  public boolean isAtDesiredPosition() { 
+    return pidController.atSetpoint();
   }
 }

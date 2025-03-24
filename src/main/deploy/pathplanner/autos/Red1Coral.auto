@@ -7,43 +7,37 @@
         {
           "type": "path",
           "data": {
-            "pathName": "Example"
+            "pathName": "Red1Coral1"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "eUp"
-          }
-        },
-        {
-          "type": "wait",
-          "data": {
-            "waitTime": 0.02
+            "name": "L4"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "Score"
+            "name": "Score2"
           }
         },
         {
           "type": "named",
           "data": {
-            "name": "eDown"
+            "name": "eIntake"
           }
         },
         {
           "type": "path",
           "data": {
-            "pathName": "Example 2"
+            "pathName": "Red1Coral2"
           }
         }
       ]
     }
   },
   "resetOdom": true,
-  "folder": "Examples and Testing",
+  "folder": "Autos",
   "choreoAuto": false
 }

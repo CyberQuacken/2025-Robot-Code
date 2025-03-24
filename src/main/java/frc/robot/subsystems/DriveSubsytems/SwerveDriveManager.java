@@ -119,7 +119,7 @@ public class SwerveDriveManager extends SubsystemBase{
  , new ModuleConfig(2, 5, alignment, null, null, stage)
  , new Translation2d[]{new Translation2d()}); */
 
-/*  try { 
+  try { 
     config = RobotConfig.fromGUISettings();
     AutoBuilder.configure(
             this::getPose,  //Pose Supplier
@@ -144,7 +144,7 @@ public class SwerveDriveManager extends SubsystemBase{
  } catch(Exception e) { 
     AutoBuilder.configureCustom(null, null, null, alginOnLeft);
     e.printStackTrace();
- } */
+ } 
 
     
     }
