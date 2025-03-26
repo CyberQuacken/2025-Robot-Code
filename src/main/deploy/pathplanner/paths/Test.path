@@ -16,12 +16,12 @@
     },
     {
       "anchor": {
-        "x": 2.0,
-        "y": 2.0
+        "x": 6.005840163934426,
+        "y": 5.085911885245901
       },
       "prevControl": {
-        "x": 2.0,
-        "y": 1.75
+        "x": 18.14938524590164,
+        "y": 1.633452868852459
       },
       "nextControl": null,
       "isLocked": false,
@@ -47,7 +47,7 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 0.0
+    "rotation": -176.82016988013584
   },
   "reversed": false,
   "folder": "Example&Test Paths",

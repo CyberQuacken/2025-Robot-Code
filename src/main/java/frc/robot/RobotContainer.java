@@ -108,21 +108,21 @@ public class RobotContainer {
   // Replace with CommandPS4Controller or CommandJoystick if needed
   private final CommandXboxController m_driverController =
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
-  private final CommandXboxController m_scoringController =
+  private static final CommandXboxController m_scoringController =
       new CommandXboxController(OperatorConstants.kScorerControllerPort);
   private final VisionSubsystem m_vision = new VisionSubsystem();
 
   
   //private final AlgaeScrubberPivotSubsytem m_scrubberPivot = new AlgaeScrubberPivotSubsytem(algaeScrubberConstants.algeaScrubberPivotMotorID,m_scoringController);
   //private final AlgaeScrubberSubsystem m_scrubber = new AlgaeScrubberSubsystem(algaeScrubberConstants.algeaScrubberMotorID,m_scoringController);
-  private final ElevatorSubsystem m_Elevator = new ElevatorSubsystem(elevatorConstants.leftMotorCanID, elevatorConstants.rightMotorCanID, m_scoringController);
+  private static final ElevatorSubsystem m_Elevator = new ElevatorSubsystem(elevatorConstants.leftMotorCanID, elevatorConstants.rightMotorCanID, m_scoringController);
   private final CoralFeederSubsystem m_Coral = new CoralFeederSubsystem(coralFeederConstants.motorID,coralFeederConstants.sensorPort);
 
   //Simple variable names, if yall want them to be more descriptive they can be changed.
   private final moveElevatorDownCommand eDown = new moveElevatorDownCommand(m_Elevator);
   //private final moveElevatorHomeCommand eHome = new moveElevatorHomeCommand(m_Elevator);
   private final moveElevatorIntakeCommand eIntake = new moveElevatorIntakeCommand(m_Elevator);
-  private final moveElevatorUpCommand eUp = new moveElevatorUpCommand(m_Elevator);
+  public static final moveElevatorUpCommand eUp = new moveElevatorUpCommand(m_Elevator);
 
   //OVERRIDES
   private final overrideElevatorCommand EOverride = new overrideElevatorCommand(m_Elevator);
@@ -136,11 +136,11 @@ public class RobotContainer {
   private final maneuverCoral intakeCoral = new maneuverCoral(m_Coral);
   private final pathPlannerCoral namedAutoCoral = new pathPlannerCoral(m_Coral);
 
-  private final automateIntakeCoral intakeCoral2 = new automateIntakeCoral(m_Coral);
+  public final automateIntakeCoral intakeCoral2 = new automateIntakeCoral(m_Coral);
   private final toggleDriveModeCommand toggleMode = new toggleDriveModeCommand();//This is a real duct tape fix that has a probability of not working.
   private final DriveFieldCommand fieldCentricC = new DriveFieldCommand();
   private final DriveRobotCommand robotCentricC = new DriveRobotCommand();
-  private final autoL4Command autoL4 = new autoL4Command(m_Elevator);
+ public static final autoL4Command autoL4 = new autoL4Command(m_Elevator);
 
   public static boolean fieldCentric = true;
   public static boolean reducedSpeed = false;
@@ -188,13 +188,13 @@ public class RobotContainer {
     //NamedCommands.registerCommand("ScrubIn", moveScrubberIn);
     //NamedCommands.registerCommand("ScrubOut", moveScrubberOut);
     //NamedCommands.registerCommand("Scrub", scrub);
-    NamedCommands.registerCommand("eUp", eUp);
+    /* NamedCommands.registerCommand("eUp", eUp);
     NamedCommands.registerCommand("Score0", namedAutoCoral);
     NamedCommands.registerCommand("eDown", eDown);
     NamedCommands.registerCommand("eIntake", eIntake);
     NamedCommands.registerCommand("L4", autoL4);
     NamedCommands.registerCommand("Score1",new ParallelRaceGroup(intakeCoral, new WaitCommand(1)));
-    NamedCommands.registerCommand("IntakeCoral", intakeCoral2);
+    NamedCommands.registerCommand("IntakeCoral", intakeCoral2); */
   }
 
   /**

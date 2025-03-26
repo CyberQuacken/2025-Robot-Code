@@ -1,6 +1,7 @@
 package frc.robot.subsystems.DriveSubsytems;
 
 import frc.robot.LimelightHelpers;
+import frc.robot.RobotContainer;
 import frc.robot.Constants.DriveConstants;
 import frc.robot.Constants.limelightAutoConstants;
 
@@ -14,6 +15,7 @@ import static edu.wpi.first.units.Units.Meters;
 import java.util.function.Function;
 
 import com.pathplanner.lib.auto.AutoBuilder;
+import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.controllers.PPLTVController;
@@ -26,8 +28,10 @@ import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj2.command.ParallelRaceGroup;
 import edu.wpi.first.wpilibj2.command.Subsystem;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
+import edu.wpi.first.wpilibj2.command.WaitCommand;
 
 public class SwerveDriveManager extends SubsystemBase{
     public SwerveDrive driveSystem;
@@ -118,8 +122,8 @@ public class SwerveDriveManager extends SubsystemBase{
 /*  config = new RobotConfig(50, 1.89
  , new ModuleConfig(2, 5, alignment, null, null, stage)
  , new Translation2d[]{new Translation2d()}); */
-
   try { 
+    NamedCommands.registerCommand("eUp", RobotContainer.autoL4);
     config = RobotConfig.fromGUISettings();
     AutoBuilder.configure(
             this::getPose,  //Pose Supplier
@@ -127,22 +131,26 @@ public class SwerveDriveManager extends SubsystemBase{
             this::getSpeeds,   //Speeds supplier
             (speeds, feedforwards) -> driveSystem.driveRobotRelative(speeds), //Output
             new PPHolonomicDriveController(
-                new PIDConstants(5, 0, 0),
-                new PIDConstants(5, 0, 0)
+                new PIDConstants(5.0, 0.0, 0.0),
+                new PIDConstants(5.0, 0.0, 0.0)
         ), // Controller
             config, // Robot Configuration
             () -> { 
-                var alliance = DriverStation.getAlliance();
+               /*  var alliance = DriverStation.getAlliance();
                 if(alliance.isPresent()) { 
                     return alliance.get() == DriverStation.Alliance.Red;
-                }    
+                }     */
       return false;  //Field side, I think blue is false(not sure though) This will have to be dealt with before any actual games
-    }
+    },
+    driveSystem
     
      //Set requirements
+
   );
+  System.out.println("auto: so far so good");
  } catch(Exception e) { 
-    AutoBuilder.configureCustom(null, null, null, alginOnLeft);
+    //AutoBuilder.configureCustom(null, null, null, alginOnLeft);
+    System.out.println("Something broke with auto!!!!");
     e.printStackTrace();
  } 
 
@@ -263,6 +271,7 @@ public class SwerveDriveManager extends SubsystemBase{
     @Override
     public void periodic()
     {
+        System.out.println("Speeds? " + getSpeeds());
         driveSystem.updateSystem();
         updateRobotPos();
 

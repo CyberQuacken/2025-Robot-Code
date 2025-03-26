@@ -279,7 +279,7 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
         double xSpeedDelivered = xSpeedCommand * DriveConstants.kMaxSpeedMetersPerSecond;
         double ySpeedDelivered = ySpeedCommand * DriveConstants.kMaxSpeedMetersPerSecond;
         double rotDelivered = m_currentRotation * DriveConstants.kMaxAngularSpeed; 
-
+        driveRobotRelative(new ChassisSpeeds(xSpeedDelivered, ySpeedDelivered, rotDelivered));
         //Convert chassis speeds to usable module states
         var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
             fieldRelative
@@ -338,6 +338,9 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
                   m_backRight.getState()
               };
       }
+      public SwerveModuleState[] getSimModuleStates() { 
+        return currStates;
+      }
     private void setDesiredStates(SwerveModuleState[] states){
         currStates = states;
     }
@@ -354,8 +357,13 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
             m_backLeft.getPosition(),
              m_backRight.getPosition()
         };
-        relativeOdometry.update(new Rotation2d(0), modulePosition);
-        odometry.update(gyro.getRotation2d(), modulePosition);
+        odometry.update(new Rotation2d(1), new SwerveModulePosition[] { 
+            new SwerveModulePosition(1.0, new Rotation2d(1.0)),
+            new SwerveModulePosition(1.0, new Rotation2d(1.0)),
+            new SwerveModulePosition(1.0, new Rotation2d(1.0)),
+            new SwerveModulePosition(1.0, new Rotation2d(1.0))
+        });
+        //odometry.update(gyro.getRotation2d(), modulePosition);
         double x = getSpeeds().vxMetersPerSecond;
         double y = getSpeeds().vyMetersPerSecond;
         prevSpeed = speed;
