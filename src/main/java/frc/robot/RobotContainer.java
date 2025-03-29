@@ -8,6 +8,7 @@ import frc.robot.Constants.OIConstants;
 import frc.robot.Constants.OperatorConstants;
 import frc.robot.Constants.algaeHarvesterConstants;
 import frc.robot.Constants.algaeScrubberConstants;
+import frc.robot.Constants.autoWayPointConstants;
 import frc.robot.Constants.coralFeederConstants;
 import frc.robot.Constants.elevatorConstants;
 import frc.robot.commands.SwerveDriveCommands.toggleAlignment;
@@ -53,6 +54,7 @@ import frc.robot.subsystems.AlgaeSubsytems.Harvester.algaeHarvesterIntakeSubsyst
 import frc.robot.subsystems.AlgaeSubsytems.Harvester.algaeHarvesterPivot;
 import frc.robot.subsystems.AlgaeSubsytems.Scrubber.AlgaeScrubberPivotSubsytem;
 import frc.robot.subsystems.AlgaeSubsytems.Scrubber.AlgaeScrubberSubsystem;
+import frc.robot.subsystems.DriveSubsytems.SwerveDrive;
 import frc.robot.subsystems.DriveSubsytems.SwerveDriveManager;
 
 import java.lang.management.OperatingSystemMXBean;
@@ -62,11 +64,17 @@ import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.kinematics.Odometry;
+import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.networktables.StructPublisher;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
 import edu.wpi.first.wpilibj2.command.WaitCommand;
+import edu.wpi.first.wpilibj2.command.button.CommandGenericHID;
+import edu.wpi.first.wpilibj2.command.button.CommandJoystick;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.button.Trigger;
 import edu.wpi.first.wpilibj2.command.Commands;
@@ -110,7 +118,9 @@ public class RobotContainer {
       new CommandXboxController(OperatorConstants.kDriverControllerPort);
   private final CommandXboxController m_scoringController =
       new CommandXboxController(OperatorConstants.kScorerControllerPort);
-  private final VisionSubsystem m_vision = new VisionSubsystem();
+  private final CommandGenericHID buttonPannel = 
+      new CommandGenericHID(2);
+  
 
   
   //private final AlgaeScrubberPivotSubsytem m_scrubberPivot = new AlgaeScrubberPivotSubsytem(algaeScrubberConstants.algeaScrubberPivotMotorID,m_scoringController);
@@ -142,8 +152,23 @@ public class RobotContainer {
   private final DriveRobotCommand robotCentricC = new DriveRobotCommand();
   private final autoL4Command autoL4 = new autoL4Command(m_Elevator);
 
+  Command intakeBlueLeftCommand = AutoBuilder.pathfindToPose(autoWayPointConstants.intakeBlueLeftPosition,autoWayPointConstants.constraints,0.0); // Goal end velocity in meters/sec);
+  Command intakeBlueRightCommand = AutoBuilder.pathfindToPose(autoWayPointConstants.intakeBlueRightPosition,autoWayPointConstants.constraints,0.0); // Goal end velocity in meters/sec);
+  Command intakeCenterLeftCommand = AutoBuilder.pathfindToPose(autoWayPointConstants.intakeCenterLeftPosition,autoWayPointConstants.constraints,0.0); // Goal end velocity in meters/sec);
+  Command intakeCenterRightCommand = AutoBuilder.pathfindToPose(autoWayPointConstants.intakeCenterRightPosition,autoWayPointConstants.constraints,0.0); // Goal end velocity in meters/sec);
+  Command intakeRedLeftCommand = AutoBuilder.pathfindToPose(autoWayPointConstants.intakeRedLeftPosition,autoWayPointConstants.constraints,0.0); // Goal end velocity in meters/sec);
+  Command intakeRedightCommand = AutoBuilder.pathfindToPose(autoWayPointConstants.intakeRedRightPosition,autoWayPointConstants.constraints,0.0); // Goal end velocity in meters/sec);
+
+  Command bargeBlueLeftCommand = AutoBuilder.pathfindToPose(autoWayPointConstants.bargeBlueLeftPosition,autoWayPointConstants.constraints,0.0); // Goal end velocity in meters/sec);
+  Command bargeBlueRightCommand = AutoBuilder.pathfindToPose(autoWayPointConstants.bargeBlueRightPosition,autoWayPointConstants.constraints,0.0); // Goal end velocity in meters/sec);
+  Command bargeCenterLeftCommand = AutoBuilder.pathfindToPose(autoWayPointConstants.bargeCenterLeftPosition,autoWayPointConstants.constraints,0.0); // Goal end velocity in meters/sec);
+  Command bargeCenterRightCommand = AutoBuilder.pathfindToPose(autoWayPointConstants.bargeCenterRightPosition,autoWayPointConstants.constraints,0.0); // Goal end velocity in meters/sec);
+  Command bargeRedLeftCommand = AutoBuilder.pathfindToPose(autoWayPointConstants.bargeRedLeftPosition,autoWayPointConstants.constraints,0.0); // Goal end velocity in meters/sec);
+  Command bargeRedightCommand = AutoBuilder.pathfindToPose(autoWayPointConstants.bargeRedRightPosition,autoWayPointConstants.constraints,0.0); // Goal end velocity in meters/sec);
+
   public static boolean fieldCentric = true;
   public static boolean reducedSpeed = false;
+  public static boolean alignOnLeft = false;
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
@@ -210,7 +235,9 @@ public class RobotContainer {
 
 
     Trigger aDriverButton = m_driverController.a();
-    aDriverButton.toggleOnTrue(toggleLimelight);
+    //aDriverButton.toggleOnTrue(toggleLimelight);
+    // testing pathfind to point
+  
 
     Trigger bDriverButton = m_driverController.b();
     //bDriverButton.toggleOnTrue(toggleAlignment);
@@ -278,7 +305,28 @@ public class RobotContainer {
           leftTrigger.whileTrue(EOverride).toggleOnFalse(nullE); // override elevator (be aware unless changed, it will move to its old posisitoion)
 
         Trigger rightBumper = m_scoringController.rightBumper();
-        
+
+    Trigger intakeBlue = buttonPannel.button(1);
+    intakeBlue.onTrue(intakeBlueLeftCommand);
+
+    Trigger intakeCenter = buttonPannel.button(2);
+    intakeCenter.onTrue(intakeCenterLeftCommand);
+
+    Trigger intakeRed = buttonPannel.button(3);
+    intakeRed.onTrue(intakeRedLeftCommand);
+
+    Trigger bargeBlue = buttonPannel.button(4);
+    bargeBlue.onTrue(bargeBlueLeftCommand);
+
+    Trigger bargeCenter = buttonPannel.button(5);
+    bargeCenter.onTrue(bargeCenterLeftCommand);
+
+    Trigger bargeRed = buttonPannel.button(6);
+    bargeRed.onTrue(bargeRedLeftCommand);
+
+
+
+
     SmartDashboard.putData("Auto Chooser", autoChooser);
   }
   /**

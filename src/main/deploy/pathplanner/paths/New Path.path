@@ -3,32 +3,37 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 4.00725,
-        "y": 2.8842499999999998
+        "x": 2.0,
+        "y": 7.0
       },
       "prevControl": null,
       "nextControl": {
-        "x": 3.4320000000000004,
-        "y": 2.3089999999999997
+        "x": 2.829372314919527,
+        "y": 5.989645501684562
       },
       "isLocked": false,
-      "linkedName": "Red1Coral1End"
+      "linkedName": null
     },
     {
       "anchor": {
-        "x": 1.6380000000000001,
-        "y": 0.5734999999999991
+        "x": 4.962750000005977,
+        "y": 2.8257499999980893
       },
       "prevControl": {
-        "x": 1.8006978433639924,
-        "y": 0.763314150591323
+        "x": 4.243793704422994,
+        "y": 3.7022760477286676
       },
       "nextControl": null,
       "isLocked": false,
       "linkedName": null
     }
   ],
-  "rotationTargets": [],
+  "rotationTargets": [
+    {
+      "waypointRelativePos": 1,
+      "rotationDegrees": 0.0
+    }
+  ],
   "constraintZones": [],
   "pointTowardsZones": [],
   "eventMarkers": [],
@@ -42,13 +47,13 @@
   },
   "goalEndState": {
     "velocity": 0,
-    "rotation": 54.0193224313817
+    "rotation": 119.99999999999999
   },
   "reversed": false,
-  "folder": "Red1Coral",
+  "folder": null,
   "idealStartingState": {
     "velocity": 0,
-    "rotation": 59.30027744918574
+    "rotation": -53.50097608295928
   },
   "useDefaultConstraints": true
 }

@@ -2,6 +2,7 @@ package frc.robot.commands.SwerveDriveCommands;
 
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
+import frc.robot.RobotContainer;
 import frc.robot.subsystems.DriveSubsytems.SwerveDriveManager;
 public class autoAlignOnRightCommand extends Command {
     private final SwerveDriveManager driveMananger;
@@ -15,6 +16,8 @@ public class autoAlignOnRightCommand extends Command {
         driveMananger.alignRight();
         System.out.println("Aligning On Right");
         SmartDashboard.putString("Align on : ", "RIGHT");
+
+        RobotContainer.alignOnLeft = false;
     }
 
     @Override

@@ -67,7 +67,7 @@ public class SwerveDrive extends SubsystemBase
     StructArrayPublisher<SwerveModuleState> swervePublisher =
     NetworkTableInstance.getDefault()
     .getStructArrayTopic("MyStates", SwerveModuleState.struct).publish();
-    
+
     //Sim states
     SwerveModuleState[] currStates = {new SwerveModuleState(), new SwerveModuleState(),new SwerveModuleState(),new SwerveModuleState()};
 
@@ -184,7 +184,16 @@ public void driveRobotRelative(ChassisSpeeds RobotRelativeSpeeds){
     ChassisSpeeds.fromFieldRelativeSpeeds(RobotRelativeSpeeds,getPose().getRotation())
     );
     SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
-    setModuleStates(swerveModuleStates);
+    System.out.println(swerveModuleStates[0]);
+
+    //setModuleStates(swerveModuleStates);
+    m_frontLeft.setDesiredState(swerveModuleStates[0]);
+    m_frontRight.setDesiredState(swerveModuleStates[1]);
+    m_backLeft.setDesiredState(swerveModuleStates[2]);
+    m_backRight.setDesiredState(swerveModuleStates[3]);
+
+    //swervePublisher.set(swerveModuleStates);
+    setDesiredStates(swerveModuleStates);
 }
 public void setModuleStates(SwerveModuleState[] desiredStates) {
     SwerveDriveKinematics.desaturateWheelSpeeds(
@@ -296,7 +305,7 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
         m_backRight.setDesiredState(swerveModuleStates[3]);//Back-Right
     
 
-        setDesiredStates(swerveModuleStates);
+        //setDesiredStates(swerveModuleStates);
     }
     public void moveRot(double rot, boolean fieldRelative) { 
         double rotDelivered = Math.toRadians(rot) * DriveConstants.kMaxAngularSpeed;
@@ -338,6 +347,7 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
                   m_backRight.getState()
               };
       }
+
     private void setDesiredStates(SwerveModuleState[] states){
         currStates = states;
     }
@@ -346,7 +356,7 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
     {
         pose = getPose();
         publisher.set(pose);
-        swervePublisher.set(currStates);
+        swervePublisher.set(currStates); // BRINg BACK
         // Update the odometry
         modulePosition = new SwerveModulePosition[]{
             m_frontLeft.getPosition(),

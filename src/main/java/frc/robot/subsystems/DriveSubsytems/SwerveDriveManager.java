@@ -127,8 +127,8 @@ public class SwerveDriveManager extends SubsystemBase{
             this::getSpeeds,   //Speeds supplier
             (speeds, feedforwards) -> driveSystem.driveRobotRelative(speeds), //Output
             new PPHolonomicDriveController(
-                new PIDConstants(5, 0, 0),
-                new PIDConstants(5, 0, 0)
+                new PIDConstants(0, 0, 0),
+                new PIDConstants(0.0, 0, 0)
         ), // Controller
             config, // Robot Configuration
             () -> { 
@@ -160,8 +160,8 @@ public class SwerveDriveManager extends SubsystemBase{
         //SmartDashboard.putNumber("distance", driveSystem.gyro.getDisplacementX());
          if(reducedSpeed){
             controllerXvalue /= 4;
-          controllerYvalue /= 4;
-         controllerRotValue /= 4;
+            controllerYvalue /= 4;
+            controllerRotValue /= 4;
         }
         if (!autoDrive){
             SmartDashboard.putString("State: " , "manual");
@@ -169,17 +169,19 @@ public class SwerveDriveManager extends SubsystemBase{
         }
         else{ // if auto
             SmartDashboard.putString("State: " , "auto");
+            /* removed to test on the spot pathfinding .-.
             double otherHorizontalDistance = LimelightHelpers.getTargetPose_CameraSpace("")[2]*Math.tan(LimelightHelpers.getTX("") * (Math.PI/180));
+
             if(align){
                 if(LimelightHelpers.getTV("") == true){ 
-                    /* 
+                    
                 driveSystem.drive(
                     moveToDistance(LimelightHelpers.getTargetPose_CameraSpace("")[2], 1.5),
                     //orbitOnAngle(-LimelightHelpers.getTX(""),SmartDashboard.getNumber("Degrees off", 10)),//orbitOnAngle(LimelightHelpers.getTargetPose_CameraSpace("")[4], 0),
                     orbitOnAngle(-otherHorizontalDistance, .25),
                     rotateToHeading(-LimelightHelpers.getTargetPose_CameraSpace("")[4], 0),
                     false, true);
-                    */
+                    
                     alignOnTag(alignment);// .25 // is at 13 and -13
                     // if at position (say) at position
                     SmartDashboard.putBoolean("Aligned", alignedOnTag());
@@ -188,6 +190,7 @@ public class SwerveDriveManager extends SubsystemBase{
             else{
                 moveDistance(.6, 0);
             }
+            */
         }
     }
 
@@ -395,16 +398,19 @@ public class SwerveDriveManager extends SubsystemBase{
     }
 
     public void alignLeft(){
-        alignment = limelightAutoConstants.alignmentOffset;
+        //alignment = limelightAutoConstants.alignmentOffset;
+        alginOnLeft = true;
     }
 
     public void alignRight(){
-        alignment = -limelightAutoConstants.alignmentOffset;
+        //alignment = -limelightAutoConstants.alignmentOffset;
+        alginOnLeft = false;
     }
 
     public void alignCenter(){
         alignment = 0;
     }
+
 
 public Pose2d getPose(){
     return driveSystem.getPose();

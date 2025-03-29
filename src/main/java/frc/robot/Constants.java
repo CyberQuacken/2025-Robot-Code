@@ -4,9 +4,14 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.path.PathConstraints;
+
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.util.Units;
+import edu.wpi.first.util.sendable.Sendable;
 import edu.wpi.first.wpilibj.LEDPattern;
 import edu.wpi.first.wpilibj.util.Color;
 
@@ -170,6 +175,37 @@ public static class lightConstants {
     LEDPattern.solid(Color.kBlack), // off
     null
   };
+}
+
+public static class autoWayPointConstants{
+  public static final PathConstraints constraints = new PathConstraints(
+        3.0, 4.0,
+        Units.degreesToRadians(540), Units.degreesToRadians(720));
+
+  // test position waypoint
+  public static final Pose2d test = new Pose2d(10, 2, Rotation2d.fromDegrees(360));
+  public static final Pose2d testTwo = new Pose2d(2,2, Rotation2d.fromDegrees(180));
+
+
+  //______ intake side______ _direction_barge side_Side
+  public static final Pose2d intakeBlueRightPosition= new Pose2d(3.7, 4.980, Rotation2d.fromDegrees(-60));
+  public static final Pose2d intakeBlueLeftPosition= new Pose2d(4.0, 5.215, Rotation2d.fromDegrees(-60));
+
+  public static final Pose2d intakeCenterRightPosition= new Pose2d(3.2, 3.85, Rotation2d.fromDegrees(0));
+  public static final Pose2d intakeCenterLeftPosition= new Pose2d(3.2, 4.2, Rotation2d.fromDegrees(0));
+
+  public static final Pose2d intakeRedRightPosition= new Pose2d(4.0, 2.8, Rotation2d.fromDegrees(60));
+  public static final Pose2d intakeRedLeftPosition= new Pose2d(3.7, 3.0, Rotation2d.fromDegrees(60));
+  // ______ Barge Side ____
+  public static final Pose2d bargeBlueRightPosition= new Pose2d(5, 5.250, Rotation2d.fromDegrees(-120));
+  public static final Pose2d bargeBlueLeftPosition= new Pose2d(5.275, 5.0, Rotation2d.fromDegrees(-120));
+
+  public static final Pose2d bargeCenterRightPosition= new Pose2d(5.8, 4.2, Rotation2d.fromDegrees(180));
+  public static final Pose2d bargeCenterLeftPosition= new Pose2d(5.8, 3.85, Rotation2d.fromDegrees(180));
+
+  public static final Pose2d bargeRedRightPosition= new Pose2d(5.265, 3.0, Rotation2d.fromDegrees(120));
+  public static final Pose2d bargeRedLeftPosition= new Pose2d(5.0, 2.8, Rotation2d.fromDegrees(120));
+  
 }
 
 public static class limelightAutoConstants{
