@@ -3,24 +3,24 @@
   "waypoints": [
     {
       "anchor": {
-        "x": 5.2455,
-        "y": 5.029249999999999
+        "x": 1.277,
+        "y": 7.19375
       },
       "prevControl": null,
       "nextControl": {
-        "x": 6.2455,
-        "y": 5.029249999999999
+        "x": 2.277,
+        "y": 7.19375
       },
       "isLocked": false,
       "linkedName": "FarBlue1End"
     },
     {
       "anchor": {
-        "x": 1.2772500000000002,
+        "x": 1.277,
         "y": 7.19375
       },
       "prevControl": {
-        "x": 0.2772500000000002,
+        "x": 0.2769999999999999,
         "y": 7.19375
       },
       "nextControl": null,
@@ -48,7 +48,7 @@
   "folder": "Blu1Coral",
   "idealStartingState": {
     "velocity": 0,
-    "rotation": -119.74488129694218
+    "rotation": -51.50448969981984
   },
   "useDefaultConstraints": true
 }

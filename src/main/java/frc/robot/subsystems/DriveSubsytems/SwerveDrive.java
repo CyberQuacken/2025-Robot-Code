@@ -146,7 +146,7 @@ public class SwerveDrive extends SubsystemBase
             kinematics,
             gyro.getRotation2d(), 
             new SwerveModulePosition[]{new SwerveModulePosition(),new SwerveModulePosition(),new SwerveModulePosition(),new SwerveModulePosition()},
-            new Pose2d(0,0,new Rotation2d())
+            new Pose2d(0,0,new Rotation2d(180))
         );
 
 
@@ -159,8 +159,10 @@ public class SwerveDrive extends SubsystemBase
         
        
   
-  poseEstimator = new SwerveDrivePoseEstimator(kinematics, new Rotation2d(gyro.getAngle()), modulePosition, pose);//I put the rotation2d to fix an error, the param was previously null
-    }
+    poseEstimator = new SwerveDrivePoseEstimator(kinematics, new Rotation2d(gyro.getAngle()), modulePosition, pose);//I put the rotation2d to fix an error, the param was previously null
+    resetOdometry(new Pose2d(0,0,new Rotation2d(180)));
+    zeroHeading();
+}
 //Auto methods
 public Pose2d getPose(){
     return odometry.getPoseMeters();
@@ -168,9 +170,10 @@ public Pose2d getPose(){
 public ChassisSpeeds getSpeeds(){
     return DriveConstants.kDriveKinematics.toChassisSpeeds(getModuleStates());
 }
+/* */
 public void resetOdometry(Pose2d pose) {
     odometry.resetPosition(
-        Rotation2d.fromDegrees(-gyro.getAngle()),
+        Rotation2d.fromDegrees(gyro.getAngle()),
         new SwerveModulePosition[] { 
             m_frontLeft.getPosition(),
             m_frontRight.getPosition(),
@@ -179,21 +182,64 @@ public void resetOdometry(Pose2d pose) {
         }, pose
     );
 }
+
+public void resetOdometry() {
+    odometry.resetPosition(
+        Rotation2d.fromDegrees(gyro.getAngle()),
+        new SwerveModulePosition[] { 
+            m_frontLeft.getPosition(),
+            m_frontRight.getPosition(),
+            m_backLeft.getPosition(),
+            m_backRight.getPosition()
+        }, new Pose2d(0,0, new Rotation2d(180))
+    );
+}
+
 public void driveRobotRelative(ChassisSpeeds RobotRelativeSpeeds){
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
     ChassisSpeeds.fromFieldRelativeSpeeds(RobotRelativeSpeeds,getPose().getRotation())
     );
-    SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
-    System.out.println(swerveModuleStates[0]);
+    
+        SmartDashboard.putNumber("FLA", swerveModuleStates[0].angle.getRadians());
+        SmartDashboard.putNumber("FRA", swerveModuleStates[1].angle.getRadians());
+        SmartDashboard.putNumber("BLA", swerveModuleStates[2].angle.getRadians());
+        SmartDashboard.putNumber("BRA", swerveModuleStates[3].angle.getRadians());
 
-    //setModuleStates(swerveModuleStates);
+        SmartDashboard.putNumber("FLD", swerveModuleStates[0].speedMetersPerSecond);
+        SmartDashboard.putNumber("FRD", swerveModuleStates[1].speedMetersPerSecond);
+        SmartDashboard.putNumber("BLD", swerveModuleStates[2].speedMetersPerSecond);
+        SmartDashboard.putNumber("BRD", swerveModuleStates[3].speedMetersPerSecond);
+
+    //setModuleStates(swerveModuleStates);\
+    
+    /* 
     m_frontLeft.setDesiredState(swerveModuleStates[0]);
     m_frontRight.setDesiredState(swerveModuleStates[1]);
     m_backLeft.setDesiredState(swerveModuleStates[2]);
     m_backRight.setDesiredState(swerveModuleStates[3]);
+    */
+    
+    //m_frontLeft.setDesiredRot(swerveModuleStates[0].angle);
+    //m_frontRight.setDesiredRot(swerveModuleStates[1].angle);
+    //m_backLeft.setDesiredRot(swerveModuleStates[2].angle);
+    //m_backRight.setDesiredRot(swerveModuleStates[3].angle);
+
+    /* 
+    swerveModuleStates[3].angle = swerveModuleStates[3].angle;
+    swerveModuleStates[2].angle = swerveModuleStates[2].angle;
+    swerveModuleStates[1].angle = swerveModuleStates[1].angle;
+    swerveModuleStates[0].angle = swerveModuleStates[0].angle;
+
+    swerveModuleStates[3].speedMetersPerSecond = - swerveModuleStates[3].speedMetersPerSecond;
+    swerveModuleStates[2].speedMetersPerSecond = - swerveModuleStates[2].speedMetersPerSecond;
+    swerveModuleStates[1].speedMetersPerSecond = - swerveModuleStates[1].speedMetersPerSecond;
+    swerveModuleStates[0].speedMetersPerSecond = - swerveModuleStates[0].speedMetersPerSecond;
+*/
+
+    setModuleStates(swerveModuleStates);
 
     //swervePublisher.set(swerveModuleStates);
-    setDesiredStates(swerveModuleStates);
+    //setDesiredStates(swerveModuleStates);
 }
 public void setModuleStates(SwerveModuleState[] desiredStates) {
     SwerveDriveKinematics.desaturateWheelSpeeds(
@@ -297,6 +343,16 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
         //System.out.println(swerveModuleStates[0].angle);
         SwerveDriveKinematics.desaturateWheelSpeeds(swerveModuleStates, DriveConstants.kMaxSpeedMetersPerSecond);
 
+        SmartDashboard.putNumber("FLA", swerveModuleStates[0].angle.getRadians());
+        SmartDashboard.putNumber("FRA", swerveModuleStates[1].angle.getRadians());
+        SmartDashboard.putNumber("BLA", swerveModuleStates[2].angle.getRadians());
+        SmartDashboard.putNumber("BRA", swerveModuleStates[3].angle.getRadians());
+
+        SmartDashboard.putNumber("FLD", swerveModuleStates[0].speedMetersPerSecond);
+        SmartDashboard.putNumber("FRD", swerveModuleStates[1].speedMetersPerSecond);
+        SmartDashboard.putNumber("BLD", swerveModuleStates[2].speedMetersPerSecond);
+        SmartDashboard.putNumber("BRD", swerveModuleStates[3].speedMetersPerSecond);
+
         
         
         m_frontLeft.setDesiredState(swerveModuleStates[0]);//Front-Left
@@ -382,6 +438,9 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
             poseEstimator.addVisionMeasurement(LimelightHelpers.getBotPose2d(""), LimelightHelpers.getLatency_Pipeline(""));
         }
         SmartDashboard.putNumber("gyro: ", gyro.getAngle());
+        SmartDashboard.putNumber("Esitimated X", poseEstimator.getEstimatedPosition().getX());
+        SmartDashboard.putNumber("Esitimated Y", poseEstimator.getEstimatedPosition().getY());
+        SmartDashboard.putNumber("Odometer", getPose().getRotation().getDegrees());
     }
 
     public Pose2d getPoseEstimation(){

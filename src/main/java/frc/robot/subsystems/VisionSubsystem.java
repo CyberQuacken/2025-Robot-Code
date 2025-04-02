@@ -51,7 +51,7 @@ public class VisionSubsystem extends SubsystemBase {
 
         // Change the camera pose relative to robot center (x forward, y left, z up, degrees)
         LimelightHelpers.setCameraPose_RobotSpace("", 
-            0.05,    // Forward offset (meters)
+            0.2,    // Forward offset (meters)
             0.0,    // Side offset (meters)
             0.3,    // Height offset (meters)
             0.0,    // Roll (degrees)
@@ -61,7 +61,7 @@ public class VisionSubsystem extends SubsystemBase {
 
         // Set AprilTag offset tracking point (meters)
         LimelightHelpers.setFiducial3DOffset("", 
-            0.0,    // Forward offset
+            0.6,    // Forward offset
             0.0,    // Side offset  
             0.5     // Height offset
         );

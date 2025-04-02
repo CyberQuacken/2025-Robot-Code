@@ -39,6 +39,7 @@ import frc.robot.commands.algaeHarvesterCommands.algaeHarvesterOuttakeCommand;
 import frc.robot.commands.algaeHarvesterCommands.algaeHarvesterPivotDownCommand;
 import frc.robot.commands.algaeHarvesterCommands.algaeHarvesterPivotUpCommand;
 import frc.robot.commands.moveElevatorCommands.autoL4Command;
+import frc.robot.commands.moveElevatorCommands.moveElevator;
 import frc.robot.commands.moveElevatorCommands.moveElevatorDownCommand;
 
 import frc.robot.commands.moveElevatorCommands.moveElevatorIntakeCommand;
@@ -62,6 +63,7 @@ import java.lang.management.OperatingSystemMXBean;
 import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.auto.NamedCommands;
 import com.pathplanner.lib.commands.PathPlannerAuto;
+import com.pathplanner.lib.commands.PathfindingCommand;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -128,18 +130,19 @@ public class RobotContainer {
   private final ElevatorSubsystem m_Elevator = new ElevatorSubsystem(elevatorConstants.leftMotorCanID, elevatorConstants.rightMotorCanID, m_scoringController);
   private final CoralFeederSubsystem m_Coral = new CoralFeederSubsystem(coralFeederConstants.motorID,coralFeederConstants.sensorPort);
 
-  //Simple variable names, if yall want them to be more descriptive they can be changed.
   private final moveElevatorDownCommand eDown = new moveElevatorDownCommand(m_Elevator);
-  //private final moveElevatorHomeCommand eHome = new moveElevatorHomeCommand(m_Elevator);
   private final moveElevatorIntakeCommand eIntake = new moveElevatorIntakeCommand(m_Elevator);
   private final moveElevatorUpCommand eUp = new moveElevatorUpCommand(m_Elevator);
 
+  private final moveElevator eLevelFour = new moveElevator(m_Elevator, 4);
+  private final moveElevator eLevelThree = new moveElevator(m_Elevator, 3);
+  private final moveElevator eLevelTwo = new moveElevator(m_Elevator, 2);
+  private final moveElevator eLevelOne = new moveElevator(m_Elevator, 1);
+
+
   //OVERRIDES
   private final overrideElevatorCommand EOverride = new overrideElevatorCommand(m_Elevator);
-
-
   private final nullElevatorCommand nullE = new nullElevatorCommand(m_Elevator);
-  //private final nullScrubberCommand nullScrub = new nullScrubberCommand(m_scrubber, m_scrubberPivot);
 
  private final resetEncoderCommand resetEncoder = new resetEncoderCommand(m_Elevator);
   private final resetGyroCommand resetGyro = new resetGyroCommand(m_DriveManager);
@@ -151,6 +154,8 @@ public class RobotContainer {
   private final DriveFieldCommand fieldCentricC = new DriveFieldCommand();
   private final DriveRobotCommand robotCentricC = new DriveRobotCommand();
   private final autoL4Command autoL4 = new autoL4Command(m_Elevator);
+
+  
 
   Command intakeBlueLeftCommand = AutoBuilder.pathfindToPose(autoWayPointConstants.intakeBlueLeftPosition,autoWayPointConstants.constraints,0.0); // Goal end velocity in meters/sec);
   Command intakeBlueRightCommand = AutoBuilder.pathfindToPose(autoWayPointConstants.intakeBlueRightPosition,autoWayPointConstants.constraints,0.0); // Goal end velocity in meters/sec);
@@ -176,18 +181,38 @@ public class RobotContainer {
     SmartDashboard.putNumber("elevator P", elevatorConstants.kP);
     SmartDashboard.putNumber("elevator I", elevatorConstants.kI);
     SmartDashboard.putNumber("elevator D", elevatorConstants.kD);
+
+    if(Constants.OperatorConstants.ElevatorSubsystemOnline){
+      NamedCommands.registerCommand("LevelFour", eLevelFour);
+      NamedCommands.registerCommand("LevelThree", eLevelThree);
+      NamedCommands.registerCommand("LevelTwo", eLevelTwo);
+      NamedCommands.registerCommand("LevelOne", eLevelOne);
+
+      NamedCommands.registerCommand("eUp", eUp);
+      NamedCommands.registerCommand("eDown", eDown);
+      NamedCommands.registerCommand("eIntake", eIntake);
+    }
+    if (Constants.OperatorConstants.coralFeederOnline){
+      NamedCommands.registerCommand("IntakeCoral", intakeCoral2);
+    }
+
+
+    NamedCommands.registerCommand("Score0", namedAutoCoral); // ?
+
     autoChooser = AutoBuilder.buildAutoChooser();
 
     // Configure the trigger bindings
     configureBindings();
     
-    
-    m_DriveManager.setDefaultCommand(
-      new RunCommand( ()-> m_DriveManager.ManageSwerveSystem(
-        -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDeadband),
-        -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDeadband),
-        -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDeadband),
-        fieldCentric, false, reducedSpeed),m_DriveManager));
+    if (Constants.OperatorConstants.driverSystemOnline){
+      m_DriveManager.setDefaultCommand(
+        new RunCommand( ()-> m_DriveManager.ManageSwerveSystem(
+          -MathUtil.applyDeadband(m_driverController.getLeftY(), OIConstants.kDeadband),
+          -MathUtil.applyDeadband(m_driverController.getLeftX(), OIConstants.kDeadband),
+          -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDeadband),
+          fieldCentric, false, reducedSpeed),m_DriveManager));
+    }
+
     
     /* 
     m_Elevator.setDefaultCommand(
@@ -195,9 +220,13 @@ public class RobotContainer {
     ); 
     */
     
-    m_Elevator.setDefaultCommand(
-      new RunCommand( ()-> m_Elevator.moveMotors(), m_Elevator)
+    
+    if(Constants.OperatorConstants.ElevatorSubsystemOnline){
+    } 
+      m_Elevator.setDefaultCommand(
+        new RunCommand( ()-> m_Elevator.moveMotors(), m_Elevator)
     ); 
+    
 
     /* 
     /// - find a way to toggle between including controller values
@@ -213,13 +242,6 @@ public class RobotContainer {
     //NamedCommands.registerCommand("ScrubIn", moveScrubberIn);
     //NamedCommands.registerCommand("ScrubOut", moveScrubberOut);
     //NamedCommands.registerCommand("Scrub", scrub);
-    NamedCommands.registerCommand("eUp", eUp);
-    NamedCommands.registerCommand("Score0", namedAutoCoral);
-    NamedCommands.registerCommand("eDown", eDown);
-    NamedCommands.registerCommand("eIntake", eIntake);
-    NamedCommands.registerCommand("L4", autoL4);
-    NamedCommands.registerCommand("Score1",new ParallelRaceGroup(intakeCoral, new WaitCommand(1)));
-    NamedCommands.registerCommand("IntakeCoral", intakeCoral2);
   }
 
   /**
@@ -242,50 +264,37 @@ public class RobotContainer {
     Trigger bDriverButton = m_driverController.b();
     //bDriverButton.toggleOnTrue(toggleAlignment);
     // lets see how this ends
-    /* 
-    bDriverButton.toggleOnTrue(    new ParallelRaceGroup(
-      limelightOff 
-      ,new RunCommand(() -> m_DriveManager.ManageSwerveSystem(
-        0.6,
-        0.0,
-        m_DriveManager.rotateToHeading(-LimelightHelpers.getTargetPose_CameraSpace("")[4], 0),
-        false, false),m_DriveManager),
-        new WaitCommand(.25)
-    ));
-    */
 
     //bDriverButton.onTrue(resetGyro);
-    Trigger yDriverButton = m_driverController.y();
-    yDriverButton.onTrue(resetGyro);
-    //yDriverButton.whileTrue(testLightCommand);
-
-    Trigger xDriverButton = m_driverController.x();
-    xDriverButton.onTrue(toggleMode);
-
-    Trigger leftDriveButton = m_driverController.povLeft();
-    leftDriveButton.toggleOnTrue(alignLeft);
-
-    Trigger rightDriverButton = m_driverController.povRight();
-    rightDriverButton.toggleOnTrue(alignRight);
-
-    Trigger upDriverbutton = m_driverController.povUp();
-    upDriverbutton.toggleOnTrue(alignCenter);
-
-    Trigger LeftDriverTrigger = m_driverController.leftTrigger();
-    LeftDriverTrigger.toggleOnTrue(robotCentricC).toggleOnTrue(fieldCentricC);// hold triger, robot is robot centric, let go and it becomes field centric
-
-    Trigger rightDriverTrigger = m_driverController.rightTrigger();
-    rightDriverTrigger.toggleOnTrue(reduceSpeed).toggleOnFalse(normalSpeed); // when trigger is held, reduce speed to 25 %
-    //Trigger scorerLeftY = m_scoringController.leftStick();
-
+    if (Constants.OperatorConstants.driverSystemOnline){
+      Trigger yDriverButton = m_driverController.y();
+      yDriverButton.onTrue(resetGyro);
+      //yDriverButton.whileTrue(testLightCommand);
+  
+      Trigger xDriverButton = m_driverController.x();
+      xDriverButton.onTrue(toggleMode);
+  
+      Trigger leftDriveButton = m_driverController.povLeft();
+      leftDriveButton.toggleOnTrue(alignLeft);
+  
+      Trigger rightDriverButton = m_driverController.povRight();
+      rightDriverButton.toggleOnTrue(alignRight);
+  
+      Trigger upDriverbutton = m_driverController.povUp();
+      upDriverbutton.toggleOnTrue(alignCenter);
+  
+      Trigger LeftDriverTrigger = m_driverController.leftTrigger();
+      LeftDriverTrigger.toggleOnTrue(robotCentricC).toggleOnFalse(fieldCentricC);// hold triger, robot is robot centric, let go and it becomes field centric
+  
+      Trigger rightDriverTrigger = m_driverController.rightTrigger();
+      rightDriverTrigger.toggleOnTrue(reduceSpeed).toggleOnFalse(normalSpeed); // when trigger is held, reduce speed to 25 %
+    }
+    
+    if (Constants.OperatorConstants.ElevatorSubsystemOnline){
+//Trigger scorerLeftY = m_scoringController.leftStick();
+         
         Trigger aScorerButton = m_scoringController.a();
           aScorerButton.toggleOnTrue(eIntake);
-
-        Trigger bScorerButton = m_scoringController.b();
-          bScorerButton.toggleOnTrue(intakeCoral2);
-    
-        Trigger xScoreButton = m_scoringController.x();
-          //xScoreButton.whileTrue(scrub);
 
         Trigger yScoreButton = m_scoringController.y();
           yScoreButton.whileTrue(resetEncoder);
@@ -297,32 +306,44 @@ public class RobotContainer {
         Trigger upScorerButton = m_scoringController.povUp();
           upScorerButton.toggleOnTrue(eUp);
 
-        Trigger rightTrigger = m_scoringController.rightTrigger();
-          //rightTrigger.whileTrue(overrideScrubBoth).toggleOnFalse(nullScrub);
-          rightTrigger.whileTrue(intakeCoral);
+          if (Constants.OperatorConstants.ElevatorOverrideOnline){
+            Trigger leftTrigger = m_scoringController.leftTrigger();
+            leftTrigger.whileTrue(EOverride).toggleOnFalse(nullE); // override elevator (be aware unless changed, it will move to its old posisitoion)
+          }
+          
+    }
+  
 
-        Trigger leftTrigger = m_scoringController.leftTrigger();
-          leftTrigger.whileTrue(EOverride).toggleOnFalse(nullE); // override elevator (be aware unless changed, it will move to its old posisitoion)
+    if (Constants.OperatorConstants.coralFeederOnline){
+      Trigger rightTrigger = m_scoringController.rightTrigger();
+      //rightTrigger.whileTrue(overrideScrubBoth).toggleOnFalse(nullScrub);
+      rightTrigger.whileTrue(intakeCoral);
 
-        Trigger rightBumper = m_scoringController.rightBumper();
+      Trigger rightBumper = m_scoringController.rightBumper();
+      rightBumper.onTrue(intakeCoral2);
+    }
+        
 
-    Trigger intakeBlue = buttonPannel.button(1);
-    intakeBlue.onTrue(intakeBlueLeftCommand);
-
-    Trigger intakeCenter = buttonPannel.button(2);
-    intakeCenter.onTrue(intakeCenterLeftCommand);
-
-    Trigger intakeRed = buttonPannel.button(3);
-    intakeRed.onTrue(intakeRedLeftCommand);
-
-    Trigger bargeBlue = buttonPannel.button(4);
-    bargeBlue.onTrue(bargeBlueLeftCommand);
-
-    Trigger bargeCenter = buttonPannel.button(5);
-    bargeCenter.onTrue(bargeCenterLeftCommand);
-
-    Trigger bargeRed = buttonPannel.button(6);
-    bargeRed.onTrue(bargeRedLeftCommand);
+    if (Constants.OperatorConstants.autoAlignOnline){
+      Trigger intakeBlue = buttonPannel.button(1);
+      intakeBlue.onTrue(intakeBlueLeftCommand);
+  
+      Trigger intakeCenter = buttonPannel.button(2);
+      intakeCenter.onTrue(intakeCenterLeftCommand);
+  
+      Trigger intakeRed = buttonPannel.button(3);
+      intakeRed.onTrue(intakeRedLeftCommand);
+  
+      Trigger bargeBlue = buttonPannel.button(4);
+      bargeBlue.onTrue(bargeBlueLeftCommand);
+  
+      Trigger bargeCenter = buttonPannel.button(5);
+      bargeCenter.onTrue(bargeCenterLeftCommand);
+  
+      Trigger bargeRed = buttonPannel.button(6);
+      bargeRed.onTrue(bargeRedLeftCommand);
+    }
+    
 
 
 

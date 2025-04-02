@@ -4,6 +4,7 @@
 
 package frc.robot;
 
+import com.pathplanner.lib.commands.PathfindingCommand;
 import com.pathplanner.lib.pathfinding.Pathfinding;
 
 import edu.wpi.first.wpilibj.DriverStation;
@@ -32,6 +33,7 @@ public class Robot extends TimedRobot {
     m_robotContainer = new RobotContainer();
     //Pathfinding.setPathfinder(new LocalADStarAK()); // need to import file for andavant kit
     DriverStation.silenceJoystickConnectionWarning(true);
+    PathfindingCommand.warmupCommand().schedule();
   }
 
   /**

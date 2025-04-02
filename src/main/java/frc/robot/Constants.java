@@ -28,6 +28,12 @@ public final class Constants {
     public static final int kDriverControllerPort = 1;
     public static final int kScorerControllerPort = 0;
 
+    public static final boolean ElevatorSubsystemOnline = true;
+    public static final boolean ElevatorOverrideOnline = true;
+    public static final boolean driverSystemOnline = true;
+    public static final boolean coralFeederOnline = true;
+    public static final boolean autoAlignOnline = false;
+
   }
   public static final class ModuleConstants {
     // The MAXSwerve module can be configured with one of three pinion gears: 12T,
@@ -135,7 +141,7 @@ public static class elevatorConstants {
   public static final int leftMotorCanID = 9;
   public static final int rightMotorCanID = 10;//Double check these
 
-  public static final double maxSpeed = .75;
+  public static final double maxSpeed = .60;
 }
 
 public static class algaeScrubberConstants {
@@ -188,7 +194,7 @@ public static class autoWayPointConstants{
 
 
   //______ intake side______ _direction_barge side_Side
-  public static final Pose2d intakeBlueRightPosition= new Pose2d(3.7, 4.980, Rotation2d.fromDegrees(-60));
+  public static final Pose2d intakeBlueRightPosition= new Pose2d(3, 5.2, Rotation2d.fromDegrees(-60));
   public static final Pose2d intakeBlueLeftPosition= new Pose2d(4.0, 5.215, Rotation2d.fromDegrees(-60));
 
   public static final Pose2d intakeCenterRightPosition= new Pose2d(3.2, 3.85, Rotation2d.fromDegrees(0));
