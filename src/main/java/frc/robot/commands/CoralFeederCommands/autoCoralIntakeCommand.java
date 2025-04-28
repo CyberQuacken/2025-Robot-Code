@@ -4,11 +4,11 @@ import edu.wpi.first.wpilibj2.command.Command;
 import frc.robot.Constants.coralFeederConstants;
 import frc.robot.subsystems.CoralFeederSubsystem;
 
-public class automateIntakeCoral extends Command{
+public class autoCoralIntakeCommand extends Command{
     CoralFeederSubsystem coralFeeder;
     boolean hasCoral;
     
-    public automateIntakeCoral (CoralFeederSubsystem subsystem){
+    public autoCoralIntakeCommand (CoralFeederSubsystem subsystem){
         coralFeeder = subsystem;
         hasCoral = coralFeeder.testForCoral();
 
@@ -23,15 +23,11 @@ public class automateIntakeCoral extends Command{
     @Override
     public boolean isFinished(){
         // if nothing has change, continue the program
-        if(hasCoral == coralFeeder.testForCoral()){
-            return false;
-        }
-        // else prepare to end the program
-        else{
-            //____I Don't think we need two cases, but just in case____
-            hasCoral = coralFeeder.testForCoral();
-            // if claw started with coral
+        if(coralFeeder.testForCoral()){
             return true;
+        }
+        else{
+            return false;
         }
     }
     

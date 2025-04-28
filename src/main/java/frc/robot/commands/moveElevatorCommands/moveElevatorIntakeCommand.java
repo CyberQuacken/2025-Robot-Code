@@ -25,7 +25,7 @@ public class moveElevatorIntakeCommand extends Command {
   // Called every time the scheduler runs while the command is scheduled.
   @Override
   public void execute() {
-    m_subsystem.moveElevator(-.85);
+    m_subsystem.moveElevator(-.40);
     //oldPosition = m_subsystem.getAveragePosition();
     end = m_subsystem.getSwitch();
   }

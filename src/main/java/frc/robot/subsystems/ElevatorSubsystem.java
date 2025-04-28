@@ -58,6 +58,8 @@ public class ElevatorSubsystem extends SubsystemBase {
       elevatorConstants.kP,
       elevatorConstants.kI,
       elevatorConstants.kD);
+
+      resetEncoder();
   }
 
 /**
@@ -143,6 +145,7 @@ public class ElevatorSubsystem extends SubsystemBase {
   }
 
   public boolean isAtDesiredPosition() { 
-    return pidController.atSetpoint();
+    return averagePosition>= positions[currentPosition]-.5 &&  averagePosition <= positions[currentPosition] +.5;
+    //return pidController.atSetpoint();
   }
 }

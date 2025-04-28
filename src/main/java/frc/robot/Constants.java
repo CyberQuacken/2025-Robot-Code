@@ -32,7 +32,7 @@ public final class Constants {
     public static final boolean ElevatorOverrideOnline = true;
     public static final boolean driverSystemOnline = true;
     public static final boolean coralFeederOnline = true;
-    public static final boolean autoAlignOnline = false;
+    public static final boolean autoAlignOnline = true;
 
   }
   public static final class ModuleConstants {
@@ -43,11 +43,11 @@ public final class Constants {
 
     // Calculations required for driving motor conversion factors and feed forward
     public static final double kDrivingMotorFreeSpeedRps = NeoMotorConstants.kFreeSpeedRpm / 60;
-    public static final double kWheelDiameterMeters = 0.0762;
+    public static final double kWheelDiameterMeters = 0.0762; // 3 inch diameter // return to .0762
     public static final double kWheelCircumferenceMeters = kWheelDiameterMeters * Math.PI;
     // 45 teeth on the wheel's bevel gear, 22 teeth on the first-stage spur gear, 15
     // teeth on the bevel pinion
-    public static final double kDrivingMotorReduction = (45.0 * 22) / (kDrivingMotorPinionTeeth * 15);
+    public static final double kDrivingMotorReduction = (45.0 * 22) / (kDrivingMotorPinionTeeth * 15); // Check with Eathn
     public static final double kDriveWheelFreeSpeedRps = (kDrivingMotorFreeSpeedRps * kWheelCircumferenceMeters)
         / kDrivingMotorReduction;
   }
@@ -70,9 +70,9 @@ public static final class DriveConstants {
     public static final double kMagnitudeSlewRate = 1.8; // percent per second (1 = 100%)
     public static final double kRotationalSlewRate = 3.0; // percent per second (1 = 100%)
     // Chassis configuration
-    public static final double kTrackWidth = Units.inchesToMeters(24);
+    public static final double kTrackWidth = Units.inchesToMeters(20);
     // Distance between centers of right and left wheels on robot
-    public static final double kWheelBase = Units.inchesToMeters(24);
+    public static final double kWheelBase = Units.inchesToMeters(20);
     // Distance between front and back wheels on robot
     public static final SwerveDriveKinematics kDriveKinematics = new SwerveDriveKinematics(
         new Translation2d(kWheelBase / 2, kTrackWidth / 2),
@@ -123,7 +123,7 @@ public static class elevatorConstants {
     15, // level one // doesnt work
     21, // level two
     42, // level three
-    70, // level four
+    67, // level four
   };
   
   public static final int intakePositionIndex = 0;
@@ -134,20 +134,20 @@ public static class elevatorConstants {
   public static final int levelFourPositionIndex = 4;
 
   // temp values for PID
-  public static final double kP = 0.09;
+  public static final double kP = 0.5;
   public static final double kI = 0.0005;
   public static final double kD = 0.0001; 
 
   public static final int leftMotorCanID = 9;
   public static final int rightMotorCanID = 10;//Double check these
 
-  public static final double maxSpeed = .60;
+  public static final double maxSpeed = .40;
 }
 
 public static class algaeScrubberConstants {
   public static final int algeaScrubberMotorID = 12;
   public static final int algeaScrubberPivotMotorID = 13;
-  public static final double algaeScrubberSpeed = .25;
+  public static final double algaeScrubberSpeed = .40;
 
   public static final double scrubberOutPosition = -2.5; // replace with encoder value 90degress off
   public static final double scrubberInPosition = 1; // replace with encoder value of resting position;

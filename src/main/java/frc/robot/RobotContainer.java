@@ -21,6 +21,7 @@ import frc.robot.commands.AlgaeScrubberCommands.overrideScrubberCommand;
 import frc.robot.commands.AlgaeScrubberCommands.overrideScrubberPivotCommand;
 import frc.robot.commands.AlgaeScrubberCommands.ScrubAlgae;
 import frc.robot.commands.AlgaeScrubberCommands.manualScrub;
+import frc.robot.commands.CoralFeederCommands.autoCoralIntakeCommand;
 import frc.robot.commands.CoralFeederCommands.automateIntakeCoral;
 import frc.robot.commands.CoralFeederCommands.maneuverCoral;
 import frc.robot.commands.CoralFeederCommands.pathPlannerCoral;
@@ -47,6 +48,7 @@ import frc.robot.commands.moveElevatorCommands.moveElevatorUpCommand;
 import frc.robot.commands.moveElevatorCommands.nullElevatorCommand;
 import frc.robot.commands.moveElevatorCommands.overrideElevatorCommand;
 import frc.robot.commands.moveElevatorCommands.resetEncoderCommand;
+import frc.robot.commands.moveElevatorCommands.runElevator;
 import frc.robot.subsystems.CoralFeederSubsystem;
 import frc.robot.subsystems.ElevatorSubsystem;
 import frc.robot.subsystems.VisionSubsystem;
@@ -138,18 +140,19 @@ public class RobotContainer {
   private final moveElevator eLevelThree = new moveElevator(m_Elevator, 3);
   private final moveElevator eLevelTwo = new moveElevator(m_Elevator, 2);
   private final moveElevator eLevelOne = new moveElevator(m_Elevator, 1);
-
-
-  //OVERRIDES
   private final overrideElevatorCommand EOverride = new overrideElevatorCommand(m_Elevator);
   private final nullElevatorCommand nullE = new nullElevatorCommand(m_Elevator);
+  private final runElevator runElevatorCommand = new runElevator(m_Elevator);
 
  private final resetEncoderCommand resetEncoder = new resetEncoderCommand(m_Elevator);
   private final resetGyroCommand resetGyro = new resetGyroCommand(m_DriveManager);
+
   private final maneuverCoral intakeCoral = new maneuverCoral(m_Coral);
   private final pathPlannerCoral namedAutoCoral = new pathPlannerCoral(m_Coral);
-
   private final automateIntakeCoral intakeCoral2 = new automateIntakeCoral(m_Coral);
+  private final autoCoralIntakeCommand autoCoralIntake = new autoCoralIntakeCommand(m_Coral);
+
+  
   private final toggleDriveModeCommand toggleMode = new toggleDriveModeCommand();//This is a real duct tape fix that has a probability of not working.
   private final DriveFieldCommand fieldCentricC = new DriveFieldCommand();
   private final DriveRobotCommand robotCentricC = new DriveRobotCommand();
@@ -177,7 +180,6 @@ public class RobotContainer {
 
   /** The container for the robot. Contains subsystems, OI devices, and commands. */
   public RobotContainer() {
-    SmartDashboard.putNumber("light index", -.17);
     SmartDashboard.putNumber("elevator P", elevatorConstants.kP);
     SmartDashboard.putNumber("elevator I", elevatorConstants.kI);
     SmartDashboard.putNumber("elevator D", elevatorConstants.kD);
@@ -187,6 +189,8 @@ public class RobotContainer {
       NamedCommands.registerCommand("LevelThree", eLevelThree);
       NamedCommands.registerCommand("LevelTwo", eLevelTwo);
       NamedCommands.registerCommand("LevelOne", eLevelOne);
+      NamedCommands.registerCommand("L4", autoL4);
+      NamedCommands.registerCommand("Move Elevator", runElevatorCommand);
 
       NamedCommands.registerCommand("eUp", eUp);
       NamedCommands.registerCommand("eDown", eDown);
@@ -194,12 +198,14 @@ public class RobotContainer {
     }
     if (Constants.OperatorConstants.coralFeederOnline){
       NamedCommands.registerCommand("IntakeCoral", intakeCoral2);
+      NamedCommands.registerCommand("runCoral", autoCoralIntake);
     }
+    NamedCommands.registerCommand("reset Gyro", resetGyro);
 
 
-    NamedCommands.registerCommand("Score0", namedAutoCoral); // ?
+    NamedCommands.registerCommand("Score0", namedAutoCoral); // ?!?!?!?
 
-    autoChooser = AutoBuilder.buildAutoChooser();
+    autoChooser = AutoBuilder.buildAutoChooser(); // <
 
     // Configure the trigger bindings
     configureBindings();
@@ -212,36 +218,14 @@ public class RobotContainer {
           -MathUtil.applyDeadband(m_driverController.getRightX(), OIConstants.kDeadband),
           fieldCentric, false, reducedSpeed),m_DriveManager));
     }
-
-    
-    /* 
-    m_Elevator.setDefaultCommand(
-      new RunCommand( ()-> m_Elevator.moveElevator(-MathUtil.applyDeadband(m_scoringController.getLeftY(), OIConstants.kDeadband)), m_Elevator)
-    ); 
-    */
-    
     
     if(Constants.OperatorConstants.ElevatorSubsystemOnline){
     } 
       m_Elevator.setDefaultCommand(
         new RunCommand( ()-> m_Elevator.moveMotors(), m_Elevator)
     ); 
-    
-
-    /* 
-    /// - find a way to toggle between including controller values
-    m_scrubberPivot.setDefaultCommand(
-      new RunCommand( ()-> m_scrubberPivot.moveMotorIn(), m_scrubberPivot)
-    );
-    */
   
-
     SmartDashboard.putData("Auto Chooser", autoChooser);
-
-    // Named commands
-    //NamedCommands.registerCommand("ScrubIn", moveScrubberIn);
-    //NamedCommands.registerCommand("ScrubOut", moveScrubberOut);
-    //NamedCommands.registerCommand("Scrub", scrub);
   }
 
   /**
@@ -257,19 +241,12 @@ public class RobotContainer {
 
 
     Trigger aDriverButton = m_driverController.a();
-    //aDriverButton.toggleOnTrue(toggleLimelight);
-    // testing pathfind to point
-  
 
     Trigger bDriverButton = m_driverController.b();
-    //bDriverButton.toggleOnTrue(toggleAlignment);
-    // lets see how this ends
 
-    //bDriverButton.onTrue(resetGyro);
     if (Constants.OperatorConstants.driverSystemOnline){
       Trigger yDriverButton = m_driverController.y();
       yDriverButton.onTrue(resetGyro);
-      //yDriverButton.whileTrue(testLightCommand);
   
       Trigger xDriverButton = m_driverController.x();
       xDriverButton.onTrue(toggleMode);
@@ -291,7 +268,6 @@ public class RobotContainer {
     }
     
     if (Constants.OperatorConstants.ElevatorSubsystemOnline){
-//Trigger scorerLeftY = m_scoringController.leftStick();
          
         Trigger aScorerButton = m_scoringController.a();
           aScorerButton.toggleOnTrue(eIntake);
@@ -316,7 +292,7 @@ public class RobotContainer {
 
     if (Constants.OperatorConstants.coralFeederOnline){
       Trigger rightTrigger = m_scoringController.rightTrigger();
-      //rightTrigger.whileTrue(overrideScrubBoth).toggleOnFalse(nullScrub);
+
       rightTrigger.whileTrue(intakeCoral);
 
       Trigger rightBumper = m_scoringController.rightBumper();
@@ -348,7 +324,7 @@ public class RobotContainer {
 
 
 
-    SmartDashboard.putData("Auto Chooser", autoChooser);
+    //SmartDashboard.putData("Auto Chooser", autoChooser);
   }
   /**
    * Use this to pass the autonomous command to the main {@link Robot} class.
@@ -358,6 +334,8 @@ public class RobotContainer {
 
   public Command getAutonomousCommand() { 
     // runs preplanned pathplanner
+    //return autoChooser.getSelected();
+    // return new PathPlannerAuto("Auto Elevator");
     return autoChooser.getSelected();
   }
 
@@ -373,5 +351,70 @@ public class RobotContainer {
         new WaitCommand(1)
     ); // put robot backwards
 
+  }
+
+  public Command getManualAutoCenterCommand(){ // Auto we want to test
+    return Commands.runOnce(()-> m_DriveManager.ManageSwerveSystem(.5, 0, 0, false, false, false), m_DriveManager)
+    .andThen(new WaitCommand(1))//second
+    .andThen(()-> m_DriveManager.ManageSwerveSystem(0, 0, 0, false, false, false), m_DriveManager)
+    .andThen(()-> m_Elevator.setCurrentPosition(Constants.elevatorConstants.levelFourPositionIndex), m_Elevator)
+    .andThen(()-> m_Elevator.moveMotors(), m_Elevator)
+    .andThen(new WaitCommand(2.5))
+    .andThen(()-> m_Coral.intakeMotor(Constants.coralFeederConstants.clawIntakeSpeed), m_Coral)
+    .andThen(new WaitCommand(1))
+    .andThen(()-> m_Coral.stopMotor(), m_Coral)
+    .andThen(()-> m_Elevator.setCurrentPosition(Constants.elevatorConstants.intakePositionIndex), m_Elevator)
+    .andThen(()-> m_Elevator.moveMotors(), m_Elevator)
+    .andThen(new WaitCommand(2.5))
+    .andThen(()-> m_DriveManager.ManageSwerveSystem(-.5, 0, 0, false, false, false), m_DriveManager)
+    .andThen(new WaitCommand(.5))
+    .andThen(()-> m_DriveManager.ManageSwerveSystem(0, 0, 0, false, false, false), m_DriveManager)
+    .andThen(()-> m_DriveManager.ManageSwerveSystem(0, 0, .5, false, false, false), m_DriveManager)
+    .andThen(new WaitCommand(1))
+    .andThen(()-> m_DriveManager.ManageSwerveSystem(0, 0, 0, false, false, false), m_DriveManager)
+    .andThen(()-> m_DriveManager.driveSystem.zeroHeading(),m_DriveManager)
+    ;
+
+    /*  REFERNCE
+    return Commands.runOnce(
+      () -> shooterSubsystem.shootSpeaker(),
+      shooterSubsystem).andThen(new WaitCommand(2))
+      .andThen(()->intakeSubsystem.enableIntake(0.5),
+      intakeSubsystem).andThen(new WaitCommand(5))
+      .andThen(new WaitCommand(1)).andThen(()-> shooterSubsystem.endShoot(),shooterSubsystem)
+      .andThen(()-> m_robotDrive.drive(0.0,0.5,0.0,OIConstants.fieldRelative,true),m_robotDrive);
+      */
+      //.andThen(backwards);
+    //return Commands.runOnce();
+    //return Commands.runOnce(()-> ampArmSubsystem.move(.22).ampArmSubsystem).andThen(new WaitCommand(2)).andThen(()-> ampArmSubsystem.stop().ampArmSubsystem);
+  }
+  public Command getManualLimelightCommand(){ // Want to use limelight with it
+    // parralle race group
+    //
+    return Commands.runOnce(()-> m_DriveManager.alignOnTag(), m_DriveManager)
+    .andThen(new ParallelRaceGroup(new RunCommand(()-> m_DriveManager.alignOnTag(), m_DriveManager).repeatedly(), new WaitCommand(3)))
+    .andThen(new ParallelRaceGroup(new RunCommand(()-> m_DriveManager.ManageSwerveSystem(.25, 0, m_DriveManager.rotateToHeading(m_DriveManager.getGyro().getAngle(), m_DriveManager.getDesiredAngle()), false, false, false), m_DriveManager).repeatedly(), new WaitCommand(2)))
+    //.andThen(()-> m_DriveManager.ManageSwerveSystem(.25, 0, m_DriveManager.rotateToHeading(m_DriveManager.getGyro().getAngle(), m_DriveManager.getDesiredAngle()), false, false, false), m_DriveManager)
+    //.andThen(new WaitCommand(5))
+    .andThen(()-> m_DriveManager.ManageSwerveSystem(0, 0, 0, false, false, false), m_DriveManager)
+    //.andThen(new WaitCommand(2.5))
+    .andThen(()-> m_Elevator.setCurrentPosition(Constants.elevatorConstants.levelFourPositionIndex), m_Elevator)
+    .andThen(()-> m_Elevator.moveMotors(), m_Elevator) // can make a race group
+    .andThen(new WaitCommand(2.5))
+    .andThen(()-> m_Coral.intakeMotor(Constants.coralFeederConstants.clawIntakeSpeed), m_Coral)
+    .andThen(new WaitCommand(2))
+    .andThen(()-> m_Coral.stopMotor(), m_Coral)
+    .andThen(()-> m_Elevator.setCurrentPosition(Constants.elevatorConstants.intakePositionIndex), m_Elevator)
+    .andThen(()-> m_Elevator.moveMotors(), m_Elevator) // race group
+    .andThen(new WaitCommand(2))
+    .andThen(()-> m_Elevator.moveElevator(0), m_Elevator)
+    .andThen(()-> m_DriveManager.ManageSwerveSystem(-.25, 0, m_DriveManager.rotateToHeading(m_DriveManager.getGyro().getAngle(), m_DriveManager.getDesiredAngle()), false, false, false), m_DriveManager)
+    .andThen(new WaitCommand(1))
+    .andThen(()-> m_DriveManager.ManageSwerveSystem(0, 0, 0, false, false, false), m_DriveManager)
+    .andThen(()-> m_DriveManager.ManageSwerveSystem(0, 0, m_DriveManager.rotateToHeading(m_DriveManager.getGyro().getAngle(), m_DriveManager.getDesiredAngle()+180), false, false, false), m_DriveManager)
+    .andThen(new WaitCommand(1))
+    .andThen(()-> m_DriveManager.ManageSwerveSystem(0, 0, 0, false, false, false), m_DriveManager)
+    .andThen(()-> m_DriveManager.driveSystem.zeroHeading(),m_DriveManager)
+    ;
   }
 }

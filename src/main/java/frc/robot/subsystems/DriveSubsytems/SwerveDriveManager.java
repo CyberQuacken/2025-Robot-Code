@@ -17,6 +17,8 @@ import com.pathplanner.lib.auto.AutoBuilder;
 import com.pathplanner.lib.config.RobotConfig;
 import com.pathplanner.lib.controllers.PPHolonomicDriveController;
 import com.pathplanner.lib.controllers.PPLTVController;
+import com.studica.frc.AHRS;
+
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -34,6 +36,8 @@ public class SwerveDriveManager extends SubsystemBase{
 
     private boolean autoDrive = false;
     private boolean align = true;
+
+    private double desiredAngle;
 
     private boolean isBlue = false;
 
@@ -133,8 +137,8 @@ public class SwerveDriveManager extends SubsystemBase{
             this::getSpeeds, // ChassisSpeeds supplier. MUST BE ROBOT RELATIVE
             (speeds, feedforwards) -> driveSystem.driveRobotRelative(speeds), // Method that will drive the robot given ROBOT RELATIVE ChassisSpeeds. Also optionally outputs individual module feedforwards
             new PPHolonomicDriveController( // PPHolonomicController is the built in path following controller for holonomic drive trains
-                    new PIDConstants(5, 0, 0), // Translation PID constants
-                    new PIDConstants(1, 0.0, 0) // Rotation PID constants
+                    new PIDConstants(5, 0, 1), // Translation PID constants
+                    new PIDConstants(5, 0.0, 0) // Rotation PID constants
             ),
             config, // The robot configuration
             () -> {
@@ -305,10 +309,11 @@ public class SwerveDriveManager extends SubsystemBase{
     @Override
     public void periodic()
     {
+
         driveSystem.updateSystem();
         updateRobotPos();
 
-        
+        /* 
         distancePIDController.setP(SmartDashboard.getNumber("Distance_P", 0.0));
         distancePIDController.setI(SmartDashboard.getNumber("Distance_I", 0.0));
         distancePIDController.setD(SmartDashboard.getNumber("Distance_D", 0.0));
@@ -324,10 +329,16 @@ public class SwerveDriveManager extends SubsystemBase{
         rotateToHeadingPIDController.setP(SmartDashboard.getNumber("Rotation_P", 0.0));
         rotateToHeadingPIDController.setI(SmartDashboard.getNumber("Rotation_I", 0.0));
         rotateToHeadingPIDController.setD(SmartDashboard.getNumber("Rotation_D", 0.0));
+        */
 
         SmartDashboard.putNumber("X pose", driveSystem.getPoseEstimation().getX());
         SmartDashboard.putNumber("Y pose", driveSystem.getPoseEstimation().getY());
+        SmartDashboard.putNumber("Desired Angle", desiredAngle);
 
+    }
+
+    public AHRS getGyro(){
+        return driveSystem.gyro;
     }
 
     // might be removed
@@ -401,9 +412,10 @@ public class SwerveDriveManager extends SubsystemBase{
         driveSystem.drive(
             moveToDistance(LimelightHelpers.getTargetPose_CameraSpace("")[2], 1.5),
             //orbitOnAngle(-LimelightHelpers.getTX(""),SmartDashboard.getNumber("Degrees off", 10)),//orbitOnAngle(LimelightHelpers.getTargetPose_CameraSpace("")[4], 0),
-            orbitOnAngle(-LimelightHelpers.getTargetPose_CameraSpace("")[2]*Math.tan(LimelightHelpers.getTX("") * (Math.PI/180)), .25),
+            orbitOnAngle(-LimelightHelpers.getTargetPose_CameraSpace("")[2]*Math.tan(LimelightHelpers.getTX("") * (Math.PI/180)), -.25),
             rotateToHeading(-LimelightHelpers.getTargetPose_CameraSpace("")[4], 0),
             false, true);
+            desiredAngle = driveSystem.gyro.getAngle() + -LimelightHelpers.getTargetPose_CameraSpace("")[4];
     }
 
     public void alignOnTag(double distance){
@@ -419,6 +431,10 @@ public class SwerveDriveManager extends SubsystemBase{
     public void resetRelativeOdometry(){
         driveSystem.relativeOdometry.resetPose(new Pose2d(0,0, new Rotation2d()));
         driveSystem.drive(.1, 0 ,0 , false, true);
+    }
+
+    public double getDesiredAngle(){
+        return desiredAngle;
     }
 
     public boolean atAprilTag(){

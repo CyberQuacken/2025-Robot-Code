@@ -39,6 +39,7 @@ import edu.wpi.first.util.WPIUtilJNI;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants;
 import frc.robot.LimelightHelpers;
 import frc.robot.SwerveUtils;
 
@@ -146,7 +147,7 @@ public class SwerveDrive extends SubsystemBase
             kinematics,
             gyro.getRotation2d(), 
             new SwerveModulePosition[]{new SwerveModulePosition(),new SwerveModulePosition(),new SwerveModulePosition(),new SwerveModulePosition()},
-            new Pose2d(0,0,new Rotation2d(180))
+            new Pose2d(0,0,new Rotation2d(0))
         );
 
 
@@ -196,9 +197,12 @@ public void resetOdometry() {
 }
 
 public void driveRobotRelative(ChassisSpeeds RobotRelativeSpeeds){
+    ChassisSpeeds fixedSpeeds = RobotRelativeSpeeds.times(-1);
+    fixedSpeeds.omegaRadiansPerSecond = fixedSpeeds.omegaRadiansPerSecond*-1;
     var swerveModuleStates = DriveConstants.kDriveKinematics.toSwerveModuleStates(
-    ChassisSpeeds.fromFieldRelativeSpeeds(RobotRelativeSpeeds,getPose().getRotation())
+    ChassisSpeeds.fromFieldRelativeSpeeds(fixedSpeeds,getPose().getRotation())
     );
+    
     
         SmartDashboard.putNumber("FLA", swerveModuleStates[0].angle.getRadians());
         SmartDashboard.putNumber("FRA", swerveModuleStates[1].angle.getRadians());
@@ -420,7 +424,9 @@ public void setModuleStates(SwerveModuleState[] desiredStates) {
             m_backLeft.getPosition(),
              m_backRight.getPosition()
         };
+        //System.out.println(gyro.getRotation2d());
         relativeOdometry.update(new Rotation2d(0), modulePosition);
+        System.out.println(m_backLeft.getPosition().distanceMeters/Constants.ModuleConstants.kWheelCircumferenceMeters);
         odometry.update(gyro.getRotation2d(), modulePosition);
         double x = getSpeeds().vxMetersPerSecond;
         double y = getSpeeds().vyMetersPerSecond;

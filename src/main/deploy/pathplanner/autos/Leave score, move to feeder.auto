@@ -57,6 +57,18 @@
           "data": {
             "name": "eIntake"
           }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "moveBlueSide"
+          }
+        },
+        {
+          "type": "path",
+          "data": {
+            "pathName": "moveTofeeder from blueside"
+          }
         }
       ]
     }
